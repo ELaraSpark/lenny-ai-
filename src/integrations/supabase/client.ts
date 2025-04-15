@@ -3,8 +3,20 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://quljyygvzixraubpdome.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1bGp5eWd2eml4cmF1YnBkb21lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE2OTY0MzUsImV4cCI6MjA1NzI3MjQzNX0.dUtac1xsR0TClOY_NuLAy4aCz_klgBrjteDxgEfFlcY";
-export const GEMINI_API_KEY = "AIzaSyBBXVIaqFnVmbT7cjp_f1Ow0sWcHGt9teI";
+// Ensure environment variables are set
+if (!import.meta.env.VITE_SUPABASE_URL) {
+  throw new Error("Missing environment variable: VITE_SUPABASE_URL");
+}
+if (!import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  throw new Error("Missing environment variable: VITE_SUPABASE_ANON_KEY");
+}
+if (!import.meta.env.VITE_GEMINI_API_KEY) {
+  // Optional: You might want to handle this differently if Gemini is not essential
+  console.warn("Missing environment variable: VITE_GEMINI_API_KEY");
+}
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ""; // Provide a default or handle missing key
+
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
