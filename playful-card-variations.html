@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playful Card Design Variations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#4A9270',
+              light: '#6AB187',
+            },
+            background: '#fafbfa',
+            foreground: '#2D3C35',
+            muted: {
+              DEFAULT: '#F4F7F5',
+              foreground: '#6c7b74',
+            },
+            border: '#E1EAE5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 10s linear infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px 0 rgba(74, 146, 112, 0.4); }
+      50% { box-shadow: 0 0 25px 5px rgba(74, 146, 112, 0.6); }
+    }
+    .animate-pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    body {
+      background-color: #fafbfa;
+      color: #2D3C35;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="p-8">
+  <div class="container mx-auto">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold mb-2">Playful Card Design Variations</h1>
+      <p class="text-muted-foreground">
+        Four different variations with larger human faces
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <!-- Variation 1: Large Side Avatar -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Large Side Avatar</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-lg bg-white border-2 border-purple-500/30 h-full flex flex-col mx-auto">
+            <!-- Fun header with large avatar -->
+            <div class="p-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 relative overflow-hidden">
+              <!-- Decorative elements -->
+              <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+              <div class="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8"></div>
+              
+              <div class="flex items-center gap-6 relative z-10">
+                <!-- Avatar with fun border - LARGER -->
+                <div class="relative">
+                  <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-light rounded-full animate-spin-slow"></div>
+                  <div class="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white m-0.5 animate-pulse-glow">
+                    <img
+                      src="public/agents/female-doctor-scrubs.jpg"
+                      alt="Dr. Sarah Lee"
+                      class="w-full h-full object-cover"
+                      onerror="this.src='public/placeholder.svg'"
+                    />
+                  </div>
+                </div>
+                
+                <div class="flex-1">
+                  <div class="flex items-center gap-1">
+                    <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                    <span class="text-xl">🧠</span>
+                  </div>
+                  <p class="text-primary font-medium">Thoracic Surgery Specialist</p>
+                  <div class="flex items-center mt-1 text-xs font-medium text-foreground/70">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    4.9 ★ Awesome Rating
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fun tagline -->
+            <div class="px-6 py-3 bg-muted/30 italic text-center text-sm font-medium">
+              "Making precise cuts through medical confusion!"
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+              <!-- Capabilities as fun bullet points -->
+              <div class="mb-4">
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Super Powers:
+                </h4>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgery Consultation</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Post-Operative Care</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgical Risk Assessment</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action button -->
+              <div class="mt-auto">
+                <button class="w-full bg-gradient-to-r from-primary to-primary-light hover:opacity-90 text-white font-medium text-base h-12 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
+                  Chat with me!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Features:</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+            <li>Much larger side avatar (32x32 instead of 20x20)</li>
+            <li>Added subtle pulsing glow animation to the avatar</li>
+            <li>Increased spacing between avatar and text</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Variation 2: Centered Large Avatar -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Centered Large Avatar</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-lg bg-white border-2 border-purple-500/30 h-full flex flex-col mx-auto">
+            <!-- Fun header with centered avatar -->
+            <div class="pt-8 pb-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 relative overflow-hidden">
+              <!-- Decorative elements -->
+              <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+              <div class="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8"></div>
+              
+              <!-- Centered avatar -->
+              <div class="flex flex-col items-center relative z-10">
+                <div class="relative mb-3">
+                  <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-light rounded-full animate-spin-slow"></div>
+                  <div class="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white m-0.5 animate-float">
+                    <img
+                      src="public/agents/female-doctor-scrubs.jpg"
+                      alt="Dr. Sarah Lee"
+                      class="w-full h-full object-cover"
+                      onerror="this.src='public/placeholder.svg'"
+                    />
+                  </div>
+                </div>
+                
+                <div class="text-center">
+                  <div class="flex items-center justify-center gap-1">
+                    <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                    <span class="text-xl">🧠</span>
+                  </div>
+                  <p class="text-primary font-medium">Thoracic Surgery Specialist</p>
+                  <div class="flex items-center justify-center mt-1 text-xs font-medium text-foreground/70">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    4.9 ★ Awesome Rating
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fun tagline -->
+            <div class="px-6 py-3 bg-muted/30 italic text-center text-sm font-medium">
+              "Making precise cuts through medical confusion!"
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+              <!-- Capabilities as fun bullet points -->
+              <div class="mb-4">
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Super Powers:
+                </h4>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgery Consultation</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Post-Operative Care</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgical Risk Assessment</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action button -->
+              <div class="mt-auto">
+                <button class="w-full bg-gradient-to-r from-primary to-primary-light hover:opacity-90 text-white font-medium text-base h-12 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
+                  Chat with me!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Features:</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+            <li>Large centered avatar (40x40)</li>
+            <li>Gentle floating animation</li>
+            <li>Centered text layout for a more symmetrical design</li>
+            <li>More vertical space in the header</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Variation 3: Full-Width Avatar Background -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Full-Width Avatar Background</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-lg bg-white border-2 border-purple-500/30 h-full flex flex-col mx-auto">
+            <!-- Full-width avatar background -->
+            <div class="relative h-64 overflow-hidden">
+              <!-- Background image -->
+              <div class="absolute inset-0 z-0">
+                <img
+                  src="public/agents/female-doctor-scrubs.jpg"
+                  alt=""
+                  class="w-full h-full object-cover"
+                  onerror="this.src='public/placeholder.svg'"
+                />
+                <!-- Gradient overlay -->
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-500/40 to-primary/70"></div>
+              </div>
+              
+              <!-- Content overlay -->
+              <div class="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
+                <div class="flex items-center gap-3">
+                  <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white">
+                    <img
+                      src="public/agents/female-doctor-scrubs.jpg"
+                      alt="Dr. Sarah Lee"
+                      class="w-full h-full object-cover"
+                      onerror="this.src='public/placeholder.svg'"
+                    />
+                  </div>
+                  
+                  <div>
+                    <div class="flex items-center gap-1">
+                      <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                      <span class="text-xl">🧠</span>
+                    </div>
+                    <p class="font-medium text-white/90">Thoracic Surgery Specialist</p>
+                    <div class="flex items-center mt-1 text-xs font-medium text-white/80">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-yellow-300"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                      4.9 ★ Awesome Rating
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fun tagline -->
+            <div class="px-6 py-3 bg-muted/30 italic text-center text-sm font-medium">
+              "Making precise cuts through medical confusion!"
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+              <!-- Capabilities as fun bullet points -->
+              <div class="mb-4">
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Super Powers:
+                </h4>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgery Consultation</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Post-Operative Care</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgical Risk Assessment</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action button -->
+              <div class="mt-auto">
+                <button class="w-full bg-gradient-to-r from-primary to-primary-light hover:opacity-90 text-white font-medium text-base h-12 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
+                  Chat with me!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Features:</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+            <li>Full-width avatar as background image</li>
+            <li>Gradient overlay for better text contrast</li>
+            <li>Smaller avatar thumbnail in the corner</li>
+            <li>Dramatic hero-style presentation</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Variation 4: Overlapping Avatar -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Overlapping Avatar</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-lg bg-white border-2 border-purple-500/30 h-full flex flex-col mx-auto pt-16 relative">
+            <!-- Large overlapping avatar -->
+            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2">
+              <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-light rounded-full animate-spin-slow"></div>
+                <div class="relative w-36 h-36 rounded-full overflow-hidden border-4 border-white m-0.5 shadow-xl">
+                  <img
+                    src="public/agents/female-doctor-scrubs.jpg"
+                    alt="Dr. Sarah Lee"
+                    class="w-full h-full object-cover"
+                    onerror="this.src='public/placeholder.svg'"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <!-- Header content -->
+            <div class="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-6 text-center">
+              <div class="flex items-center justify-center gap-1">
+                <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                <span class="text-xl">🧠</span>
+              </div>
+              <p class="text-primary font-medium">Thoracic Surgery Specialist</p>
+              <div class="flex items-center justify-center mt-1 text-xs font-medium text-foreground/70">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                4.9 ★ Awesome Rating
+              </div>
+            </div>
+            
+            <!-- Fun tagline -->
+            <div class="px-6 py-3 bg-muted/30 italic text-center text-sm font-medium">
+              "Making precise cuts through medical confusion!"
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+              <!-- Capabilities as fun bullet points -->
+              <div class="mb-4">
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Super Powers:
+                </h4>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgery Consultation</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Post-Operative Care</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgical Risk Assessment</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action button -->
+              <div class="mt-auto">
+                <button class="w-full bg-gradient-to-r from-primary to-primary-light hover:opacity-90 text-white font-medium text-base h-12 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
+                  Chat with me!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Features:</h3>
+          <ul class="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+            <li>Large avatar (36x36) that overlaps the card border</li>
+            <li>Centered layout with avatar as focal point</li>
+            <li>Shadow effect for depth</li>
+            <li>Unique visual hierarchy with avatar at the top</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-16 p-6 bg-muted/30 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4">Design Considerations</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="font-medium mb-2">Avatar Size & Placement</h3>
+          <p class="text-sm text-muted-foreground mb-4">
+            Each variation explores different approaches to featuring a larger human face:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
+            <li><span class="font-medium text-foreground">Large Side Avatar:</span> Maintains the original layout but with a much larger avatar</li>
+            <li><span class="font-medium text-foreground">Centered Large Avatar:</span> Puts the face front and center as the main focal point</li>
+            <li><span class="font-medium text-foreground">Full-Width Background:

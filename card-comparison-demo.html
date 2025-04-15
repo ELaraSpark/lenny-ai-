@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Card Design Comparison</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#4A9270',
+              light: '#6AB187',
+            },
+            background: '#fafbfa',
+            foreground: '#2D3C35',
+            muted: {
+              DEFAULT: '#F4F7F5',
+              foreground: '#6c7b74',
+            },
+            border: '#E1EAE5',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin-slow 10s linear infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    body {
+      background-color: #fafbfa;
+      color: #2D3C35;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="p-8">
+  <div class="container mx-auto">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold mb-2">Agent Card Design Comparison</h1>
+      <p class="text-muted-foreground">
+        Four different card designs with distinct personalities
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+      <!-- Conversational Card -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Conversational</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-2xl overflow-hidden shadow-md bg-white border border-border h-full flex flex-col">
+            <!-- Header with avatar and status -->
+            <div class="p-4 bg-primary/5 flex items-center gap-3">
+              <div class="relative">
+                <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-white">
+                  <img
+                    src="public/agents/female-doctor-scrubs.jpg"
+                    alt="Dr. Sarah Lee"
+                    class="w-full h-full object-cover"
+                    onerror="this.src='public/placeholder.svg'"
+                  />
+                </div>
+                <div class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-2 border-white"></div>
+              </div>
+              
+              <div class="flex-1">
+                <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                <p class="text-primary font-medium">Thoracic Surgery Specialist</p>
+              </div>
+              
+              <div class="bg-primary/10 border-primary/20 px-2 py-1 rounded-full text-xs font-medium">
+                4.9 ★
+              </div>
+            </div>
+            
+            <!-- Chat bubble -->
+            <div class="p-4 flex-1 flex flex-col">
+              <div class="bg-muted/50 rounded-2xl p-4 rounded-tl-none">
+                <p>Hello, I'm your surgical care specialist. How can I assist you today?</p>
+              </div>
+              
+              <!-- Quick action buttons -->
+              <div class="flex flex-wrap gap-2 mt-4">
+                <button class="bg-white border-primary/20 text-primary hover:bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  Surgery Consultation
+                </button>
+                <button class="bg-white border-primary/20 text-primary hover:bg-primary/10 px-3 py-1 rounded-full text-sm">
+                  Post-Op Care
+                </button>
+              </div>
+              
+              <div class="mt-auto">
+                <!-- Chat input -->
+                <div class="relative mt-4 flex items-center">
+                  <input
+                    type="text"
+                    placeholder="Ask me anything..."
+                    class="w-full h-12 pl-4 pr-12 rounded-full bg-muted/30 border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+                  />
+                  <div class="absolute right-2 flex items-center gap-1">
+                    <button class="h-8 w-8 flex items-center justify-center rounded-full bg-muted/50 text-muted-foreground hover:bg-muted/80">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    </button>
+                    <button class="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Personality:</h3>
+          <p class="text-sm text-muted-foreground">
+            Friendly and approachable with a chat-like interface. Focuses on direct communication with the user.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Professional Card -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Professional</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-lg overflow-hidden shadow-md bg-white border border-border h-full flex flex-col">
+            <!-- Header with image -->
+            <div class="relative h-48 bg-gradient-to-r from-primary/10 to-primary/5">
+              <!-- Professional badge -->
+              <div class="absolute top-4 right-4 z-10">
+                <div class="bg-white text-primary border-primary/20 font-semibold px-3 py-1 rounded-full flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                  4.9 Rating
+                </div>
+              </div>
+              
+              <!-- Agent image -->
+              <div class="absolute -bottom-12 left-6">
+                <div class="w-24 h-24 rounded-lg overflow-hidden border-4 border-white shadow-md">
+                  <img
+                    src="public/agents/female-doctor-scrubs.jpg"
+                    alt="Dr. Sarah Lee"
+                    class="w-full h-full object-cover"
+                    onerror="this.src='public/placeholder.svg'"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="pt-14 px-6 pb-6 flex-1 flex flex-col">
+              <!-- Agent info -->
+              <div class="mb-4">
+                <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                <p class="text-primary font-medium">Thoracic Surgery Specialist</p>
+              </div>
+              
+              <!-- Expertise section -->
+              <div class="mb-6">
+                <h4 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Areas of Expertise</h4>
+                <div class="space-y-1.5">
+                  <div class="flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary mt-0.5 flex-shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="text-sm">Surgery Consultation</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary mt-0.5 flex-shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="text-sm">Post-Operative Care</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary mt-0.5 flex-shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="text-sm">Surgical Risk Assessment</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Brief description -->
+              <div class="mb-6 text-sm text-muted-foreground">
+                <p>Board-certified thoracic surgeon with expertise in minimally invasive procedures and post-operative care management.</p>
+              </div>
+              
+              <!-- Action buttons -->
+              <div class="mt-auto flex gap-2">
+                <button class="flex-1 bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Message
+                </button>
+                
+                <button class="flex-1 border border-border hover:bg-muted/50 py-2 px-4 rounded flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                  Consult
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Personality:</h3>
+          <p class="text-sm text-muted-foreground">
+            Formal and structured with clear expertise areas. Emphasizes credentials and professional capabilities.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Playful Card -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Playful</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm rounded-3xl overflow-hidden shadow-lg bg-white border-2 border-purple-500/30 h-full flex flex-col">
+            <!-- Fun header with avatar -->
+            <div class="p-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 relative overflow-hidden">
+              <!-- Decorative elements -->
+              <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+              <div class="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full -ml-8 -mb-8"></div>
+              
+              <div class="flex items-center gap-4 relative z-10">
+                <!-- Avatar with fun border -->
+                <div class="relative">
+                  <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-light rounded-full animate-spin-slow"></div>
+                  <div class="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white m-0.5">
+                    <img
+                      src="public/agents/female-doctor-scrubs.jpg"
+                      alt="Dr. Sarah Lee"
+                      class="w-full h-full object-cover"
+                      onerror="this.src='public/placeholder.svg'"
+                    />
+                  </div>
+                </div>
+                
+                <div class="flex-1">
+                  <div class="flex items-center gap-1">
+                    <h3 class="font-bold text-xl">Dr. Sarah Lee</h3>
+                    <span class="text-xl">🧠</span>
+                  </div>
+                  <p class="text-primary font-medium">Thoracic Surgery Specialist</p>
+                  <div class="flex items-center mt-1 text-xs font-medium text-foreground/70">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    4.9 ★ Awesome Rating
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fun tagline -->
+            <div class="px-6 py-3 bg-muted/30 italic text-center text-sm font-medium">
+              "Making precise cuts through medical confusion!"
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+              <!-- Capabilities as fun bullet points -->
+              <div class="mb-4">
+                <h4 class="font-semibold mb-2 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-primary"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Super Powers:
+                </h4>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgery Consultation</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Post-Operative Care</span>
+                  </div>
+                  <div class="flex items-start gap-2 bg-muted/30 p-2 rounded-lg">
+                    <span class="text-lg">✨</span>
+                    <span class="text-sm">Surgical Risk Assessment</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action button -->
+              <div class="mt-auto">
+                <button class="w-full bg-gradient-to-r from-primary to-primary-light hover:opacity-90 text-white font-medium text-base h-12 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
+                  Chat with me!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Personality:</h3>
+          <p class="text-sm text-muted-foreground">
+            Fun and colorful with emojis and casual language. Uses animations and playful descriptions.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Minimalist Card -->
+      <div class="flex flex-col">
+        <h2 class="text-xl font-semibold mb-4 text-center">Minimalist</h2>
+        <div class="flex-1">
+          <div class="w-full max-w-sm overflow-hidden bg-white border border-border h-full flex flex-col group hover:border-primary/30 transition-colors duration-300">
+            <!-- Minimal header with just the name and specialty -->
+            <div class="p-6 border-b border-border">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-medium text-lg">Dr. Sarah Lee</h3>
+                  <p class="text-muted-foreground text-sm">Thoracic Surgery Specialist</p>
+                </div>
+                
+                <!-- Minimal avatar -->
+                <div class="w-10 h-10 rounded-full overflow-hidden bg-muted">
+                  <img
+                    src="public/agents/female-doctor-scrubs.jpg"
+                    alt="Dr. Sarah Lee"
+                    class="w-full h-full object-cover"
+                    onerror="this.src='public/placeholder.svg'"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <!-- Minimal content - just one key capability -->
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="text-sm text-muted-foreground mb-2">Primary focus</div>
+              <p class="font-medium">Surgery Consultation</p>
+              
+              <!-- Minimal action button -->
+              <div class="mt-auto pt-6">
+                <button class="w-full justify-between group-hover:bg-primary/5 group-hover:text-primary transition-colors duration-300 py-2 px-4 rounded flex items-center">
+                  <span>Consult</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform duration-300"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-muted/30 rounded-lg">
+          <h3 class="font-medium mb-2">Personality:</h3>
+          <p class="text-sm text-muted-foreground">
+            Clean and simple with focus on essential information. Elegant design with minimal distractions.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-16 p-6 bg-muted/30 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4">Design Considerations</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="font-medium mb-2">Emphasis on Tasks/Capabilities</h3>
+          <p class="text-sm text-muted-foreground mb-4">
+            Each card design emphasizes the agent's capabilities differently:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
+            <li><span class="font-medium text-foreground">Conversational:</span> Shows capabilities as quick action buttons in a chat interface</li>
+            <li><span class="font-medium text-foreground">Professional:</span> Lists capabilities as formal "Areas of Expertise" with checkmarks</li>
+            <li><span class="font-medium text-foreground">Playful:</span> Presents capabilities as fun "Super Powers" with sparkle emojis</li>
+            <li><span class="font-medium text-foreground">Minimalist:</span> Focuses on just the primary capability for simplicity</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-medium mb-2">User Interaction Style</h3>
+          <p class="text-sm text-muted-foreground mb-4">
+            The interaction style varies to match each personality:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
+            <li><span class="font-medium text-foreground">Conversational:</span> Chat input with send button, mimicking messaging apps</li>
+            <li><span class="font-medium text-foreground">Professional:</span> Clear action buttons with descriptive labels</li>
+            <li><span class="font-medium text-foreground">Playful:</span> Bold, colorful button with friendly call-to-action</li>
+            <li><span class="font-medium text-foreground">Minimalist:</span> Subtle ghost button with hover effects</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

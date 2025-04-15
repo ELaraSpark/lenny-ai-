@@ -1,0 +1,432 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Custom animation for floating elements */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Custom animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 10s linear infinite;
+}
+
+/* CSS variables for themes */
+@layer base {
+  :root {
+    /* Friendly Innovation Palette */
+    --primary: 190 100% 43%; /* #00B8D9 - Vibrant Teal */
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    --secondary: 36 100% 50%; /* #FFAB00 - Sunshine Yellow */
+    --secondary-foreground: 0 0% 15%; /* Dark text for contrast */
+    
+    --accent: 9 100% 60%; /* #FF5630 - Energetic Coral */
+    --accent-foreground: 0 0% 100%; /* White */
+    
+    --background: 48 67% 98%; /* #FDFBF5 beige */
+    --foreground: 0 0% 15%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 15%;
+    
+    --muted: 140 10% 97%;
+    --muted-foreground: 0 0% 45%;
+    
+    --destructive: 9 100% 60%; /* #FF5630 - Same as accent for consistency */
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 190 30% 90%;
+    --input: 190 30% 90%;
+    --ring: 190 100% 43%; /* Teal for focus ring */
+    
+    --radius: 0.5rem; 
+  }
+
+  /* Dark mode variables - Friendly Innovation Dark Theme */
+  .dark {
+    --background: 190 30% 10%; /* Dark teal background */
+    --foreground: 190 15% 90%; /* Light text with slight teal tint */
+    
+    --card: 190 25% 15%; /* Slightly lighter than background */
+    --card-foreground: 190 15% 90%; /* Same as foreground */
+    
+    --popover: 190 25% 15%; /* Same as card */
+    --popover-foreground: 190 15% 90%; /* Same as foreground */
+    
+    --muted: 190 20% 20%; /* Slightly lighter than card */
+    --muted-foreground: 190 10% 70%; /* Slightly darker than foreground */
+    
+    --border: 190 20% 25%; /* Slightly lighter than muted */
+    --input: 190 20% 25%; /* Same as border */
+    
+    /* Friendly Innovation colors for dark mode */
+    --primary: 190 90% 50%; /* #00B8D9 - Brighter in dark mode */
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    --secondary: 36 90% 55%; /* #FFAB00 - Brighter in dark mode */
+    --secondary-foreground: 0 0% 15%; /* Dark text for contrast */
+    
+    --accent: 9 90% 65%; /* #FF5630 - Brighter in dark mode */
+    --accent-foreground: 0 0% 100%; /* White */
+    
+    --destructive: 9 90% 65%; /* Same as accent */
+    --destructive-foreground: 0 0% 100%; /* White */
+    
+    --ring: var(--primary); /* Use primary color for focus ring */
+  }
+}
+
+@layer base {
+  * {
+    /* Use Tailwind's default border or the one defined in config */
+    @apply border-border selection:bg-primary/20 selection:text-primary; 
+  }
+  
+  body {
+    /* Increased base font size for better visibility */
+    @apply bg-background text-foreground font-sans antialiased text-xl leading-normal font-normal; 
+  }
+  /* .dark body rule is not needed if body uses bg-background */
+
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+/* Custom Utilities */
+@layer utilities {
+  /* Removed .bg-beige-layout utility */
+  .glass-card {
+    @apply bg-background/80 backdrop-blur-sm border border-border/20 shadow-sm;
+  }
+  
+  .subtle-shadow {
+    @apply shadow-sm shadow-black/5;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Remove gradient utilities or update them if needed */
+  /* .gradient-card { ... } */
+}
+
+/* Typography Adjustments - Increased font sizes for better visibility */
+@layer components {
+  /* Map h1 to welcome-title size (increased from 36px to 48px) */
+  .h1 { 
+    @apply text-[48px] font-display font-bold tracking-tight text-foreground; 
+  } 
+  /* Map h2 to a reasonable step down (increased from 30px to 40px) */
+  .h2 { 
+    @apply text-5xl font-display font-bold tracking-tight text-foreground; 
+  } 
+  /* Map h3 to a reasonable step down (increased from 24px to 32px) */
+  .h3 { 
+    @apply text-4xl font-display font-semibold tracking-tight text-foreground; 
+  } 
+  /* Map h4 to a reasonable step down (increased from 20px to 28px) */
+  .h4 { 
+    @apply text-3xl font-display font-semibold tracking-tight text-foreground; 
+  } 
+  /* Map p-large to welcome-subtitle/chat-input size (increased from 16px to 20px) */
+  .p-large { 
+    /* Use the CSS variable directly for text color */
+    @apply text-2xl text-[hsl(var(--text-secondary-hsl))]; 
+  } 
+  /* Map p-small to nav-item/user-name/footer size (increased from 13px/14px to 18px) */
+  .p-small { 
+    /* Use the standard text-muted-foreground utility */
+    @apply text-xl text-muted-foreground; 
+  }
+
+  /* Remove default link underline added previously */
+  /* a:not(.no-underline) { ... } */
+
+  /* Other component styles can go here */
+}
+
+/* Animation Modifiers */
+.animate-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animate-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animate-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animate-delay-400 {
+  animation-delay: 400ms;
+}
+
+.animate-delay-500 {
+  animation-delay: 500ms;
+}
+
+/* Personality-driven animations */
+@keyframes pulse-subtle {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.hover\:animate-bounce-subtle:hover {
+  animation: bounce-subtle 1s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.015); }
+  35% { transform: scale(1); }
+  45% { transform: scale(1.015); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* Float animation for illustrations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Blinking cursor animation for typing effect */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 0.8s step-end infinite;
+}
+
+/* Text shadow animation for typing effect */
+@keyframes text-shadow-pulse {
+  0% { text-shadow: 0 0 0 rgba(0,184,217,0); }
+  50% { text-shadow: 0 0 5px rgba(0,184,217,0.3); }
+  100% { text-shadow: 0 0 0 rgba(0,184,217,0); }
+}
+
+.typing-text {
+  animation: text-shadow-pulse 2s ease-in-out infinite;
+}
+
+/* Shadow animation for the typing container */
+@keyframes box-shadow-pulse {
+  0% { box-shadow: 0 0 0 rgba(0,184,217,0); }
+  50% { box-shadow: 0 0 10px rgba(0,184,217,0.2); }
+  100% { box-shadow: 0 0 0 rgba(0,184,217,0); }
+}
+
+.shadow-pulse {
+  animation: box-shadow-pulse 2s ease-in-out infinite;
+}
+
+/* Modern card designs */
+.card-modern {
+  @apply rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md;
+}
+
+.card-modern-gradient {
+  @apply bg-gradient-to-br from-card to-muted;
+}
+
+.card-glass {
+  @apply bg-background/30 backdrop-blur-lg border border-border/20;
+}
+
+/* Button effects */
+.btn-glow {
+  @apply relative overflow-hidden;
+}
+
+.btn-glow::after {
+  @apply absolute inset-0 rounded-md opacity-0 transition-opacity content-[''];
+  box-shadow: 0 0 20px 5px theme('colors.primary.DEFAULT');
+}
+
+.btn-glow:hover::after {
+  @apply opacity-60;
+}
+
+/* Feature card styles */
+.feature-card {
+  @apply relative overflow-hidden rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md;
+}
+
+.feature-icon-container {
+  @apply mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary;
+}
+
+/* Form elements with gradients */
+.input-gradient {
+  @apply bg-background border border-input; /* Use theme variables */
+}
+
+/* Gradient backgrounds for Friendly Innovation palette */
+.bg-gradient-teal {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#e1f5fe];
+}
+
+.dark .bg-gradient-teal {
+  @apply bg-gradient-to-br from-[#0d2534] to-[#051620];
+}
+
+.bg-gradient-coral {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#ffebe5];
+}
+
+.dark .bg-gradient-coral {
+  @apply bg-gradient-to-br from-[#2d1008] to-[#1a0905];
+}
+
+.bg-gradient-yellow {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#fff8e1];
+}
+
+.dark .bg-gradient-yellow {
+  @apply bg-gradient-to-br from-[#2d2105] to-[#1a1408];
+}
+
+.bg-gradient-purple {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#ede7f6];
+}
+
+.dark .bg-gradient-purple {
+  @apply bg-gradient-to-br from-[#1a0d2e] to-[#0d071a];
+}
+
+.bg-gradient-green {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#e8f5e9];
+}
+
+.dark .bg-gradient-green {
+  @apply bg-gradient-to-br from-[#1a2e22] to-[#0d1912];
+}
+
+/* Legacy gradients */
+.bg-gradient-clinical {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#e1f5fe];
+}
+
+.dark .bg-gradient-clinical {
+  @apply bg-gradient-to-br from-[#0d2534] to-[#051620];
+}
+
+.bg-gradient-surgical {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#e0f2f1];
+}
+
+.dark .bg-gradient-surgical {
+  @apply bg-gradient-to-br from-[#0d2a27] to-[#051916];
+}
+
+.bg-gradient-pediatric {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#fff8e1];
+}
+
+.dark .bg-gradient-pediatric {
+  @apply bg-gradient-to-br from-[#2d2105] to-[#1a1408];
+}
+
+.bg-gradient-cardiology {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#fce4ec];
+}
+
+.dark .bg-gradient-cardiology {
+  @apply bg-gradient-to-br from-[#2d0a16] to-[#1a060d];
+}
+
+.bg-gradient-neurology {
+  @apply bg-gradient-to-br from-[#f8f9fa] to-[#ede7f6];
+}
+
+.dark .bg-gradient-neurology {
+  @apply bg-gradient-to-br from-[#1a0d2e] to-[#0d071a];
+}
+
+/* Friendly Innovation combined gradients */
+.bg-gradient-friendly {
+  @apply bg-gradient-to-r from-teal via-purple to-coral;
+}
+
+.bg-gradient-innovation {
+  @apply bg-gradient-to-r from-coral via-yellow to-green;
+}
+
+/* Remove page-gradient or update */
+/* .page-gradient { ... } */
+
+/* Remove card-hover-lift or update */
+/* .card-hover-lift { ... } */
