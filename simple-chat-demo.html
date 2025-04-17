@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat Demo with Professional Format</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+        }
+        .prose {
+            max-width: 65ch;
+            color: #374151;
+        }
+        .prose strong {
+            color: #111827;
+            font-weight: 600;
+        }
+        .prose sup {
+            font-size: 0.75em;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            top: -0.5em;
+        }
+        .prose sup a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .prose ol {
+            list-style-type: decimal;
+            margin-left: 1.5em;
+        }
+        .prose li {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Simple Chat Demo with Professional Format</h1>
+        
+        <!-- Chat Container -->
+        <div class="w-full bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-8">
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="p-4 space-y-4 max-h-[500px] overflow-y-auto">
+                <!-- Messages will be added here -->
+            </div>
+            
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-4">
+                <div class="flex space-x-2">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Type your medical question..."
+                    >
+                    <button 
+                        id="sendButton"
+                        class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample responses
+        const responses = {
+            "brucellosis": `QUESTION:
+What is the treatment for brucellosis?
+
+DIAGNOSIS/ANALYSIS:
+**Brucellosis** is a bacterial infection caused by various species of the genus Brucella. It's primarily a zoonotic disease, meaning it's transmitted from animals to humans, typically through consumption of unpasteurized dairy products or direct contact with infected animals [1]. The treatment of brucellosis requires a combination of antibiotics to effectively eradicate the bacteria and prevent relapse.
+
+The **first-line treatment** for uncomplicated brucellosis is a combination of **doxycycline and rifampicin for at least 6 weeks** [1]. This regimen is recommended by the Centers for Disease Control and Prevention (CDC) and the World Health Organization (WHO) due to its efficacy in clearing the infection and preventing relapse [2].
+
+For more complicated cases of brucellosis, such as those involving endocarditis, meningitis, or osteomyelitis, the treatment regimen should be extended and may include an aminoglycoside. Specifically, a combination of **doxycycline, rifampicin, and an aminoglycoside (such as streptomycin or gentamicin)** is recommended, with the duration of therapy extended to 4-6 months [1].
+
+SUMMARY:
+1. Uncomplicated brucellosis: Doxycycline and rifampicin for ≥6 weeks [1].
+2. Complicated brucellosis: Doxycycline, rifampicin, and an aminoglycoside for 4-6 months [1].
+3. Alternative regimens such as doxycycline plus trimethoprim-sulfamethoxazole or doxycycline plus quinolones may be considered in specific patient populations [3-4].
+
+REFERENCES:
+1. Brucellosis: Diagnosis, Treatment, and Management. Centers for Disease Control and Prevention. 2021.
+2. Antibiotics for Treating Human Brucellosis. Yousefi-Nooraie R, et al. The Cochrane Database of Systematic Reviews. 2012;10:CD007179.
+3. Treatment of Human Brucellosis: Systematic Review and Meta-Analysis of Randomised Controlled Trials. Skalsky K, et al. BMJ. 2008;336:701-704.
+4. Brucellosis: A Worldwide Zoonosis. Pappas G, et al. Current Opinion in Infectious Diseases. 2006;19:272-279.`,
+            "pneumonia": `QUESTION:
+What is the treatment for pneumonia?
+
+DIAGNOSIS/ANALYSIS:
+**Pneumonia** is an infection that inflames the air sacs in one or both lungs, which may fill with fluid or pus. The infection can be caused by various pathogens, including bacteria, viruses, and fungi [1]. The treatment approach depends on the type of pneumonia, the causative pathogen, the severity of symptoms, and patient factors such as age and comorbidities.
+
+For **bacterial pneumonia**, which is the most common type requiring specific treatment, **antibiotics** are the mainstay of therapy [1]. The choice of antibiotic depends on several factors, including whether the pneumonia is community-acquired (CAP) or hospital-acquired (HAP), the suspected pathogen, and local resistance patterns [2].
+
+For **mild to moderate community-acquired pneumonia** in otherwise healthy adults, oral antibiotics such as **amoxicillin, doxycycline, or a macrolide** (azithromycin or clarithromycin) are typically recommended as first-line treatments [2]. For patients with comorbidities or risk factors for drug-resistant pathogens, a **respiratory fluoroquinolone** (levofloxacin or moxifloxacin) or a **beta-lactam plus a macrolide** combination may be more appropriate [3].
+
+For **severe pneumonia** requiring hospitalization, **intravenous antibiotics** are typically initiated. Common regimens include a **beta-lactam (such as ceftriaxone) plus a macrolide or a respiratory fluoroquinolone** [3]. For patients with risk factors for Pseudomonas aeruginosa, an **antipseudomonal beta-lactam** (piperacillin-tazobactam, cefepime, meropenem, or imipenem) plus either a fluoroquinolone or an aminoglycoside is recommended [2].
+
+SUMMARY:
+1. Mild to moderate community-acquired pneumonia: Oral antibiotics such as amoxicillin, doxycycline, or a macrolide for 5-7 days [2].
+2. Severe community-acquired pneumonia: Intravenous beta-lactam plus either a macrolide or a respiratory fluoroquinolone [3].
+3. Hospital-acquired pneumonia: Broader-spectrum antibiotics based on local resistance patterns and patient risk factors [4].
+4. Supportive care including adequate hydration, oxygen therapy if needed, and antipyretics for fever is essential for all patients with pneumonia [1].
+
+REFERENCES:
+1. Pneumonia Diagnosis and Treatment. Mayo Clinic. 2021.
+2. Metlay JP, Waterer GW, Long AC, et al. Diagnosis and Treatment of Adults with Community-acquired Pneumonia. An Official Clinical Practice Guideline of the American Thoracic Society and Infectious Diseases Society of America. Am J Respir Crit Care Med. 2019;200(7):e45-e67.
+3. National Institute for Health and Care Excellence (NICE). Pneumonia in adults: diagnosis and management. Clinical guideline [CG191]. 2019.
+4. Kalil AC, Metersky ML, Klompas M, et al. Management of Adults With Hospital-acquired and Ventilator-associated Pneumonia: 2016 Clinical Practice Guidelines by the Infectious Diseases Society of America and the American Thoracic Society. Clin Infect Dis. 2016;63(5):e61-e111.`,
+            "default": `I'm sorry, I don't have specific information about that medical condition. Please try asking about a different condition or be more specific with your question.`
+        };
+
+        // DOM elements
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // Function to create a user message
+        function createUserMessage(text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-end';
+            messageDiv.innerHTML = `
+                <div class="bg-blue-500 text-white rounded-lg px-4 py-2 max-w-[80%]">
+                    <p>${text}</p>
+                </div>
+            `;
+            return messageDiv;
+        }
+
+        // Function to create a professional AI message
+        function createProfessionalMessage(text) {
+            // Parse the response
+            const questionMatch = text.match(/QUESTION:\s*(.*?)(?:\n\n|\n(?=DIAGNOSIS))/s);
+            const diagnosisMatch = text.match(/DIAGNOSIS\/ANALYSIS:\s*(.*?)(?:\n\n|\n(?=SUMMARY))/s);
+            const summaryMatch = text.match(/SUMMARY:\s*(.*?)(?:\n\n|\n(?=REFERENCES))/s);
+            const referencesMatch = text.match(/REFERENCES:\s*(.*?)$/s);
+            
+            const question = questionMatch ? questionMatch[1].trim() : '';
+            const diagnosis = diagnosisMatch ? diagnosisMatch[1].trim() : '';
+            const summary = summaryMatch ? summaryMatch[1].trim() : '';
+            const references = referencesMatch ? referencesMatch[1].trim().split('\n').map(ref => ref.trim()) : [];
+            
+            // Process text to add formatting
+            const processedDiagnosis = diagnosis
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[(\d+(?:-\d+)?)\]/g, '<sup class="text-xs font-medium text-blue-600">[$1]</sup>');
+            
+            // Process summary to create list items
+            const summaryItems = summary.split(/\d+\.\s+/).filter(item => item.trim());
+            
+            // Create the message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-start';
+            
+            // Create the professional message HTML
+            messageDiv.innerHTML = `
+                <div class="max-w-[90%] w-full bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+                    <!-- Expanded Question -->
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="text-gray-500 text-sm mb-1">Expanded question:</div>
+                        <div class="flex">
+                            <span class="font-medium text-gray-700">What is </span>
+                            <span class="text-gray-700">${question.replace(/^What is /i, '')}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content -->
+                    <div class="px-6 py-4">
+                        <div class="prose prose-sm max-w-none text-gray-700">
+                            ${processedDiagnosis}
+                        </div>
+                        
+                        <!-- Summary Points -->
+                        <div class="mt-4">
+                            <p class="font-medium text-gray-700">In summary, the treatment involves:</p>
+                            <ol class="list-decimal pl-6 mt-2 space-y-1">
+                                ${summaryItems.map(item => `<li class="text-gray-700">${item.replace(/\[(\d+(?:-\d+)?)\]/g, '<sup class="text-xs font-medium text-blue-600">[$1]</sup>')}</li>`).join('')}
+                            </ol>
+                        </div>
+                        
+                        <!-- References Citation -->
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p>
+                                These regimens are supported by multiple systematic reviews and meta-analyses, ensuring their efficacy and safety in treating this condition.
+                                ${Array.from({length: Math.min(references.length, 4)}, (_, i) => `<sup class="text-xs font-medium text-blue-600">[${i+1}]</sup>`).join('')}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Feedback and References Toggle -->
+                    <div class="px-6 py-3 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                    <polyline points="16 6 12 2 8 6"></polyline>
+                                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                                </svg>
+                                <span>Share</span>
+                            </button>
+                            <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                </svg>
+                                <span>Helpful</span>
+                            </button>
+                            <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+                                </svg>
+                                <span>Not Helpful</span>
+                            </button>
+                        </div>
+                        
+                        <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm toggle-references">
+                            <span>References</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform rotate-180 transition-transform reference-arrow">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- References Section -->
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 hidden references-section">
+                        <h3 class="font-medium text-gray-700 mb-3">References</h3>
+                        <ol class="list-decimal pl-6 space-y-3 text-sm">
+                            ${references.map((ref, index) => {
+                                const parts = ref.split('.');
+                                const title = parts[0];
+                                const authors = parts.length > 1 ? parts[1] : '';
+                                const source = parts.length > 2 ? parts.slice(2).join('.') : '';
+                                
+                                return `
+                                    <li class="text-gray-600">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <div class="font-medium text-gray-700">${title}</div>
+                                                <div>${authors}</div>
+                                                <div class="text-gray-500">${source}</div>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button class="h-7 w-7 p-0 text-gray-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                                    </svg>
+                                                </button>
+                                                <button class="h-7 w-7 p-0 text-gray-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                `;
+                            }).join('')}
+                        </ol>
+                    </div>
+                </div>
+            `;
+            
+            return messageDiv;
+        }
+
+        // Function to handle sending a message
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+            
+            // Add user message
+            chatMessages.appendChild(createUserMessage(text));
+            messageInput.value = '';
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulate AI thinking
+            setTimeout(() => {
+                // Determine which response to use
+                let responseText = responses.default;
+                if (text.toLowerCase().includes('brucellosis')) {
+                    responseText = responses.brucellosis;
+                } else if (text.toLowerCase().includes('pneumonia')) {
+                    responseText = responses.pneumonia;
+                }
+                
+                // Add AI message
+                const aiMessage = createProfessionalMessage(responseText);
+                chatMessages.appendChild(aiMessage);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Add event listeners to toggle references
+                const toggleButtons = aiMessage.querySelectorAll('.toggle-references');
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const referencesSection = this.closest('.max-w-[90%]').querySelector('.references-section');
+                        const referenceArrow = this.querySelector('.reference-arrow');
+                        
+                        if (referencesSection.classList.contains('hidden')) {
+                            referencesSection.classList.remove('hidden');
+                            referenceArrow.classList.remove('rotate-180');
+                        } else {
+                            referencesSection.classList.add('hidden');
+                            referenceArrow.classList.add('rotate-180');
+                        }
+                    });
+                });
+            }, 1000);
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

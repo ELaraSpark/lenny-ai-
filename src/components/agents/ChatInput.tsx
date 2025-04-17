@@ -1,7 +1,8 @@
 
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
-import { ArrowUp, Lightbulb, ChevronDown, Paperclip } from "lucide-react";
+import { ArrowUp, Lightbulb, ChevronDown, Paperclip, X, AlertCircle } from "lucide-react";
 import SuggestionsDropdown from "@/components/onboarding/SuggestionsDropdown";
+import { validateFile, SUPPORTED_FILE_TYPES } from "@/services/documentProcessor";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,6 +49,12 @@ const ChatInput = ({
     
     if (!chatInput.trim() && attachments.length === 0) {
       return; 
+    }
+    
+    // Prevent default behavior and stop propagation
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
     
     onSendMessage(chatInput, attachments);
@@ -108,8 +115,25 @@ const ChatInput = ({
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setAttachments(Array.from(event.target.files));
+      const files = Array.from(event.target.files);
+      
+      // Validate each file
+      const validFiles = files.filter(file => {
+        const validation = validateFile(file);
+        if (!validation.valid) {
+          console.warn(`File validation failed: ${validation.error}`);
+          // You could show a toast here with the error message
+          return false;
+        }
+        return true;
+      });
+      
+      setAttachments(validFiles);
     }
+  };
+  
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleAttachmentClick = () => {
@@ -139,16 +163,35 @@ const ChatInput = ({
         ref={fileInputRef} 
         onChange={handleFileChange}
         multiple
+        accept={SUPPORTED_FILE_TYPES.join(',')}
         className="hidden" 
         aria-hidden="true"
       />
       
       {/* Attachments display - only shown when files are attached */}
       {attachments.length > 0 && (
-        <div className="flex items-center px-4 pt-3">
-          <div className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center"> 
-            <Paperclip className="h-3 w-3 mr-1" />
-            <span>{attachments.length} file{attachments.length !== 1 ? 's' : ''}</span>
+        <div className="flex flex-wrap items-center gap-2 px-4 pt-3">
+          {attachments.map((file, index) => (
+            <div 
+              key={index} 
+              className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center group"
+            > 
+              <Paperclip className="h-3 w-3 mr-1" />
+              <span className="max-w-[100px] truncate">{file.name}</span>
+              <button 
+                type="button"
+                className="ml-1 p-0.5 rounded-full hover:bg-primary/20 transition-colors"
+                onClick={() => removeAttachment(index)}
+                aria-label={`Remove ${file.name}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+          
+          <div className="text-xs text-muted-foreground flex items-center ml-auto">
+            <AlertCircle className="h-3 w-3 mr-1" />
+            <span>Supported: Images, PDFs, Text</span>
           </div>
         </div>
       )}
@@ -252,7 +295,11 @@ const ChatInput = ({
             {/* Send Button */}
             <Button 
               type="button"
-              onClick={(e) => handleSendMessage(e)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSendMessage(e);
+              }}
               disabled={(!chatInput.trim() && attachments.length === 0) || isLoading}
               aria-label="Send message"
               variant="default" // Default variant now uses primary green from button.tsx update

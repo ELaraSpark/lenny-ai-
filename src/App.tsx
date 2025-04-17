@@ -56,6 +56,7 @@ import CreateTemplatePage from "./pages/CreateTemplatePage";
 import EditTemplatePage from "./pages/EditTemplatePage"; // Import edit template page
 import DoctorsLounge from "./pages/DoctorsLounge"; // Import Doctor's Lounge page
 import CardComparisonPage from "./pages/CardComparisonPage"; // Import card comparison page
+import CleanChat from "./pages/CleanChat"; // Import the new clean chat interface
 
 // Import the new page for security logs if needed
 // import SecurityLogs from "./pages/SecurityLogs";
@@ -85,6 +86,7 @@ const App = () => (
               <Route path="/public/my-templates" element={<PublicLayout><QuickNotes isPublicView={true} /></PublicLayout>} />
               <Route path="/public/tumor-board" element={<PublicLayout><ExpertPanelView isPublicView={true} /></PublicLayout>} />
               <Route path="/public/chat" element={<PublicLayout><PublicChat /></PublicLayout>} />
+              <Route path="/clean-chat" element={<CleanChat />} />
 
               {/* Root Route - Handled by RootHandler (Redirects to /login or /chat) */}
               <Route path="/" element={<RootHandler />} /> 
@@ -123,7 +125,7 @@ const App = () => (
                 <Route path="/agents/create" element={<CreateAgentPage />} />
                 <Route path="/referrals" element={<Referrals />} />
                 <Route path="/library" element={<Library />} />
-                <Route path="/chat" element={<Chat />} /> 
+                <Route path="/chat" element={<Chat />} />
                 <Route path="/agents/:agentId" element={<AgentDetailPage />} /> {/* Added agent detail route */}
                 <Route path="/templates/create" element={<CreateTemplatePage />} /> {/* Added create template route */}
                 <Route path="/templates/:templateId/edit" element={<EditTemplatePage />} /> {/* Added edit template route */}

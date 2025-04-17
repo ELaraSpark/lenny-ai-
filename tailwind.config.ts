@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate"; // Import the plugin
+import tailwindcssAnimate from "tailwindcss-animate"; // Import the animate plugin
+import typography from "@tailwindcss/typography"; // Import the typography plugin
 
 export default {
   darkMode: ["class"],
@@ -102,7 +103,7 @@ export default {
       // Add other extensions like boxShadow, backgroundImage if they were present
     },
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [tailwindcssAnimate, typography],
   // Safelist classes needed for dynamic colors
   safelist: [
     // Friendly Innovation Palette

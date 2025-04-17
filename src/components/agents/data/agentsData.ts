@@ -9,11 +9,11 @@ import {
 import { Agent } from "../types/agentTypes";
 import { AgentCategory } from "../AgentCategoryFilters"; // Import AgentCategory type
 
-// Import images directly
-import femaleDoctorScrubs from '/public/agents/female-doctor-scrubs.jpg';
-import maleDoctorLabcoat from '/public/agents/male-doctor-labcoat.jpg';
-import femaleSurgeonCap from '/public/agents/female-surgeon-cap.jpg';
-import placeholderSvg from '/public/placeholder.svg';
+// Use URLs for public assets instead of importing them directly
+const femaleDoctorScrubs = '/agents/female-doctor-scrubs.jpg';
+const maleDoctorLabcoat = '/agents/male-doctor-labcoat.jpg';
+const femaleSurgeonCap = '/agents/female-surgeon-cap.jpg';
+const placeholderSvg = '/placeholder.svg';
 
 // Helper function to generate simple IDs
 const generateId = (name: string): string => {

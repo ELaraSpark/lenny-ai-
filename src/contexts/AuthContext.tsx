@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 type AuthContextType = {
   session: Session | null;
   user: User | null;
+  userRole: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{
     error: Error | null;
@@ -29,14 +30,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Helper to fetch user role from users table
+    const fetchUserRole = async (userId: string) => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('user_role')
+        .eq('id', userId)
+        .single();
+      if (error) {
+        setUserRole(null);
+      } else {
+        setUserRole(data?.user_role ?? null);
+      }
+    };
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user?.id) {
+        fetchUserRole(session.user.id);
+      } else {
+        setUserRole(null);
+      }
     });
 
     // Listen for auth changes
@@ -45,6 +66,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (session?.user?.id) {
+          fetchUserRole(session.user.id);
+        } else {
+          setUserRole(null);
+        }
       }
     );
 
@@ -125,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         user,
+        userRole,
         loading,
         signIn,
         signInWithGoogle,

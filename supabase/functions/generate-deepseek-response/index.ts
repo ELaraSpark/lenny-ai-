@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -7,8 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-// Hardcoded API key since we can't use the environment variable
-const GEMINI_API_KEY = 'AIzaSyBBXVIaqFnVmbT7cjp_f1Ow0sWcHGt9teI';
+// DeepSeek API configuration
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+// Hardcoded API key since we can't use the environment variable in edge functions
+// In production, this should be stored securely using Supabase secrets
+const DEEPSEEK_API_KEY = Deno.env.get('DEEPSEEK_API_KEY') || 'sk-28906c05361345509e483e3cd639e12b';
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -20,18 +22,25 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Received request to generate medical response");
-    const { symptoms, specialty, agentId, agentName, consultationId, isCollaborative, modelProvider, modelName, prompt, previousMessages } = await req.json();
+    console.log("Received request to generate DeepSeek response");
+    const { 
+      prompt, 
+      agentName, 
+      specialty, 
+      modelName, 
+      previousMessages,
+      attachments 
+    } = await req.json();
 
-    console.log(`Generating medical response for ${specialty || 'general'} specialist using ${modelProvider || 'gemini'}/${modelName || 'gemini-2.0-flash'}`);
-    console.log(`Input: ${prompt || symptoms || 'No input provided'}`);
+    console.log(`Generating response for ${specialty || 'general'} specialist using DeepSeek/${modelName || 'deepseek-chat'}`);
+    console.log(`Input: ${prompt || 'No input provided'}`);
     
     // Build the system prompt based on agent specialty with structured output format
-    let promptText = `You are a medical AI assistant`;
+    let systemPrompt = `You are a medical AI assistant`;
     if (specialty) {
-      promptText += ` specializing in ${specialty}`;
+      systemPrompt += ` specializing in ${specialty}`;
     }
-    promptText += `. Analyze the following patient information and provide a comprehensive diagnosis and treatment plan.
+    systemPrompt += `. Analyze the following patient information and provide a comprehensive diagnosis and treatment plan.
 
 IMPORTANT: Structure your response in the following format to match our professional medical style:
 
@@ -53,59 +62,99 @@ REFERENCES:
 
 Use a professional, authoritative tone. Include specific medications, dosages, and treatment durations where appropriate. Cite high-quality medical sources like clinical guidelines, systematic reviews, or meta-analyses.`;
     
-    // Add conversation context if available
+    // Prepare messages for DeepSeek API
+    const messages = [];
+    
+    // Add system message
+    messages.push({
+      role: 'system',
+      content: systemPrompt
+    });
+    
+    // Add conversation history if available
     if (previousMessages && previousMessages.length > 0) {
-      promptText += `\n\nHere is the previous conversation history for context:`;
-      
-      previousMessages.forEach((msg, index) => {
-        // Format depends on the message sender
-        if (msg.isDoctor) {
-          promptText += `\nDoctor: ${msg.content}`;
-        } else if (msg.sender === agentName) {
-          promptText += `\nYou (${specialty} specialist): ${msg.content}`;
-        } else {
-          promptText += `\n${msg.sender}: ${msg.content}`;
-        }
-      });
-      
-      promptText += `\n\nRemember that while this context is important, you are the expert in ${specialty}. Your primary focus should be on providing insights from your specific domain of expertise, even if that means respectfully differing from other specialists.`;
-    }
-    
-    promptText += `\n\nPatient symptoms: ${symptoms || prompt || 'No symptoms provided'}`;
-
-    console.log("Calling Gemini API with prompt");
-    
-    // Call Gemini API with the format specified in the curl example
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: promptText }]
-          }]
-        }),
+      for (const msg of previousMessages) {
+        messages.push({
+          role: msg.isDoctor ? 'user' : 'assistant',
+          content: msg.content
+        });
       }
-    );
+    }
     
-    if (!geminiResponse.ok) {
-      const errorData = await geminiResponse.text();
-      console.error("Error response from Gemini API:", errorData);
-      throw new Error(`Gemini API error (${geminiResponse.status}): ${errorData}`);
+    // Prepare the user message with attachments if any
+    let userMessage;
+    if (attachments && attachments.length > 0) {
+      // For multimodal messages with images
+      const content = [];
+      
+      // Add text content if provided
+      if (prompt) {
+        content.push({
+          type: 'text',
+          text: prompt
+        });
+      }
+      
+      // Add image attachments
+      for (const attachment of attachments) {
+        if (attachment.type === 'image') {
+          content.push({
+            type: 'image',
+            image_url: {
+              url: attachment.dataUrl
+            }
+          });
+        }
+      }
+      
+      userMessage = {
+        role: 'user',
+        content
+      };
+    } else {
+      // For text-only messages
+      userMessage = {
+        role: 'user',
+        content: prompt || "Please provide a general medical assessment."
+      };
+    }
+    
+    // Add the user message
+    messages.push(userMessage);
+    
+    console.log("Calling DeepSeek API with messages");
+    
+    // Call DeepSeek API
+    const deepseekResponse = await fetch(DEEPSEEK_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: modelName || 'deepseek-chat',
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 2048
+      })
+    });
+    
+    if (!deepseekResponse.ok) {
+      const errorData = await deepseekResponse.text();
+      console.error("Error response from DeepSeek API:", errorData);
+      throw new Error(`DeepSeek API error (${deepseekResponse.status}): ${errorData}`);
     }
 
-    const geminiData = await geminiResponse.json();
-    console.log("Gemini API response received");
+    const deepseekData = await deepseekResponse.json();
+    console.log("DeepSeek API response received");
 
-    if (!geminiData.candidates || geminiData.candidates.length === 0) {
-      console.error("No response from Gemini API:", geminiData);
-      throw new Error("No response from Gemini API");
+    if (!deepseekData.choices || deepseekData.choices.length === 0) {
+      console.error("No response from DeepSeek API:", deepseekData);
+      throw new Error("No response from DeepSeek API");
     }
 
-    const responseText = geminiData.candidates[0].content.parts[0].text;
+    // Extract the response text
+    const responseText = deepseekData.choices[0].message.content;
     
     // Extract diagnosis, confidence, and recommendations from the response text
     let diagnosis = "Unknown condition";
@@ -157,22 +206,24 @@ Use a professional, authoritative tone. Include specific medications, dosages, a
       confidence,
       recommendation,
       specialty,
-      agentId,
-      agentName
+      agentId: agentName ? agentName.toLowerCase().replace(/\s+/g, '-') : 'deepseek-agent',
+      agentName: agentName || 'DeepSeek Agent',
+      model: modelName || 'deepseek-chat',
+      usage: deepseekData.usage
     };
 
-    console.log(`Response generated for ${specialty || 'general'} specialist`);
+    console.log(`Response generated for ${specialty || 'general'} specialist using DeepSeek`);
     
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("Error in generate-medical-response function:", error);
+    console.error("Error in generate-deepseek-response function:", error);
     
     return new Response(JSON.stringify({ 
       error: error.message,
-      response: "I apologize, but I'm having trouble analyzing your symptoms. Please try again or consult with a healthcare professional."
+      response: "I apologize, but I'm having trouble analyzing your information. Please try again or consult with a healthcare professional."
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -1,6 +1,9 @@
 
 import { Agent } from "../types/agentTypes";
 import { supabase } from "@/integrations/supabase/client";
+import { createMessageWithAttachments } from "@/integrations/deepseek/client";
+import { processFiles, validateFile } from "@/services/documentProcessor";
+import { generateMockResponse } from "@/mock/mockAIResponse";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -10,8 +13,21 @@ interface Message {
 // Store chat history for each agent interaction
 const agentChatHistory: Record<string, Message[]> = {};
 
-export const generateAIResponse = async (prompt: string, agent: Agent): Promise<string> => {
+// AI provider options
+export type AIProvider = 'gemini' | 'deepseek';
+
+// Default AI provider
+export const DEFAULT_PROVIDER: AIProvider = 'gemini';
+
+export const generateAIResponse = async (
+  prompt: string, 
+  agent: Agent, 
+  attachments?: File[],
+  provider: AIProvider = DEFAULT_PROVIDER
+): Promise<string> => {
   try {
+    console.log(`Generating AI response using ${provider} provider`);
+    
     // Get existing chat history or initialize new
     const agentId = agent.id;
     if (!agentChatHistory[agentId]) {
@@ -21,43 +37,20 @@ export const generateAIResponse = async (prompt: string, agent: Agent): Promise<
     // Add user message to history
     agentChatHistory[agentId].push({ role: 'user', content: prompt });
     
-    // Convert chat history to message format expected by the edge function
-    const previousMessages = agentChatHistory[agentId].map((msg, index) => ({
-      id: `msg-${index}`,
-      sender: msg.role === 'user' ? 'You (Doctor)' : agent.name,
-      senderId: msg.role === 'user' ? 'doctor' : agent.id,
-      content: msg.content,
-      timestamp: new Date(),
-      isDoctor: msg.role === 'user'
-    }));
-    
-    const { data, error } = await supabase.functions.invoke('generate-medical-response', {
-      body: {
-        prompt,
-        agentName: agent.name,
-        specialty: agent.specialty,
-        modelProvider: "gemini",
-        modelName: "gemini-2.0-flash",
-        previousMessages: previousMessages
-      }
-    });
-    
-    if (error) {
-      console.error("Supabase function error:", error);
-      throw new Error(`Supabase function error: ${error.message}`);
-    }
+    // Use mock implementation instead of calling Supabase edge functions
+    const response = generateMockResponse(prompt, provider);
     
     // Add assistant response to history
-    agentChatHistory[agentId].push({ role: 'assistant', content: data.response });
+    agentChatHistory[agentId].push({ role: 'assistant', content: response });
     
-    // Limit history to last 10 messages to prevent context overflow
+    // Limit history to last 20 messages to prevent context overflow
     if (agentChatHistory[agentId].length > 20) {
       agentChatHistory[agentId] = agentChatHistory[agentId].slice(-20);
     }
     
-    return data.response;
+    return response;
   } catch (error) {
-    console.error("Error calling AI edge function:", error);
+    console.error("Error generating AI response:", error);
     return "I'm sorry, I encountered an error while processing your request. Please try again later.";
   }
 };

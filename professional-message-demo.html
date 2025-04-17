@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Medical Response Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+        }
+        .prose {
+            max-width: 65ch;
+            color: #374151;
+        }
+        .prose strong {
+            color: #111827;
+            font-weight: 600;
+        }
+        .prose sup {
+            font-size: 0.75em;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+            top: -0.5em;
+        }
+        .prose sup a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .prose ol {
+            list-style-type: decimal;
+            margin-left: 1.5em;
+        }
+        .prose li {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Professional Medical Response Demo</h1>
+        
+        <!-- Professional Message Format -->
+        <div class="w-full bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-8">
+            <!-- Expanded Question -->
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="text-gray-500 text-sm mb-1">Expanded question:</div>
+                <div class="flex">
+                    <span class="font-medium text-gray-700">What is </span>
+                    <span class="text-gray-700">the treatment for brucellosis?</span>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="px-6 py-4">
+                <div class="prose prose-sm max-w-none text-gray-700">
+                    <p><strong>Brucellosis</strong> is a bacterial infection caused by various species of the genus Brucella. It's primarily a zoonotic disease, meaning it's transmitted from animals to humans, typically through consumption of unpasteurized dairy products or direct contact with infected animals <sup class="text-xs font-medium text-blue-600">[1]</sup>. The treatment of brucellosis requires a combination of antibiotics to effectively eradicate the bacteria and prevent relapse.</p>
+                    
+                    <p>The <strong>first-line treatment</strong> for uncomplicated brucellosis is a combination of <strong>doxycycline and rifampicin for at least 6 weeks</strong> <sup class="text-xs font-medium text-blue-600">[1]</sup>. This regimen is recommended by the Centers for Disease Control and Prevention (CDC) and the World Health Organization (WHO) due to its efficacy in clearing the infection and preventing relapse <sup class="text-xs font-medium text-blue-600">[2]</sup>.</p>
+                    
+                    <p>For more complicated cases of brucellosis, such as those involving endocarditis, meningitis, or osteomyelitis, the treatment regimen should be extended and may include an aminoglycoside. Specifically, a combination of <strong>doxycycline, rifampicin, and an aminoglycoside (such as streptomycin or gentamicin)</strong> is recommended, with the duration of therapy extended to 4-6 months <sup class="text-xs font-medium text-blue-600">[1]</sup>.</p>
+                </div>
+                
+                <!-- Summary Points -->
+                <div class="mt-4">
+                    <p class="font-medium text-gray-700">In summary, the treatment involves:</p>
+                    <ol class="list-decimal pl-6 mt-2 space-y-1">
+                        <li class="text-gray-700">Uncomplicated brucellosis: Doxycycline and rifampicin for ≥6 weeks <sup class="text-xs font-medium text-blue-600">[1]</sup>.</li>
+                        <li class="text-gray-700">Complicated brucellosis: Doxycycline, rifampicin, and an aminoglycoside for 4-6 months <sup class="text-xs font-medium text-blue-600">[1]</sup>.</li>
+                        <li class="text-gray-700">Alternative regimens such as doxycycline plus trimethoprim-sulfamethoxazole or doxycycline plus quinolones may be considered in specific patient populations <sup class="text-xs font-medium text-blue-600">[3-4]</sup>.</li>
+                    </ol>
+                </div>
+                
+                <!-- References Citation -->
+                <div class="mt-4 text-sm text-gray-600">
+                    <p>
+                        These regimens are supported by multiple systematic reviews and meta-analyses, ensuring their efficacy and safety in treating this condition.
+                        <sup class="text-xs font-medium text-blue-600">[1]</sup>
+                        <sup class="text-xs font-medium text-blue-600">[2]</sup>
+                        <sup class="text-xs font-medium text-blue-600">[3]</sup>
+                        <sup class="text-xs font-medium text-blue-600">[4]</sup>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Feedback and References Toggle -->
+            <div class="px-6 py-3 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                            <polyline points="16 6 12 2 8 6"></polyline>
+                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Share</span>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                        </svg>
+                        <span>Helpful</span>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+                        </svg>
+                        <span>Not Helpful</span>
+                    </button>
+                </div>
+                
+                <button class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm" id="toggleReferences">
+                    <span>References</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform rotate-180 transition-transform" id="referenceArrow">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- References Section -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 hidden" id="referencesSection">
+                <h3 class="font-medium text-gray-700 mb-3">References</h3>
+                <ol class="list-decimal pl-6 space-y-3 text-sm">
+                    <li class="text-gray-600">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-medium text-gray-700">Brucellosis: Diagnosis, Treatment, and Management</div>
+                                <div>Centers for Disease Control and Prevention</div>
+                                <div class="text-gray-500">2021</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="h-7 w-7 p-0 text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                    </svg>
+                                </button>
+                                <button class="h-7 w-7 p-0 text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="text-gray-600">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-medium text-gray-700">Antibiotics for Treating Human Brucellosis</div>
+                                <div>Yousefi-Nooraie R, et al.</div>
+                                <div class="text-gray-500">The Cochrane Database of Systematic Reviews. 2012;10:CD007179</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="h-7 w-7 p-0 text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                    </svg>
+                                </button>
+                                <button class="h-7 w-7 p-0 text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle references section
+        document.getElementById('toggleReferences').addEventListener('click', function() {
+            const referencesSection = document.getElementById('referencesSection');
+            const referenceArrow = document.getElementById('referenceArrow');
+            
+            if (referencesSection.classList.contains('hidden')) {
+                referencesSection.classList.remove('hidden');
+                referenceArrow.classList.remove('rotate-180');
+            } else {
+                referencesSection.classList.add('hidden');
+                referenceArrow.classList.add('rotate-180');
+            }
+        });
+    </script>
+</body>
+</html>
