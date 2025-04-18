@@ -79,6 +79,17 @@ export const colorThemes: ColorTheme[] = [
       accent: "#E09F5A", // Changed to orange accent
       background: "#FDFBF5" // Updated background to beige
     }
+  },
+  {
+    name: "Medical Professional",
+    id: "medical-professional",
+    description: "Modern medical teal palette with pink and yellow accents",
+    colors: {
+      primary: "#00838F", // Teal primary color
+      secondary: "#FF6B8B", // Pink secondary color
+      accent: "#FFD166", // Yellow accent color
+      background: "#F9FCFD" // Light neutral background
+    }
   }
 ];
 
@@ -101,8 +112,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return (savedMode as ThemeMode) || 'light';
   });
   
-  // Always use classic theme as default
-  const [colorTheme, setColorThemeState] = useState<string>('classic');
+  // Use medical-professional theme as default
+  const [colorTheme, setColorThemeState] = useState<string>('medical-professional');
 
   // Apply theme mode to document
   useEffect(() => {

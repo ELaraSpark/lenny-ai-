@@ -1,5 +1,5 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+Pro:wght@400;600&family=Karla:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,36 +46,47 @@
 /* CSS variables for themes */
 @layer base {
   :root {
-    /* Friendly Innovation Palette */
-    --primary: 190 100% 43%; /* #00B8D9 - Vibrant Teal */
-    --primary-foreground: 0 0% 100%; /* White */
-    
-    --secondary: 36 100% 50%; /* #FFAB00 - Sunshine Yellow */
-    --secondary-foreground: 0 0% 15%; /* Dark text for contrast */
-    
-    --accent: 9 100% 60%; /* #FF5630 - Energetic Coral */
-    --accent-foreground: 0 0% 100%; /* White */
-    
-    --background: 48 67% 98%; /* #FDFBF5 beige */
-    --foreground: 0 0% 15%;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
-    
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 15%;
-    
-    --muted: 140 10% 97%;
-    --muted-foreground: 0 0% 45%;
-    
-    --destructive: 9 100% 60%; /* #FF5630 - Same as accent for consistency */
-    --destructive-foreground: 0 0% 98%;
-    
-    --border: 190 30% 90%;
-    --input: 190 30% 90%;
-    --ring: 190 100% 43%; /* Teal for focus ring */
-    
-    --radius: 0.5rem; 
+    /* Theme: Medical Professional with playful creativity */
+    --primary: #00838F;
+    --primary-light: #E1F5F7;
+    --primary-dark: #006A75;
+    --secondary: #FF6B8B;
+    --tertiary: #5FD3BC;
+    --accent: #FFD166;
+    --neutral-50: #F9FCFD;
+    --neutral-100: #F0F5F6;
+    --neutral-200: #E0EAEC;
+    --neutral-300: #C7D8DC;
+    --neutral-400: #A0BDC4;
+    --neutral-500: #7A9AA3;
+    --neutral-600: #5D7A83;
+    --neutral-700: #3C5962;
+    --neutral-800: #2C3E50;
+    --neutral-900: #1A2530;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font-sans: 'Karla', 'Inter', sans-serif;
+    --font-serif: 'Source Serif Pro', serif;
+
+    /* For Tailwind compatibility */
+    --background: #f9fafb;
+    --foreground: var(--neutral-800);
+    --border: #e5e7eb; /* gray-200 in Tailwind */
+    --input: var(--neutral-200);
+    --ring: var(--primary);
+    --card: #ffffff;
+    --card-foreground: var(--neutral-800);
+    --popover: var(--neutral-50);
+    --popover-foreground: var(--neutral-800);
+    --muted: #f9fafb;
+    --muted-foreground: var(--neutral-500);
+    --destructive: var(--secondary);
+    --destructive-foreground: #fff;
+    --primary-foreground: #fff;
+    --secondary-foreground: #fff;
+    --accent-foreground: var(--neutral-900);
+    --radius: 8px;
   }
 
   /* Dark mode variables - Friendly Innovation Dark Theme */
@@ -416,13 +427,13 @@
   @apply bg-gradient-to-br from-[#1a0d2e] to-[#0d071a];
 }
 
-/* Friendly Innovation combined gradients */
+/* Medical Professional combined gradients */
 .bg-gradient-friendly {
-  @apply bg-gradient-to-r from-teal via-purple to-coral;
+  @apply bg-gradient-to-r from-[#00838F] via-[#5FD3BC] to-[#FF6B8B];
 }
 
 .bg-gradient-innovation {
-  @apply bg-gradient-to-r from-coral via-yellow to-green;
+  @apply bg-gradient-to-r from-[#FF6B8B] via-[#FFD166] to-[#5FD3BC];
 }
 
 /* Remove page-gradient or update */

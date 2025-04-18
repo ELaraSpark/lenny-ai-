@@ -128,7 +128,7 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
   return (
     <aside 
       className={cn(
-        "flex flex-col h-screen bg-[#F4F7F5] border-r border-[#E1EAE5] transition-all duration-300 ease-in-out", // Removed hidden lg:flex
+        "flex flex-col h-screen bg-background border-r border-border transition-all duration-300 ease-in-out", // Removed hidden lg:flex
         isCollapsed ? "lg:w-16" : "lg:w-60", // Apply width changes only on lg+ screens
         "w-60", // Default width for mobile (when shown)
         className 
@@ -143,7 +143,7 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
         </nav>
       </ScrollArea>
 
-      <div className="border-t border-[#E1EAE5] p-3">
+      <div className="border-t border-border p-3">
         <div className={cn("flex items-center", isCollapsed ? "justify-center" : "")}>
           <PicassoAvatar
             email={user?.email || 'User'}
@@ -155,7 +155,7 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
           {!isCollapsed && (
             <>
               <div className="ml-2 overflow-hidden">
-                <p className="text-sm font-medium text-[#2D3C35] truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                   {user?.email || 'User'}
                 </p>
               </div>
@@ -171,7 +171,7 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
                       <PicassoIllustration
                         name="brain"
                         size="xs"
-                        color="text-[#5A6D64]"
+                        color="text-muted-foreground"
                         className="group-hover:text-primary"
                       />
                     </div>
@@ -180,13 +180,13 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
                   {/* Add Rewards & Lounge to Dropdown */}
                    <DropdownMenuItem onSelect={() => navigate('/referrals')} className="font-medium">
                      <div className="mr-2 w-4 h-4">
-                       <Sparkles size={16} className="text-[#5A6D64] group-hover:text-primary" />
+                       <Sparkles size={16} className="text-muted-foreground group-hover:text-primary" />
                      </div>
                      Rewards & Referrals
                    </DropdownMenuItem>
                    <DropdownMenuItem onSelect={() => navigate('/doctors-lounge')} className="font-medium">
                      <div className="mr-2 w-4 h-4">
-                       <Coffee size={16} className="text-[#5A6D64] group-hover:text-primary" />
+                       <Coffee size={16} className="text-muted-foreground group-hover:text-primary" />
                      </div>
                      Doctor's Lounge
                    </DropdownMenuItem>

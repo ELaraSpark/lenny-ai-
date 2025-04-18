@@ -28,13 +28,17 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))", // Use CSS variable for primary (green)
-          foreground: "hsl(var(--primary-foreground))",
-          light: "#6366F1", // Lighter shade of primary for gradients
+          DEFAULT: "#00838F", // Teal primary color
+          foreground: "#FFFFFF",
+          light: "#E1F5F7", // Light teal for backgrounds
+          dark: "#006A75", // Darker teal for hover states
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#FF6B8B", // Pink secondary color
+          foreground: "#FFFFFF",
+        },
+        tertiary: {
+          DEFAULT: "#5FD3BC", // Mint tertiary color
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -45,8 +49,8 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))", // Use CSS variable for accent (orange)
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#FFD166", // Yellow accent color
+          foreground: "#1A2530",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -56,15 +60,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Friendly Innovation Palette
-        'teal': '#00B8D9',
-        'coral': '#FF5630',
-        'yellow': '#FFAB00',
-        'purple': '#6554C0',
-        'green': '#36B37E',
-        // Legacy colors
-        'medical-green': '#4A9270',
-        'warm-accent': '#E09F5A',
+        // Neutral colors
+        neutral: {
+          50: "#F9FCFD",
+          100: "#F0F5F6",
+          200: "#E0EAEC",
+          300: "#C7D8DC",
+          400: "#A0BDC4",
+          500: "#7A9AA3",
+          600: "#5D7A83",
+          700: "#3C5962",
+          800: "#2C3E50",
+          900: "#1A2530",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -96,9 +104,10 @@ export default {
         "fade-in-up": "fade-in-up 0.5s ease-out",
       },
       fontFamily: {
-        sans: ["Inter var", "Inter", "system-ui", "sans-serif"],
-        display: ["SF Pro Display", "Inter", "system-ui", "sans-serif"],
-        handwritten: ['Caveat', 'cursive'], // Add handwritten font
+        sans: ["Karla", "Inter", "system-ui", "sans-serif"],
+        display: ["Source Serif Pro", "SF Pro Display", "Inter", "serif"],
+        serif: ["Source Serif Pro", "serif"],
+        handwritten: ['Caveat', 'cursive'],
       },
       // Add other extensions like boxShadow, backgroundImage if they were present
     },

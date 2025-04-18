@@ -22,7 +22,7 @@ const SidebarHeader = ({ isCollapsed = false, onToggle }: SidebarHeaderProps) =>
   return (
     // Use new green palette styles
     <div className={cn(
-      "flex items-center h-16 border-b border-[#E1EAE5] shrink-0",
+      "flex items-center h-16 border-b border-border shrink-0",
       isCollapsed ? "justify-center px-2" : "px-4"
     )}> 
       {/* Logo and title */}
@@ -33,7 +33,7 @@ const SidebarHeader = ({ isCollapsed = false, onToggle }: SidebarHeaderProps) =>
         )}> 
           <Logo />
           {!isCollapsed && (
-            <span className="font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <span className="font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Leny.ai
             </span>
           )}

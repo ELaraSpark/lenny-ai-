@@ -19,7 +19,7 @@ interface ChatInputProps {
   agentName: string;
   onTypingChange?: (isTyping: boolean) => void;
   isAnchored?: boolean;
-  submitButtonColor?: 'primary' | 'accent';
+  submitButtonColor?: 'primary' | 'accent' | 'secondary';
   onStyleChange?: (style: string) => void;
   initialStyle?: string;
 }
@@ -152,10 +152,10 @@ const ChatInput = ({
   };
 
   return (
-    // Main container - Simplified to match HTML example
+    // Main container with playful design
     <div className={cn(
-      "relative w-full max-w-[900px] mx-auto rounded-xl bg-[#FFFFFF] transition-all duration-200",
-      "border border-gray-200 shadow-sm hover:shadow-md"
+      "relative w-full max-w-[900px] mx-auto rounded-[var(--radius-lg)] bg-card transition-all duration-200",
+      "border border-neutral-200 shadow-sm hover:shadow-md rotate-[0.2deg]"
     )}>
       {/* Hidden File Input */}
       <input 
@@ -211,12 +211,12 @@ const ChatInput = ({
         {/* Textarea with negative margin to align with attachment icon */}
         <textarea
           ref={textareaRef}
-          placeholder="Ask me anything..."
+          placeholder="Ask me anything medical..."
           value={chatInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           className={cn(
-            "absolute inset-0 w-full h-full bg-transparent text-lg resize-none border-0 outline-none px-4 py-3 focus:ring-0 text-left placeholder:text-left ml-2 text-[#111111]",
+            "absolute inset-0 w-full h-full bg-transparent text-xl resize-none border-0 outline-none px-5 py-4 focus:ring-0 text-left placeholder:text-left ml-2 text-[#111111]",
             chatInput.trim() ? "placeholder:text-gray-400" : "placeholder:text-gray-500"
           )}
           aria-label="Chat message input"
@@ -228,9 +228,9 @@ const ChatInput = ({
           <div className="flex items-center space-x-2">
             {/* Attachment Button */}
             <Button 
-              variant="ghost" // Ghost variant now uses primary hover from button.tsx update
+              variant="ghost"
               size="sm"
-              className="text-gray-500 p-1 h-8 w-8 rounded-full transition-colors" // Removed explicit hover colors
+              className="text-neutral-500 p-1 h-8 w-8 rounded-full transition-colors rotate-[-1deg]"
               onClick={handleAttachmentClick}
               aria-label="Add attachment"
             >
@@ -239,9 +239,9 @@ const ChatInput = ({
             
             {/* Suggestions Button (Lightbulb) */}
             <Button 
-              variant="ghost" // Ghost variant now uses primary hover from button.tsx update
+              variant="ghost"
               size="sm"
-              className="text-gray-500 p-1 h-8 w-8 rounded-full transition-colors" // Removed explicit hover colors
+              className="text-neutral-500 p-1 h-8 w-8 rounded-full transition-colors rotate-[1deg]"
               onClick={handleSuggestionsClick}
               aria-label="Show suggestions"
             >
@@ -305,11 +305,13 @@ const ChatInput = ({
               variant="default" // Default variant now uses primary green from button.tsx update
               size="sm"
               className={cn(
-                "rounded-full w-10 h-10 flex items-center justify-center text-white shadow-sm hover:shadow-md transition-all",
-                submitButtonColor === 'accent' ? 'bg-accent hover:bg-accent/90' : 'bg-primary hover:bg-primary/90'
+                "rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm hover:shadow-md transition-all",
+                submitButtonColor === 'secondary' ? 'bg-secondary hover:bg-secondary/90' : 
+                submitButtonColor === 'accent' ? 'bg-accent hover:bg-accent/90' : 
+                'bg-primary hover:bg-primary/90'
               )}
             >
-              <ArrowUp className="h-5 w-5" />
+              <ArrowUp className="h-6 w-6" />
             </Button>
           </div>
         </div>

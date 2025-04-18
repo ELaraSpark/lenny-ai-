@@ -71,13 +71,13 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
           className="flex-shrink-0 mt-1"
         />
         
-        <div className="w-full bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+        <div className="w-full bg-card rounded-[var(--radius-lg)] shadow-sm overflow-hidden border border-neutral-200 rotate-[0.2deg]">
           {/* Expanded Question */}
-          <div className="px-6 py-4 border-b border-gray-100">
-            <div className="text-gray-500 text-sm mb-1">Expanded question:</div>
+          <div className="px-6 py-4 border-b border-neutral-100">
+            <div className="text-neutral-500 text-sm mb-1">Expanded question:</div>
             <div className="flex">
-              <span className="font-medium text-gray-700">What is </span>
-              <span className="text-gray-700">{question.replace(/^What is /i, '')}</span>
+              <span className="font-medium text-neutral-700">What is </span>
+              <span className="text-neutral-700">{question.replace(/^What is /i, '')}</span>
             </div>
           </div>
           
@@ -85,19 +85,19 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
           <div className="px-6 py-4">
             {/* Diagnosis/Analysis */}
             <div 
-              className="prose prose-sm max-w-none text-gray-700"
+              className="prose prose-sm max-w-none text-neutral-700"
               dangerouslySetInnerHTML={{ __html: formattedDiagnosis }}
             />
             
             {/* Summary Points */}
             {summaryPoints.length > 0 && (
               <div className="mt-4">
-                <p className="font-medium text-gray-700">In summary, the treatment involves:</p>
+                <p className="font-medium text-neutral-700 rotate-[-0.3deg]">In summary, the treatment involves:</p>
                 <ol className="list-decimal pl-6 mt-2 space-y-1">
                   {summaryPoints.map((point, index) => (
                     <li 
                       key={index} 
-                      className="text-gray-700"
+                      className="text-neutral-700"
                       dangerouslySetInnerHTML={{ __html: point }}
                     />
                   ))}
@@ -107,7 +107,7 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
             
             {/* References Citation */}
             {references.length > 0 && (
-              <div className="mt-4 text-sm text-gray-600">
+              <div className="mt-4 text-sm text-neutral-600">
                 <p>
                   These regimens are supported by multiple systematic reviews and meta-analyses, ensuring their efficacy and safety in treating this condition.
                   {Array.from({length: Math.min(references.length, 4)}, (_, i) => (
@@ -119,17 +119,17 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
           </div>
           
           {/* Feedback and References Toggle */}
-          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+          <div className="px-6 py-3 border-t border-neutral-100 bg-neutral-50 flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <button className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+              <button className="text-neutral-500 hover:text-primary flex items-center gap-1 text-sm rotate-[-0.5deg]">
                 <Share2 size={16} />
                 <span>Share</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+              <button className="text-neutral-500 hover:text-primary flex items-center gap-1 text-sm">
                 <ThumbsUp size={16} />
                 <span>Helpful</span>
               </button>
-              <button className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">
+              <button className="text-neutral-500 hover:text-primary flex items-center gap-1 text-sm rotate-[0.5deg]">
                 <ThumbsDown size={16} />
                 <span>Not Helpful</span>
               </button>
@@ -137,7 +137,7 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
             
             {references.length > 0 && (
               <button 
-                className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
+                className="text-neutral-500 hover:text-primary flex items-center gap-1 text-sm"
                 onClick={() => setShowReferences(!showReferences)}
               >
                 <span>References</span>
@@ -148,8 +148,8 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
           
           {/* References Section */}
           {references.length > 0 && showReferences && (
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-              <h3 className="font-medium text-gray-700 mb-3">References</h3>
+            <div className="px-6 py-4 border-t border-neutral-200 bg-neutral-50">
+              <h3 className="font-medium text-neutral-700 mb-3 rotate-[-0.3deg]">References</h3>
               <ol className="list-decimal pl-6 space-y-3 text-sm">
                 {references.map((ref, index) => {
                   // Parse reference parts
@@ -159,18 +159,18 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
                   const source = parts.length > 2 ? parts.slice(2).join('.').trim() : '';
                   
                   return (
-                    <li key={index} className="text-gray-600">
+                    <li key={index} className="text-neutral-600">
                       <div className="flex justify-between items-start">
                         <div>
-                          <div className="font-medium text-gray-700">{title}</div>
+                          <div className="font-medium text-neutral-700">{title}</div>
                           <div>{authors}</div>
-                          <div className="text-gray-500">{source}</div>
+                          <div className="text-neutral-500">{source}</div>
                         </div>
                         <div className="flex gap-2">
-                          <button className="h-7 w-7 p-0 text-gray-400 hover:text-gray-600">
+                          <button className="h-7 w-7 p-0 text-neutral-400 hover:text-primary">
                             <ThumbsUp size={14} />
                           </button>
-                          <button className="h-7 w-7 p-0 text-gray-400 hover:text-gray-600">
+                          <button className="h-7 w-7 p-0 text-neutral-400 hover:text-primary">
                             <ThumbsDown size={14} />
                           </button>
                         </div>

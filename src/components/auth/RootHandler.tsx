@@ -29,6 +29,6 @@ export const RootHandler = () => {
     return <Navigate to="/chat" replace />; 
   }
   
-  // If user is not authenticated, redirect to the public chat page
-  return <Navigate to="/public/chat" replace />;
+  // If user is not authenticated, redirect to the root page
+  return <Navigate to="/" replace />;
 };

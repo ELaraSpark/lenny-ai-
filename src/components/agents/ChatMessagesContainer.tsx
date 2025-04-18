@@ -33,13 +33,13 @@ const ChatMessagesContainer = ({ messages, isLoading, selectedAgent, chatStyle =
       {messages.length > 0 && (
         <div className="flex justify-end mb-4 px-2">
           <TooltipProvider>
-            <div className="bg-white border rounded-lg flex overflow-hidden">
+            <div className="bg-card border border-neutral-200 rounded-[var(--radius-md)] flex overflow-hidden shadow-sm rotate-[0.3deg]">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant={useProfessionalFormat ? "ghost" : "outline"}
                     size="sm"
-                    className={`rounded-none border-0 ${useProfessionalFormat ? 'bg-primary/10 text-primary' : ''}`}
+                    className={`rounded-none border-0 ${useProfessionalFormat ? 'bg-primary/10 text-primary rotate-[-0.5deg]' : ''}`}
                     onClick={() => setUseProfessionalFormat(true)}
                   >
                     <Layout size={16} className="mr-1" />
@@ -56,7 +56,7 @@ const ChatMessagesContainer = ({ messages, isLoading, selectedAgent, chatStyle =
                   <Button
                     variant={!useProfessionalFormat ? "ghost" : "outline"}
                     size="sm"
-                    className={`rounded-none border-0 ${!useProfessionalFormat ? 'bg-primary/10 text-primary' : ''}`}
+                    className={`rounded-none border-0 ${!useProfessionalFormat ? 'bg-primary/10 text-primary rotate-[0.5deg]' : ''}`}
                     onClick={() => setUseProfessionalFormat(false)}
                   >
                     <LayoutGrid size={16} className="mr-1" />
@@ -92,7 +92,7 @@ const ChatMessagesContainer = ({ messages, isLoading, selectedAgent, chatStyle =
         
         {isLoading && (
           <div className="flex justify-center items-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-aida-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         )}
         

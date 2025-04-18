@@ -30,7 +30,7 @@ const AIAgentsView = () => {
     <div className="bg-white border border-gray-400 rounded-xl shadow-xl p-6 space-y-6"> 
       <header className="space-y-2">
         <motion.h1 
-          className="text-2xl font-bold text-gray-900"
+          className="text-4xl font-bold text-gray-900"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -38,7 +38,7 @@ const AIAgentsView = () => {
           AI Medical Assistants
         </motion.h1>
         <motion.p 
-          className="text-gray-600"
+          className="text-xl text-gray-600 mt-2"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
@@ -58,9 +58,9 @@ const AIAgentsView = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <TabsList className="grid grid-cols-2 md:w-[400px]">
-            <TabsTrigger value="explore">Explore Agents</TabsTrigger>
-            <TabsTrigger value="chat" disabled={!selectedAgent}>
+          <TabsList className="grid grid-cols-2 md:w-[500px] p-1">
+            <TabsTrigger value="explore" className="text-lg py-3">Explore Agents</TabsTrigger>
+            <TabsTrigger value="chat" disabled={!selectedAgent} className="text-lg py-3">
               Chat {selectedAgent && `with ${selectedAgent.name}`}
             </TabsTrigger>
           </TabsList>
@@ -104,32 +104,32 @@ const AIAgentsView = () => {
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold">{agent.name}</h3>
-                      <p className="text-xs text-muted-foreground">{agent.specialty}</p>
+                      <h3 className="text-2xl font-bold">{agent.name}</h3>
+                      <p className="text-base text-muted-foreground">{agent.specialty}</p>
                     </div>
                   </div>
                 </div>
                 
                 {/* Card Content */}
-                <div className="p-4 bg-card">
+                <div className="p-5 bg-card">
                   {agent.personality && (
-                    <div className="mb-2 text-xs text-gray-500 italic">
+                    <div className="mb-3 text-base text-gray-500 italic">
                       {agent.personality.split(',')[0]}
                     </div>
                   )}
                   
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{agent.description}</p>
+                  <p className="text-lg text-muted-foreground mb-5 line-clamp-2">{agent.description}</p>
                   
                   <div className="flex justify-between mt-auto">
                     <button 
                       onClick={() => handleSelectAgent(agent)}
-                      className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                      className="text-lg font-medium text-primary hover:text-primary/80 transition-colors"
                     >
                       Chat
                     </button>
                     <button 
                       onClick={() => handleOpenConsultationForm(agent)}
-                      className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                      className="text-lg font-medium text-primary hover:text-primary/80 transition-colors"
                     >
                       Consult
                     </button>
@@ -181,8 +181,8 @@ const AIAgentsView = () => {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
                   >
-                    <h2 className="text-xl font-bold">{selectedAgent.name}</h2>
-                    <p className="text-sm text-muted-foreground">{selectedAgent.specialty}</p>
+                    <h2 className="text-3xl font-bold">{selectedAgent.name}</h2>
+                    <p className="text-lg text-muted-foreground mt-1">{selectedAgent.specialty}</p>
                   </motion.div>
                 </div>
               </div>

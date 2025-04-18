@@ -105,16 +105,24 @@ const Header = ({ className, onMobileMenuToggle }: HeaderProps) => {
   return (
     <header 
       className={cn(
-        "sticky top-0 z-30 flex h-16 items-center gap-4 px-4 md:px-6", // Removed border and background classes
-        className // Keep className prop for flexibility from AppLayout
+        "sticky top-0 z-30 flex h-16 items-center gap-4 px-4 md:px-6 bg-background border-b border-border shadow-sm font-sans",
+        "rounded-b-lg",
+        className
       )}
+      style={{ fontFamily: "var(--font-sans)" }}
     >
+      {/* Playful Logo/Accent - Using the landing page style */}
+      <a href="/" className="text-2xl font-semibold text-neutral-900 flex items-center transform -rotate-1 mr-8">
+        <span className="inline-block w-2.5 h-2.5 bg-secondary rounded-full mr-2 transform -translate-y-1"></span>
+        Leny<span className="text-primary">.ai</span>
+      </a>
+
       {/* Mobile Menu Trigger (Hamburger) */}
       <Button 
         variant="ghost" 
         size="icon" 
         className="lg:hidden mr-4" // Show only on small screens
-        onClick={onMobileMenuToggle} // Call the toggle function from AppLayout
+        onClick={onMobileMenuToggle}
         aria-label="Toggle sidebar"
       >
         <Menu className="h-6 w-6" />
@@ -140,22 +148,22 @@ const Header = ({ className, onMobileMenuToggle }: HeaderProps) => {
           {showTip && (
             <div 
               ref={tipPopupRef}
-              className="absolute right-0 top-full mt-2 w-64 p-3 bg-green-50 border border-green-100 rounded-lg shadow-lg z-50"
+              className="absolute right-0 top-full mt-2 w-64 p-3 bg-primary/5 border border-primary/20 rounded-lg shadow-lg z-50"
             >
               <div className="flex items-start gap-2">
-                <div className="bg-green-100 rounded-full p-1.5 text-green-700 flex-shrink-0">
+                <div className="bg-primary/10 rounded-full p-1.5 text-primary flex-shrink-0">
                   <Coffee size={14} />
                 </div>
                 <div>
-                  <h4 className="text-xs font-medium text-green-800 mb-1">Healthcare Pro Tip</h4>
-                  <p className="text-xs text-green-700">{currentTip}</p>
+                  <h4 className="text-xs font-medium text-primary-dark mb-1">Healthcare Pro Tip</h4>
+                  <p className="text-xs text-primary-dark/80">{currentTip}</p>
                 </div>
               </div>
               <div className="mt-2 text-right">
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="text-xs text-green-700 hover:text-green-900 p-1 h-auto"
+                  className="text-xs text-primary hover:text-primary-dark p-1 h-auto"
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentTip(getHealthcareTip());
@@ -188,7 +196,7 @@ const Header = ({ className, onMobileMenuToggle }: HeaderProps) => {
         >
           <Bell className="h-5 w-5" />
           {/* Notification indicator */}
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full"></span>
         </Button>
         
         {/* Chat History Modal */}

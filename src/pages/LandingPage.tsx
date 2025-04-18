@@ -32,6 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from 'react-router-dom';
 import { PicassoIllustration } from '@/components/illustrations/PicassoIllustration';
 import { useTheme } from '@/contexts/ThemeContext';
+import LandingHero from "@/components/home/LandingHero";
 
 // Define type for filter/tool items
 type FilterItem = {
@@ -112,7 +113,7 @@ const LandingPage = () => {
 
   return (
     <PublicLayout showHeader={true} showFooter={!showFullPageChat}>
-      
+      <LandingHero />
       {/* Navigation menu is now in the PublicLayout header */}
 
       {showFullPageChat ? (

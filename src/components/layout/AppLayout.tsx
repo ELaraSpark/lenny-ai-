@@ -48,7 +48,7 @@ const AppLayout = () => {
   return (
     <ActiveCallProvider> {/* Keep context provider if still relevant */}
       {/* Main flex container */}
-      <div className="flex h-screen overflow-hidden relative"> {/* Added relative back */} 
+      <div className="flex h-screen overflow-hidden relative bg-background font-sans" style={{ fontFamily: "var(--font-sans)" }}>
         {/* Mobile Sidebar Overlay */}
         <AnimatePresence>
           {isMobileSidebarOpen && (
@@ -90,7 +90,8 @@ const AppLayout = () => {
         {/* Main content area */}
         <div
           className="flex-1 flex flex-col overflow-hidden relative z-10"
-          onClick={handleContentClick} // Collapses desktop sidebar, closes mobile
+          style={{ background: "var(--background)", fontFamily: "var(--font-sans)" }}
+          onClick={handleContentClick}
         >
           {isAgentsPage ? (
             // Structure for Agents page
@@ -116,7 +117,7 @@ const AppLayout = () => {
                 onMobileMenuToggle={toggleMobileSidebar}
               />
               <main className="flex-1 overflow-y-auto relative pt-16">
-                <div className="relative z-10 h-full">
+                <div className="relative z-10 h-full max-w-5xl mx-auto p-4 md:p-8 bg-background rounded-lg shadow-sm border border-border/30">
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

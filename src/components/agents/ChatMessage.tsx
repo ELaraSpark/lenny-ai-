@@ -80,21 +80,21 @@ const ChatMessage = ({ message, selectedAgent, chatStyle = "Professional" }: Cha
   // Get message bubble style based on chat style
   const getMessageBubbleStyle = () => {
     if (isUser) {
-      return "bg-aida-500 text-white rounded-tr-none";
+      return "bg-primary text-white rounded-tr-none rotate-[0.3deg]";
     }
     
     // Apply different styles based on chatStyle
     switch (chatStyle) {
       case 'Professional':
-        return `${gradientClass} rounded-tl-none shadow-sm ${animationClass}`;
+        return `${gradientClass || "bg-card"} rounded-tl-none shadow-sm ${animationClass} rotate-[-0.2deg]`;
       case 'Conversational':
-        return `${gradientClass} rounded-tl-xl rounded-bl-none shadow-md ${animationClass}`;
+        return `${gradientClass || "bg-primary-light"} rounded-tl-xl rounded-bl-none shadow-md ${animationClass} rotate-[0.3deg]`;
       case 'Minimalist':
-        return `${gradientClass} rounded-lg shadow-none ${animationClass}`;
+        return `${gradientClass || "bg-card"} rounded-[var(--radius-md)] shadow-none ${animationClass}`;
       case 'Playful':
-        return `${gradientClass} rounded-2xl shadow-lg ${animationClass}`;
+        return `${gradientClass || "bg-primary-light"} rounded-[var(--radius-lg)] shadow-lg ${animationClass} rotate-[-0.5deg]`;
       default:
-        return `${gradientClass || "bg-slate-100 dark:bg-slate-800"} rounded-tl-none shadow-sm ${animationClass}`;
+        return `${gradientClass || "bg-card"} rounded-tl-none shadow-sm ${animationClass} rotate-[-0.2deg]`;
     }
   };
   
@@ -129,7 +129,7 @@ const ChatMessage = ({ message, selectedAgent, chatStyle = "Professional" }: Cha
     >
       <div 
         className={cn(
-          "max-w-[85%] px-4 py-3 transition-all duration-300",
+          "max-w-[85%] px-5 py-4 transition-all duration-300",
           getMessageBubbleStyle()
         )}
         style={getBorderStyle()}
@@ -138,19 +138,19 @@ const ChatMessage = ({ message, selectedAgent, chatStyle = "Professional" }: Cha
         {!isUser && selectedAgent?.personality && chatStyle !== 'Minimalist' && (
           <div className={cn(
             "mb-1.5 text-xs italic hidden sm:block",
-            chatStyle === 'Playful' ? "text-purple-500 font-medium" : "text-gray-500 font-normal"
+            chatStyle === 'Playful' ? "text-secondary font-medium" : "text-neutral-500 font-normal"
           )}>
             {selectedAgent.personality.split(',')[0]}
           </div>
         )}
         
         <p className={cn(
-          "whitespace-pre-wrap",
-          isUser ? "text-white" : "text-foreground",
-          chatStyle === 'Minimalist' ? "text-sm" : 
-          chatStyle === 'Professional' ? "text-sm" : 
-          chatStyle === 'Conversational' ? "text-base" : 
-          "text-base font-medium"
+          "whitespace-pre-wrap font-sans",
+          isUser ? "text-white" : "text-neutral-800",
+          chatStyle === 'Minimalist' ? "text-base" : 
+          chatStyle === 'Professional' ? "text-base" : 
+          chatStyle === 'Conversational' ? "text-lg" : 
+          "text-lg font-medium"
         )}>
           {message.content}
         </p>

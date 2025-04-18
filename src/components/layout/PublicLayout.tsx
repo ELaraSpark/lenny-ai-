@@ -74,19 +74,10 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
         <header className={`sticky top-0 z-50 w-full backdrop-blur-md transition-all duration-300 ${isScrolled ? 'bg-background/90 shadow-md' : 'bg-transparent'}`}>
           <div className="container mx-auto px-4 sm:px-6">
             <nav className="flex items-center justify-between py-4">
-              {/* Logo Link */}
-              <Link to="/" className="flex items-center gap-2 text-decoration-none">
-                {/* Logo */}
-                <img 
-                  src="/illustrations/animation.webp"
-                  alt="Leny.ai Logo" 
-                  className="h-8 w-8 object-contain"
-                />
-                
-                {/* Text */}
-                <span className="font-bold text-2xl text-primary">
-                  Leny
-                </span>
+              {/* Playful Logo/Accent - Using the landing page style */}
+              <Link to="/" className="text-2xl font-semibold text-neutral-900 flex items-center transform -rotate-1 mr-8">
+                <span className="inline-block w-2.5 h-2.5 bg-secondary rounded-full mr-2 transform -translate-y-1"></span>
+                Leny<span className="text-primary">.ai</span>
               </Link>
               
               {/* Navigation Menu */}
@@ -252,8 +243,9 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
                   </DropdownMenu>
                 ) : (
                   <>
-                    <Link to="/login">
-                      <Button className="bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium rounded-lg px-4 py-2">Sign up</Button>
+                    <Link to="/register" className="bg-secondary text-white px-5 py-2.5 rounded-md font-medium text-sm transform rotate-1 transition-all hover:scale-105 hover:bg-secondary/90 relative">
+                      Sign up
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full"></span>
                     </Link>
                     
                     {/* Mobile menu button REMOVED */}

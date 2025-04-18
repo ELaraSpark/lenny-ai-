@@ -1,4 +1,3 @@
-
 // Remove toast components that show notifications at the bottom right
 // import { Toaster } from "@/components/ui/toaster";
 // import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -88,8 +87,8 @@ const App = () => (
               <Route path="/public/chat" element={<PublicLayout><PublicChat /></PublicLayout>} />
               <Route path="/clean-chat" element={<CleanChat />} />
 
-              {/* Root Route - Handled by RootHandler (Redirects to /login or /chat) */}
-              <Route path="/" element={<RootHandler />} /> 
+              {/* Root Route - Now renders PublicChat landing page with PublicLayout */}
+              <Route path="/" element={<PublicLayout><PublicChat /></PublicLayout>} />
 
               {/* Authenticated Routes using AppLayout */}
               <Route 
