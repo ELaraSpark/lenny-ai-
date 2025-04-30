@@ -10,6 +10,14 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('Missing Supabase environment variables. Please check your .env file.');
 }
 
+if (!SUPABASE_URL) {
+  console.error('Missing Supabase URL. Make sure your environment variables are loaded correctly.');
+}
+
+if (!SUPABASE_ANON_KEY) {
+  console.error('Missing Supabase Anon Key. Make sure your environment variables are loaded correctly.');
+}
+
 // Initialize and export the Supabase client
 export const supabase = createClient<Database>(
   SUPABASE_URL || '',
