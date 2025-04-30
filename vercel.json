@@ -1,5 +1,5 @@
 {
-  "name": "leny-ai",
+  "name": "leny-ai-doctor-network",
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
@@ -7,9 +7,9 @@
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
-  "alias": ["leny-ai.vercel.app"],
+  "alias": ["leny-ai-doctor-network.vercel.app"],
   "projectSettings": {
-    "name": "AI Doctor Network",
+    "name": "Leny AI Doctor Network",
     "description": "Leny AI - AI Doctor Network"
   },
   "github": {
