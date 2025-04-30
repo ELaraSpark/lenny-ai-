@@ -1,15 +1,26 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner"; // Using installed sonner library for toasts
+import { useToast } from "@/hooks/use-toast"; // Added missing import for useToast
 import {
     Trash2, Upload, Mic, ClipboardList, Search, Copy, Download, Edit, FileText, 
     Users, Brain, Microscope, Phone, Monitor, Bell, Save, SlidersHorizontal, 
     NotebookPen, FileSignature, ListChecks, Languages, RotateCcw, Send, Plus,
-    MoreHorizontal, Palette, Check
+    MoreHorizontal, Palette, Check, MessageSquare, Zap, List, User, LogOut, Clock,
+    Settings
 } from 'lucide-react';
+import { useAuth } from "@/contexts/AuthContext";
+import { PicassoAvatar } from "@/components/illustrations/PicassoAvatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Define Template Type
 interface Template {
@@ -153,6 +164,13 @@ interface MyTemplatesProps {
 
 const QuickNotes: React.FC<MyTemplatesProps> = ({ isPublicView = false }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, signOut } = useAuth();
+  const isAuthenticated = !!user;
+  const { toast } = useToast();
+  const [isScrolled, setIsScrolled] = useState(false);
+  
+  // State for template functions
   const [templates, setTemplates] = useState<Template[]>(exampleTemplates);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -568,8 +586,205 @@ ${inputText}`;
     }
   }, [showOutput]);
 
+  // Track scroll position for header behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLogout = () => {
+    signOut();
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully."
+    });
+    navigate("/");
+  };
+
   return (
     <>
+      {/* Add top navigation bar */}
+      <header className={`sticky top-0 z-50 w-full backdrop-blur-md transition-all duration-300 ${isScrolled ? 'bg-background/90 shadow-md' : 'bg-transparent'}`}>
+        <div className="container mx-auto px-4 sm:px-6">
+          <nav className="flex items-center justify-between py-4">
+            {/* Logo and Nav Items */}
+            <div className="flex items-center gap-8">
+              {/* Playful Logo/Accent - Using the landing page style */}
+              <Link to="/" className="text-2xl font-semibold text-neutral-900 flex items-center transform -rotate-1 mr-8">
+                <span className="inline-block w-2.5 h-2.5 bg-secondary rounded-full mr-2 transform -translate-y-1"></span>
+                Leny<span className="text-primary">.ai</span>
+              </Link>
+              
+              {/* Navigation Menu */}
+              <div className="flex items-center gap-2 md:gap-5">
+                {/* Ask Leny */}
+                <Link
+                  to="/public/chat"
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                    location.pathname === '/public/chat' || location.pathname === '/'
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    <MessageSquare size={18} className={
+                      location.pathname === '/public/chat' || location.pathname === '/'
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    } />
+                  </div>
+                  <span className="hidden md:inline">Ask Leny</span>
+                </Link>
+                
+                {/* AI Agents */}
+                <Link
+                  to="/public/my-agents"
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                    location.pathname === '/public/my-agents'
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    <Users size={18} className={
+                      location.pathname === '/public/my-agents'
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    } />
+                  </div>
+                  <span className="hidden md:inline">AI Agents</span>
+                </Link>
+                
+                {/* Smart Notes */}
+                <Link
+                  to="/public/my-templates"
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                    location.pathname === '/public/my-templates'
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    <Zap size={18} className={
+                      location.pathname === '/public/my-templates'
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    } />
+                  </div>
+                  <span className="hidden md:inline">Smart Notes</span>
+                </Link>
+
+                {/* Expert Panel */}
+                <Link
+                  to="/public/tumor-board"
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                    location.pathname === '/public/tumor-board'
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    <List size={18} className={
+                      location.pathname === '/tumor-board'
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    } />
+                  </div>
+                  <span className="hidden md:inline">Expert Panel</span>
+                </Link>
+              </div>
+            </div>
+            
+            {/* User Actions */}
+            <div className="flex items-center gap-3">
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="cursor-pointer">
+                      <PicassoAvatar
+                        email={user?.email || 'User'}
+                        size="sm"
+                        color="text-primary"
+                      />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 border border-border shadow-lg rounded-lg bg-white">
+                    {/* User Info Section */}
+                    <div className="p-4 border-b border-border bg-white">
+                      <div className="flex items-center">
+                        <PicassoAvatar
+                          email={user?.email || 'User'}
+                          size="md"
+                          color="text-primary"
+                          className="mr-3"
+                        />
+                        <div>
+                          <div className="font-medium text-sm">Medical User</div>
+                          <div className="text-xs text-muted-foreground">{user?.email || 'user@hospital.org'}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menu Items Section */}
+                    <div className="py-2 bg-white">
+                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
+                        <Link to="/recent-chats" className="cursor-pointer">
+                          <Clock size={16} className="mr-3 text-muted-foreground" />
+                          <span>Recent Chats</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
+                         <Link to="/my-agents" className="cursor-pointer">
+                           <Users size={16} className="mr-3 text-muted-foreground" />
+                           <span>My Agents</span>
+                         </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
+                         <Link to="/my-templates" className="cursor-pointer">
+                           <FileText size={16} className="mr-3 text-muted-foreground" />
+                           <span>My Templates</span>
+                         </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
+                        <Link to="/settings" className="cursor-pointer">
+                          <Settings size={16} className="mr-3 text-muted-foreground" />
+                          <span>Account Settings</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+
+                    <DropdownMenuSeparator className="bg-border" />
+                    
+                    {/* Logout Option */}
+                    <div className="py-2 bg-white">
+                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50 font-medium bg-white">
+                        <LogOut size={16} className="mr-3" />
+                        <span>Log Out</span>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="font-medium">
+                    <User size={16} className="mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </nav>
+        </div>
+      </header>
+
       {/* Main layout - Maximizing screen usage with a flexible grid */}
       <div className="h-[calc(100vh-5rem)] flex flex-col">
         {/* No top bar - functionality integrated into panels */}
@@ -612,7 +827,7 @@ ${inputText}`;
               
               {/* Empty state guidance removed as requested */}
               
-              {/* Quick action buttons - Added sparkling star emoji to each button */}
+              {/* Quick action buttons at bottom with sparkle emoji */}
               <div className="flex flex-wrap gap-2 mt-3 mb-2">
                 <Button 
                   variant="outline" 
@@ -620,7 +835,7 @@ ${inputText}`;
                   onClick={() => executeCommand('Summarize')}
                   className="bg-white hover:bg-primary/5 border-gray-300"
                 >
-                  <span className="mr-1">✨</span> Summarize
+                  <span className="text-primary mr-1">✨</span> Summarize
                 </Button>
                 <Button 
                   variant="outline" 
@@ -628,7 +843,7 @@ ${inputText}`;
                   onClick={() => executeCommand('Simplify')}
                   className="bg-white hover:bg-primary/5 border-gray-300"
                 >
-                  <span className="mr-1">✨</span> Simplify
+                  <span className="text-primary mr-1">✨</span> Simplify
                 </Button>
                 <Button 
                   variant="outline" 
@@ -636,7 +851,7 @@ ${inputText}`;
                   onClick={() => executeCommand('Translate')}
                   className="bg-white hover:bg-primary/5 border-gray-300"
                 >
-                  <span className="mr-1">✨</span> Translate
+                  <span className="text-primary mr-1">✨</span> Translate
                 </Button>
                 <Button 
                   variant="outline" 
@@ -644,26 +859,9 @@ ${inputText}`;
                   onClick={() => executeCommand('Format as Bullets')}
                   className="bg-white hover:bg-primary/5 border-gray-300"
                 >
-                  <span className="mr-1">✨</span> Format as Bullets
+                  <span className="text-primary mr-1">✨</span> Format as Bullets
                 </Button>
               </div>
-              
-              {/* Quick command chips - Only show when text is entered */}
-              {inputText && (
-                <div className="command-chips flex flex-wrap gap-2 mt-3">
-                  {['Summarize', 'Simplify', 'Translate', 'Format as Bullets'].map((cmd) => (
-                      <Button 
-                      key={cmd}
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => executeCommand(cmd)}
-                      className="bg-white hover:bg-primary/5 text-xs py-1 h-7"
-                    >
-                      <span className="text-primary mr-1">✨</span> {cmd}
-                    </Button>
-                  ))}
-                </div>
-              )}
               
               {/* Removed Upload File button and input */}
             </div>
@@ -889,46 +1087,29 @@ ${inputText}`;
                       AI Modify (Ctrl+M)
                     </span>
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={handleCopyOutput} disabled={!outputText} className="h-7 px-2">
+                  <Button variant="ghost" size="sm" className="h-7 px-2" onClick={handleToggleEditOutput}>
+                    {isOutputEditable ? 'Stop Editing' : 'Edit'}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleClearOutput}>
+                    <Trash2 size={14} />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleCopyOutput}>
                     <Copy size={14} />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={handleDownloadOutput} disabled={!outputText} className="h-7 px-2">
+                  <Button variant="ghost" size="sm" onClick={handleDownloadOutput}>
                     <Download size={14} />
                   </Button>
-                  {/* Removed Save as Template button */}
                 </div>
               </div>
-              
-              <div className="relative flex-1">
-                <div
-                  ref={outputRef}
-                  contentEditable="true"
-                  dangerouslySetInnerHTML={{ __html: outputText }}
-                  className={`border-2 border-gray-500 rounded-lg p-5 bg-white h-full overflow-y-auto text-base leading-relaxed shadow-inner ${
-                    isOutputEditable ? 'ring-2 ring-primary focus:outline-none' : ''
-                  } ${getStyleClass(outputStyle)}`}
-                />
-              </div>
+              <div 
+                ref={outputRef} 
+                className={`flex-1 overflow-y-auto prose lg:prose-lg ${getStyleClass(outputStyle)}`} 
+                dangerouslySetInnerHTML={{ __html: outputText }} 
+              />
             </div>
-          )}
+          )} {/* End of right area - Output */}
         </div>
       </div>
-      
-      {/* Loading Overlay with Animation */}
-      {isLoading && (
-        <div className="loading-overlay fixed inset-0 bg-white/80 flex flex-col items-center justify-center z-[2000] transition-opacity duration-300 opacity-100">
-          <div className="relative">
-            <div className="loading-spinner w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xl animate-pulse">✨</span>
-            </div>
-          </div>
-          <div className="mt-3 font-medium text-gray-700">{loadingText}</div>
-          <div className="mt-2 text-sm text-gray-500 animate-pulse">Leny is working some magic...</div>
-        </div>
-      )}
-      
-      {/* No Leny Assistant Character - Removed as requested */}
     </>
   );
 };

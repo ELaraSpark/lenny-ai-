@@ -40,12 +40,12 @@
 }
 
 .animate-spin-slow {
-  animation: spin-slow 10s linear infinite;
+  animation: spin-slow 8s linear infinite;
 }
 
-/* CSS variables for themes */
 @layer base {
   :root {
+    /* Color palette variables */
     /* Theme: Medical Professional with playful creativity */
     --primary: #00838F;
     --primary-light: #E1F5F7;
@@ -89,54 +89,43 @@
     --radius: 8px;
   }
 
-  /* Dark mode variables - Friendly Innovation Dark Theme */
-  .dark {
-    --background: 190 30% 10%; /* Dark teal background */
-    --foreground: 190 15% 90%; /* Light text with slight teal tint */
-    
-    --card: 190 25% 15%; /* Slightly lighter than background */
-    --card-foreground: 190 15% 90%; /* Same as foreground */
-    
-    --popover: 190 25% 15%; /* Same as card */
-    --popover-foreground: 190 15% 90%; /* Same as foreground */
-    
-    --muted: 190 20% 20%; /* Slightly lighter than card */
-    --muted-foreground: 190 10% 70%; /* Slightly darker than foreground */
-    
-    --border: 190 20% 25%; /* Slightly lighter than muted */
-    --input: 190 20% 25%; /* Same as border */
-    
-    /* Friendly Innovation colors for dark mode */
-    --primary: 190 90% 50%; /* #00B8D9 - Brighter in dark mode */
-    --primary-foreground: 0 0% 100%; /* White */
-    
-    --secondary: 36 90% 55%; /* #FFAB00 - Brighter in dark mode */
-    --secondary-foreground: 0 0% 15%; /* Dark text for contrast */
-    
-    --accent: 9 90% 65%; /* #FF5630 - Brighter in dark mode */
-    --accent-foreground: 0 0% 100%; /* White */
-    
-    --destructive: 9 90% 65%; /* Same as accent */
-    --destructive-foreground: 0 0% 100%; /* White */
-    
-    --ring: var(--primary); /* Use primary color for focus ring */
-  }
-}
-
-@layer base {
-  * {
-    /* Use Tailwind's default border or the one defined in config */
-    @apply border-border selection:bg-primary/20 selection:text-primary; 
-  }
-  
   body {
     /* Increased base font size for better visibility */
-    @apply bg-background text-foreground font-sans antialiased text-xl leading-normal font-normal; 
+    @apply bg-background text-foreground font-sans antialiased text-xl leading-normal font-normal min-h-screen; 
+    /* Ensure body is at least the height of the viewport */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
   }
-  /* .dark body rule is not needed if body uses bg-background */
 
   html {
     @apply scroll-smooth;
+    height: 100%;
+  }
+  
+  /* Add overflow-auto to all main content containers */
+  main {
+    @apply overflow-y-auto flex-1;
+  }
+  
+  /* Ensure scrollable containers have consistent behavior */
+  .scrollable-container {
+    @apply overflow-y-auto overflow-x-hidden;
+    height: 100%;
+    scrollbar-width: thin;
+  }
+  
+  /* Ensure panels fit on screen */
+  .fit-screen {
+    max-height: calc(100vh - 4rem);
+    @apply overflow-y-auto;
+  }
+  
+  /* Split panes with scrolling content */
+  .split-pane {
+    @apply h-full overflow-hidden;
+  }
+  
+  .split-pane-content {
+    @apply h-full overflow-y-auto;
   }
 }
 

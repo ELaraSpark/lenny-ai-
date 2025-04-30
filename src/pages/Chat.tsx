@@ -1,25 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { User, Bot, Clock, FileText, Search as SearchIcon, Pill, Sparkles, Coffee, Brain, Image, ToggleLeft, ToggleRight, Layout, LayoutGrid, ChevronDown } from 'lucide-react';
+import { User, Bot, FileText, Image, ToggleLeft, ToggleRight, ChevronDown, PaperclipIcon, Send, Lightbulb } from 'lucide-react';
 import ChatInput from '@/components/agents/ChatInput';
 import { cn } from '@/lib/utils';
 import { PicassoIllustration } from '@/components/illustrations/PicassoIllustration';
-import { PicassoBackground } from '@/components/illustrations/PicassoBackground';
 import { PicassoAvatar } from '@/components/illustrations/PicassoAvatar';
-import { AnimatedIllustration, LoadingIllustration } from '@/components/illustrations/AnimatedIllustration';
 import { useAuth } from '@/contexts/AuthContext';
 import ProfessionalChatMessage from '@/components/agents/ProfessionalChatMessage';
 import { 
     getPersonalizedGreeting, 
-    getMedicalJoke, 
     getLoadingMessage, 
-    getMedicalFact, 
     getSpecialtyBasedSuggestions,
-    getMedicalQuote,
-    getHealthcareTip
 } from '@/lib/personalityUtils';
 import { generateAIResponse, AIProvider, DEFAULT_PROVIDER } from '@/components/agents/services/agentService';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { 
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ChatMessage {
     sender: 'user' | 'bot';
@@ -28,42 +28,25 @@ interface ChatMessage {
 }
 
 // Define chat style options
-type ChatStyle = 'Professional' | 'Conversational' | 'Minimalist' | 'Playful';
+type ChatMode = 'Standard' | 'Deep Research' | 'Quick Summary' | 'Clinical Guidelines';
 
-// This component now renders the core chat UI, assuming parent handles layout
+// This component renders the core chat UI
 const Chat = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isSending, setIsSending] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState<string>("");
-    const [showJoke, setShowJoke] = useState<boolean>(false);
-    const [currentJoke, setCurrentJoke] = useState<string>("");
-    const [currentFact, setCurrentFact] = useState<string>("");
-    const [currentQuote, setCurrentQuote] = useState<string>("");
-    const [currentTip, setCurrentTip] = useState<string>("");
-    // This state is only used to control the visibility of suggestions, not the greeting
     const [isTyping, setIsTyping] = useState<boolean>(false);
-    // Store the personalized greeting in state so it doesn't change during the session
+    const [inputValue, setInputValue] = useState<string>("");
     const [personalizedGreeting, setPersonalizedGreeting] = useState<string>("");
+    const [chatMode, setChatMode] = useState<ChatMode>('Standard');
+    const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+    const [attachments, setAttachments] = useState<File[]>([]);
+    
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const { user } = useAuth(); // Get user from auth context
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { user } = useAuth();
     
-    // State for message format toggle
-    const [useProfessionalFormat, setUseProfessionalFormat] = useState<boolean>(true);
-    
-    // State for more detailed style options
-    const [chatStyle, setChatStyle] = useState<ChatStyle>('Professional');
-
-    // Get user's first name from email (temporary until we have proper user profiles)
-    const getUserFirstName = () => {
-        if (!user?.email) return undefined;
-        // Extract name from email (e.g., john.doe@example.com -> John)
-        const emailName = user.email.split('@')[0].split('.')[0];
-        return emailName.charAt(0).toUpperCase() + emailName.slice(1);
-    };
-
-    // Dynamic suggestions based on specialty (could be expanded to use user's actual specialty)
-    const suggestions = getSpecialtyBasedSuggestions();
-
     // AI provider state with toggle UI
     const [aiProvider, setAIProvider] = useState<AIProvider>(DEFAULT_PROVIDER);
     
@@ -72,28 +55,66 @@ const Chat = () => {
         setAIProvider(prev => prev === 'gemini' ? 'deepseek' : 'gemini');
     };
     
+    // Handle input change
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setInputValue(e.target.value);
+    };
+    
+    // Handle file input change
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const newFiles = Array.from(e.target.files);
+            setAttachments(prev => [...prev, ...newFiles]);
+        }
+    };
+    
+    // Remove attachment
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+    
+    // Open file dialog
+    const handlePaperclipClick = () => {
+        fileInputRef.current?.click();
+    };
+    
+    // Toggle suggestions popover
+    const handleLightbulbClick = () => {
+        setShowSuggestions(prev => !prev);
+    };
+    
+    // Handle suggestion click
+    const handleSuggestionClick = (suggestion: string) => {
+        setInputValue(suggestion);
+        setShowSuggestions(false);
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+    
     // Handle sending messages with attachments
-    const handleSendMessage = async (messageText: string, attachments?: File[]) => {
-        console.log("[Chat.tsx] handleSendMessage START", { messageText, attachments });
-        if (!messageText.trim() && (!attachments || attachments.length === 0)) {
-            console.log("[Chat.tsx] handleSendMessage: Empty message, returning.");
+    const handleSendMessage = async (messageText: string, files?: File[]) => {
+        if (!messageText.trim() && (!files || files.length === 0) && attachments.length === 0) {
             return;
         }
+        
+        const allAttachments = [...(attachments || []), ...(files || [])];
         
         // Create user message with attachments
         const userMessage: ChatMessage = { 
             sender: 'user', 
             text: messageText,
-            attachments 
+            attachments: allAttachments.length > 0 ? allAttachments : undefined
         };
         
-        console.log("[Chat.tsx] handleSendMessage: Setting user message and isSending=true");
         try {
             setMessages(prev => [...prev, userMessage]);
             setIsSending(true);
             setLoadingMessage(getLoadingMessage());
+            setInputValue("");
+            setAttachments([]);
             
-            // Create a mock agent for now (in a real app, this would be the selected agent)
+            // Create a mock agent for now
             const mockAgent = {
                 id: "leny",
                 name: "Leny",
@@ -107,7 +128,7 @@ const Chat = () => {
             const response = await generateAIResponse(
                 messageText,
                 mockAgent,
-                attachments,
+                allAttachments,
                 aiProvider
             );
             
@@ -117,10 +138,9 @@ const Chat = () => {
                 text: response 
             };
             
-            console.log("[Chat.tsx] handleSendMessage: Setting bot message and isSending=false");
             setMessages(prev => [...prev, botMessage]);
         } catch (error) {
-            console.error("[Chat.tsx] handleSendMessage: Error during AI response:", error);
+            console.error("Error during AI response:", error);
             // Add error message to chat
             const errorMessage: ChatMessage = {
                 sender: 'bot',
@@ -132,370 +152,463 @@ const Chat = () => {
         }
     };
 
+    // Handle form submission
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSendMessage(inputValue, attachments);
+    };
+
+    // Scroll to bottom when messages change
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Initialize random content and personalized greeting on first load
+    // Focus input on load
     useEffect(() => {
-        setCurrentJoke(getMedicalJoke());
-        setCurrentFact(getMedicalFact());
-        setCurrentQuote(getMedicalQuote());
-        setCurrentTip(getHealthcareTip());
-        // Set the personalized greeting once on component mount (already using the function)
+        inputRef.current?.focus();
+    }, []);
+
+    // Initialize personalized greeting on first load
+    useEffect(() => {
         setPersonalizedGreeting(getPersonalizedGreeting(getUserFirstName())); 
-    }, []); // Added user dependency to update greeting if user logs in/out during session
+    }, []);
+
+    // Get user's first name from email
+    const getUserFirstName = () => {
+        if (!user?.email) return undefined;
+        const emailName = user.email.split('@')[0].split('.')[0];
+        return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+    };
+
+    // Dynamic suggestions
+    const suggestions = getSpecialtyBasedSuggestions();
 
     const showInitialState = messages.length === 0;
 
-    // Enhanced Greeting Component with personality
-    const Greeting = () => (
-        <div className="mb-12"> 
-            {/* Flex container to place illustration next to text */}
-            <div className="flex items-center justify-center gap-4"> 
-                {/* Decorative element */}
-                <div className="text-primary"> 
-                    <PicassoIllustration
-                        name="healing"
-                        size="lg"
-                        color="text-primary"
-                    />
-                 </div>
-                  {/* Personalized greeting with gradient text */}
-                  <h1 className="text-3xl sm:text-[42px] font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center"> 
-                      {personalizedGreeting || `Find clinical answers instantly`}
-                      <span className="block text-lg font-normal text-muted-foreground mt-2">Your friendly AI medical assistant is here to help</span>
-                  </h1>
-             </div>
-        </div>
-    );
-
-    const MessageDisplay = () => (
-        <PicassoBackground
-            pattern="abstractArt" 
-            color="text-primary"
-            opacity={5}
-            className="w-full h-full flex-1 space-y-4 pb-4 flex flex-col items-center"
-        >
-            {/* Format toggle buttons - Always visible now (removed conditional) */}
-            <div className="sticky top-0 z-10 w-full flex justify-end mb-4 px-2 pt-2 bg-gradient-to-b from-background/90 to-transparent backdrop-blur-sm">
-                <div className="flex gap-2">
-                    {/* Style Selector Dropdown */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="flex items-center gap-1.5 bg-white border shadow-sm">
-                                {chatStyle}
-                                <ChevronDown className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => setChatStyle('Professional')}>
-                                Professional
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setChatStyle('Conversational')}>
-                                Conversational
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setChatStyle('Minimalist')}>
-                                Minimalist
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setChatStyle('Playful')}>
-                                Playful
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    {/* Professional/Standard Toggle */}
-                    <div className="bg-white border rounded-lg flex overflow-hidden shadow-sm">
-                        <Button
-                            variant={useProfessionalFormat ? "ghost" : "outline"}
-                            size="sm"
-                            className={`rounded-none border-0 ${useProfessionalFormat ? 'bg-primary/10 text-primary' : ''}`}
-                            onClick={() => setUseProfessionalFormat(true)}
-                        >
-                            <Layout size={16} className="mr-1" />
-                            <span className="text-xs">Professional</span>
-                        </Button>
+    return (
+        <div className="flex flex-col h-full w-full overflow-hidden">
+            {showInitialState ? (
+                // Initial state with centered content
+                <div className="flex flex-1 flex-col items-center justify-center px-4 py-8 overflow-y-auto">
+                    <div className="max-w-[600px] w-full flex flex-col items-center">
+                        {/* Logo Icon */}
+                        <div className="mb-6 text-primary">
+                            <PicassoIllustration
+                                name="healing"
+                                size="md"
+                                color="text-primary"
+                            />
+                        </div>
                         
-                        <Button
-                            variant={!useProfessionalFormat ? "ghost" : "outline"}
-                            size="sm"
-                            className={`rounded-none border-0 ${!useProfessionalFormat ? 'bg-primary/10 text-primary' : ''}`}
-                            onClick={() => setUseProfessionalFormat(false)}
+                        {/* Title with gradient */}
+                        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-1">
+                            <span className="bg-gradient-to-r from-teal-500 to-amber-400 bg-clip-text text-transparent">
+                                Find clinical answers instantly
+                            </span>
+                        </h1>
+                        
+                        {/* Subtitle */}
+                        <p className="text-lg text-gray-500 text-center mb-10">
+                            Your friendly AI medical assistant is here to help
+                        </p>
+                        
+                        {/* AI Provider Toggle */}
+                        <div className="mb-8 flex justify-center items-center">
+                            <span className={cn(
+                                "mr-2",
+                                aiProvider === 'gemini' ? 'font-medium text-primary' : 'text-gray-500'
+                            )}>
+                                Gemini
+                            </span>
+                            
+                            <button 
+                                onClick={toggleAIProvider} 
+                                className="relative inline-flex h-6 w-11 items-center rounded-full"
+                            >
+                                <span className={cn(
+                                    "inline-block h-5 w-10 rounded-full transition",
+                                    aiProvider === 'gemini' ? 'bg-primary' : 'bg-gray-200'
+                                )}>
+                                    <span className={cn(
+                                        "block h-4 w-4 rounded-full bg-white transition-transform",
+                                        aiProvider === 'gemini' ? 'translate-x-5' : 'translate-x-1'
+                                    )} />
+                                </span>
+                            </button>
+                            
+                            <span className={cn(
+                                "ml-2",
+                                aiProvider === 'deepseek' ? 'font-medium text-primary' : 'text-gray-500'
+                            )}>
+                                DeepSeek
+                            </span>
+                        </div>
+                        
+                        {/* Input Form */}
+                        <form 
+                            onSubmit={handleSubmit} 
+                            className="w-full relative mb-8 group"
                         >
-                            <LayoutGrid size={16} className="mr-1" />
-                            <span className="text-xs">Standard</span>
-                        </Button>
-                    </div>
-                </div>
-            </div>
-            
-            <div className="w-full max-w-3xl space-y-6">
-                {messages.map((msg, index) => {
-                    // For user messages, always use the standard format
-                    if (msg.sender === 'user') {
-                        return (
-                            <div key={index} className="flex justify-end">
-                                <div className="max-w-[85%] px-4 py-3 bg-primary text-primary-foreground rounded-lg rounded-br-none">
-                                    {/* Attachments display */}
-                                    {msg.attachments && msg.attachments.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mb-2">
-                                            {msg.attachments.map((file, fileIndex) => (
+                            <div className="relative flex items-center w-full">
+                                <textarea
+                                    ref={inputRef}
+                                    value={inputValue}
+                                    onChange={handleInputChange}
+                                    placeholder="Ask me anything medical..."
+                                    className="w-full py-3 px-4 pr-12 border border-gray-200 rounded-full resize-none overflow-hidden min-h-[50px] max-h-[120px] focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSubmit(e);
+                                        }
+                                    }}
+                                    rows={1}
+                                />
+                                
+                                <Button 
+                                    type="submit" 
+                                    disabled={!inputValue.trim() && attachments.length === 0} 
+                                    className="absolute right-2 rounded-full h-8 w-8 flex items-center justify-center bg-primary text-white hover:bg-primary/90 disabled:opacity-50"
+                                >
+                                    <Send size={16} />
+                                </Button>
+                            </div>
+                            
+                            {/* Attachments display */}
+                            {attachments.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2 px-2">
+                                    {attachments.map((file, index) => (
+                                        <div key={index} className="bg-gray-100 rounded-md px-2 py-1 flex items-center text-xs">
+                                            <span className="truncate max-w-[150px]">{file.name}</span>
+                                            <button 
+                                                type="button" 
+                                                className="ml-1 text-gray-500 hover:text-gray-700"
+                                                onClick={() => removeAttachment(index)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            <div className="flex items-center mt-2 px-2">
+                                {/* Hidden file input */}
+                                <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    className="hidden" 
+                                    onChange={handleFileChange} 
+                                    multiple
+                                />
+                                
+                                {/* Paperclip button */}
+                                <Button 
+                                    type="button" 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-gray-500 hover:bg-transparent hover:text-gray-700"
+                                    onClick={handlePaperclipClick}
+                                >
+                                    <PaperclipIcon size={16} />
+                                </Button>
+                                
+                                {/* Lightbulb button */}
+                                <Popover open={showSuggestions} onOpenChange={setShowSuggestions}>
+                                    <PopoverTrigger asChild>
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            className="text-gray-500 hover:bg-transparent hover:text-gray-700 ml-1"
+                                            onClick={handleLightbulbClick}
+                                        >
+                                            <Lightbulb size={16} />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80 p-0">
+                                        <div className="p-3 border-b border-gray-100">
+                                            <h3 className="font-medium">Try asking about:</h3>
+                                        </div>
+                                        <div className="p-3 max-h-60 overflow-y-auto">
+                                            {suggestions.slice(0, 5).map((suggestion, index) => (
                                                 <div 
-                                                    key={fileIndex} 
-                                                    className="relative group overflow-hidden rounded-lg border border-border"
+                                                    key={index} 
+                                                    className="py-1.5 px-2 rounded-md text-sm hover:bg-gray-100 cursor-pointer"
+                                                    onClick={() => handleSuggestionClick(suggestion)}
                                                 >
-                                                    {file.type.startsWith('image/') ? (
-                                                        <div className="w-24 h-24 relative">
-                                                            <img 
-                                                                src={URL.createObjectURL(file)} 
-                                                                alt={file.name}
-                                                                className="w-full h-full object-cover"
-                                                                onLoad={() => URL.revokeObjectURL(URL.createObjectURL(file))}
-                                                            />
-                                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                <Image className="w-6 h-6 text-white" />
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="w-24 h-24 bg-muted flex items-center justify-center">
-                                                            <FileText className="w-8 h-8 text-muted-foreground" />
-                                                            <span className="text-xs text-muted-foreground mt-1 px-2 truncate max-w-full">
-                                                                {file.name}
-                                                            </span>
-                                                        </div>
-                                                    )}
+                                                    {suggestion}
                                                 </div>
                                             ))}
                                         </div>
-                                    )}
-                                    <p className="whitespace-pre-wrap">{msg.text}</p>
-                                </div>
+                                    </PopoverContent>
+                                </Popover>
+                                
+                                {/* Standard dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            className="text-gray-500 hover:bg-transparent hover:text-gray-700 ml-1 flex items-center"
+                                        >
+                                            <span className="text-xs">{chatMode}</span>
+                                            <ChevronDown size={14} className="ml-1" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="start">
+                                        <DropdownMenuItem onClick={() => setChatMode('Standard')}>
+                                            Standard
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setChatMode('Deep Research')}>
+                                            Deep Research
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setChatMode('Quick Summary')}>
+                                            Quick Summary
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setChatMode('Clinical Guidelines')}>
+                                            Clinical Guidelines
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
-                        );
-                    }
-                    
-                    // For bot messages, use either professional or standard format based on the toggle
-                    return useProfessionalFormat ? (
-                        <ProfessionalChatMessage
-                            key={index}
-                            message={{
-                                id: `msg-${index}`,
-                                role: 'assistant',
-                                content: msg.text,
-                                timestamp: new Date()
-                            }}
-                            selectedAgent={{
-                                id: "leny",
-                                name: "Leny",
-                                specialty: "General Medicine",
-                                description: "AI medical assistant",
-                                icon: () => null,
-                                capabilities: []
-                            }}
-                        />
-                    ) : (
-                        <div key={index} className="flex justify-start">
-                            <div className="flex items-start gap-2.5 max-w-[85%]">
-                                <PicassoAvatar
-                                    name="Leny"
-                                    illustrationType="healing"
-                                    size="sm"
-                                    color="text-primary"
-                                    className="flex-shrink-0"
-                                />
-                                <div className="p-3 rounded-lg text-base bg-muted text-foreground rounded-bl-none">
-                                    <p className="leading-relaxed">{msg.text}</p>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-                {isSending && (
-                    <div className="flex justify-start">
-                        <div className="flex items-start gap-2.5">
-                            <PicassoAvatar
-                                name="Leny"
-                                illustrationType="brain"
-                                size="sm"
-                                color="text-primary"
-                                className="flex-shrink-0"
-                            />
-                            {/* Display the random loading message */}
-                            <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground italic">
-                                {loadingMessage}
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <div ref={messagesEndRef} />
-            </div>
-        </PicassoBackground>
-    );
-
-    const InputArea = ({ isAnchored = false }) => (
-        <div className="w-full bg-background">
-           <ChatInput
-             onSendMessage={handleSendMessage}
-             isLoading={isSending}
-             agentName="Leny"
-             onTypingChange={setIsTyping}
-             isAnchored={isAnchored}
-           />
-       </div>
-    );
-
-    // Enhanced Suggestions Component with dynamic content and "More" button
-    const Suggestions = () => {
-        const [showAllSuggestions, setShowAllSuggestions] = useState(false);
-        const initialSuggestionsCount = 8; // Show approximately 2 lines of suggestions initially
-        
-        const displayedSuggestions = showAllSuggestions 
-            ? suggestions 
-            : suggestions.slice(0, initialSuggestionsCount);
-            
-        return (
-            <div className="space-y-6 mt-6">
-                {/* Chat suggestions */}
-                <div className="flex flex-col items-center">
-                    <div className="flex flex-wrap justify-center gap-3 max-h-[88px] overflow-hidden">
-                        {displayedSuggestions.map((suggestion, index) => {
-                            const illustrationMap: Record<string, string> = {
-                                "What's the latest research": "chart",
-                                "Help me interpret": "brain",
-                                "What are the side effects": "stethoscope",
-                                "Differential diagnosis": "healing",
-                            };
-                            
-                            // Find the matching illustration based on text content
-                            let illustrationType = "empty";
-                            for (const [key, value] of Object.entries(illustrationMap)) {
-                                if (suggestion.includes(key)) {
-                                    illustrationType = value;
-                                    break;
-                                }
-                            }
-
-                            return (
-                                <Button
-                                    key={index}
-                                    variant="outline"
-                                    size="sm"
-                                    // Make default border more visible (primary with 50% opacity) and darken on hover
-                                    className="rounded-full px-4 py-2 text-sm font-medium text-foreground bg-background border-primary/50 hover:bg-primary/5 hover:border-primary hover:text-foreground group transition-colors duration-200" 
-                                    onClick={() => handleSendMessage(suggestion)}
-                                >
-                                    <div className="mr-2 w-4 h-4">
-                                        <PicassoIllustration
-                                            name={illustrationType as any}
-                                            size="xs"
-                                            color="text-primary"
-                                            className=""
-                                        />
-                                    </div>
-                                    {suggestion}
-                                </Button>
-                            );
-                        })}
-                    </div>
-                    
-                    {/* More/Less button */}
-                    {suggestions.length > initialSuggestionsCount && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="mt-2 text-muted-foreground hover:text-foreground"
-                            onClick={() => setShowAllSuggestions(!showAllSuggestions)}
-                        >
-                            {showAllSuggestions ? "Show Less" : "More Suggestions"}
-                        </Button>
-                    )}
-                </div>
-                
-                {/* Fun content cards REMOVED */}
-                
-                {/* Refresh button for fun content REMOVED */}
-                {/* Refresh button was here */}
-            </div> // This closes the main div for Suggestions
-        );
-    };
-
-    return (
-        <div className="flex flex-col h-full">
-            {showInitialState ? (
-                // Re-applying flex properties to center content vertically and horizontally
-                <div className="flex flex-1 flex-col items-center justify-center p-5 mt-24"> 
-                    {/* Background is handled by AppLayout */}
-                    <div className="w-full max-w-[700px] flex flex-col items-center"> 
-                        <Greeting />
+                        </form>
                         
-                        {/* AI Provider Toggle */}
-                        <div className="mb-4 flex items-center justify-center">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="flex items-center gap-2 text-sm"
-                                onClick={toggleAIProvider}
-                            >
-                                <span className={aiProvider === 'gemini' ? 'font-bold text-primary' : 'text-muted-foreground'}>
-                                    Gemini
-                                </span>
-                                {aiProvider === 'gemini' ? (
-                                    <ToggleLeft className="h-5 w-5 text-primary" />
-                                ) : (
-                                    <ToggleRight className="h-5 w-5 text-primary" />
-                                )}
-                                <span className={aiProvider === 'deepseek' ? 'font-bold text-primary' : 'text-muted-foreground'}>
-                                    DeepSeek
-                                </span>
-                            </Button>
-                        </div>
-                        
-                        <div className="w-full relative mb-[30px]">
-                            <InputArea isAnchored={false} />
-                        </div>
-                        {/* Only fade out suggestions, not the greeting */}
-                        <div className={cn(
-                            "transition-opacity duration-300",
-                            isTyping ? "opacity-0" : "opacity-100"
-                        )}>
-                            <Suggestions />
+                        {/* Suggestion buttons */}
+                        <div className="w-full">
+                            <div className="flex flex-wrap justify-center gap-2">
+                                {suggestions.slice(0, 3).map((suggestion, index) => (
+                                    <Button
+                                        key={index}
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                        className="rounded-full border-gray-300 text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                                    >
+                                        {suggestion.length > 40 ? suggestion.substring(0, 40) + '...' : suggestion}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             ) : (
-                // Apply centering to the parent flex container for the active chat state
-                <div className="flex flex-1 flex-col items-center justify-center overflow-hidden h-full"> 
-                    {/* AI Provider Toggle for active chat */}
-                    <div className="w-full max-w-3xl flex justify-center py-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="flex items-center gap-2 text-sm"
-                            onClick={toggleAIProvider}
-                        >
-                            <span className={aiProvider === 'gemini' ? 'font-bold text-primary' : 'text-muted-foreground'}>
-                                Gemini
-                            </span>
-                            {aiProvider === 'gemini' ? (
-                                <ToggleLeft className="h-5 w-5 text-primary" />
-                            ) : (
-                                <ToggleRight className="h-5 w-5 text-primary" />
+                // Message conversation view
+                <div className="flex flex-1 flex-col h-full w-full">
+                    {/* Messages container */}
+                    <div className="flex-1 overflow-y-auto px-4 py-4">
+                        <div className="max-w-3xl mx-auto">
+                            {messages.map((msg, index) => {
+                                if (msg.sender === 'user') {
+                                    return (
+                                        <div key={index} className="flex justify-end mb-4">
+                                            <div className="max-w-[80%] bg-primary text-white py-2 px-4 rounded-l-lg rounded-tr-lg">
+                                                {msg.attachments && msg.attachments.length > 0 && (
+                                                    <div className="flex flex-wrap gap-2 mb-2">
+                                                        {msg.attachments.map((file, fileIndex) => (
+                                                            <div key={fileIndex} className="bg-white/20 rounded-md px-2 py-1 text-xs flex items-center">
+                                                                <span className="truncate max-w-[120px]">{file.name}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                <p>{msg.text}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                } else {
+                                    return (
+                                        <div key={index} className="flex mb-4">
+                                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                                <PicassoAvatar
+                                                    name="Leny"
+                                                    illustrationType="healing"
+                                                    size="xs"
+                                                    color="text-primary"
+                                                />
+                                            </div>
+                                            <div className="max-w-[80%] bg-gray-100 py-2 px-4 rounded-r-lg rounded-bl-lg">
+                                                <p>{msg.text}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            })}
+                            {isSending && (
+                                <div className="flex mb-4">
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                        <PicassoAvatar
+                                            name="Leny"
+                                            illustrationType="healing"
+                                            size="xs"
+                                            color="text-primary"
+                                        />
+                                    </div>
+                                    <div className="max-w-[80%] bg-gray-100 py-2 px-4 rounded-r-lg rounded-bl-lg">
+                                        <div className="flex space-x-1">
+                                            <div className="h-2 w-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                            <div className="h-2 w-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                            <div className="h-2 w-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
-                            <span className={aiProvider === 'deepseek' ? 'font-bold text-primary' : 'text-muted-foreground'}>
-                                DeepSeek
-                            </span>
-                        </Button>
-                    </div>
-                    
-                    {/* Message display area: centered, takes up space, scrolls, has bottom padding */}
-                    <div className="w-full max-w-3xl flex-1 overflow-y-auto px-4 pt-2 pb-24 flex flex-col"> 
-                        <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-200px)]">
-                            <MessageDisplay />
+                            <div ref={messagesEndRef} />
                         </div>
                     </div>
-                    {/* Input area: sticky to bottom, centered */}
-                    <div className="w-full max-w-3xl sticky bottom-4 bg-background p-0 border-t border-border"> 
-                        <InputArea isAnchored={true} />
+                    
+                    {/* Input form at bottom */}
+                    <div className="border-t border-gray-200 p-4">
+                        <form 
+                            onSubmit={handleSubmit} 
+                            className="max-w-3xl mx-auto relative"
+                        >
+                            <div className="relative flex items-center w-full">
+                                <textarea
+                                    ref={inputRef}
+                                    value={inputValue}
+                                    onChange={handleInputChange}
+                                    placeholder="Ask me anything medical..."
+                                    className="w-full py-3 px-4 pr-12 border border-gray-200 rounded-full resize-none overflow-hidden min-h-[50px] max-h-[120px] focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSubmit(e);
+                                        }
+                                    }}
+                                    rows={1}
+                                />
+                                
+                                <Button 
+                                    type="submit" 
+                                    disabled={(!inputValue.trim() && attachments.length === 0) || isSending} 
+                                    className="absolute right-2 rounded-full h-8 w-8 flex items-center justify-center bg-primary text-white hover:bg-primary/90 disabled:opacity-50"
+                                >
+                                    <Send size={16} />
+                                </Button>
+                            </div>
+                            
+                            {/* Attachments display */}
+                            {attachments.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2 px-2">
+                                    {attachments.map((file, index) => (
+                                        <div key={index} className="bg-gray-100 rounded-md px-2 py-1 flex items-center text-xs">
+                                            <span className="truncate max-w-[150px]">{file.name}</span>
+                                            <button 
+                                                type="button" 
+                                                className="ml-1 text-gray-500 hover:text-gray-700"
+                                                onClick={() => removeAttachment(index)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            <div className="flex items-center mt-2 px-2">
+                                {/* Hidden file input */}
+                                <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    className="hidden" 
+                                    onChange={handleFileChange} 
+                                    multiple
+                                />
+                                
+                                {/* Paperclip button */}
+                                <Button 
+                                    type="button" 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-gray-500 hover:bg-transparent hover:text-gray-700"
+                                    onClick={handlePaperclipClick}
+                                >
+                                    <PaperclipIcon size={16} />
+                                </Button>
+                                
+                                {/* Lightbulb button */}
+                                <Popover open={showSuggestions} onOpenChange={setShowSuggestions}>
+                                    <PopoverTrigger asChild>
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            className="text-gray-500 hover:bg-transparent hover:text-gray-700 ml-1"
+                                            onClick={handleLightbulbClick}
+                                        >
+                                            <Lightbulb size={16} />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80 p-0">
+                                        <div className="p-3 border-b border-gray-100">
+                                            <h3 className="font-medium">Try asking about:</h3>
+                                        </div>
+                                        <div className="p-3 max-h-60 overflow-y-auto">
+                                            {suggestions.slice(0, 5).map((suggestion, index) => (
+                                                <div 
+                                                    key={index} 
+                                                    className="py-1.5 px-2 rounded-md text-sm hover:bg-gray-100 cursor-pointer"
+                                                    onClick={() => handleSuggestionClick(suggestion)}
+                                                >
+                                                    {suggestion}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                                
+                                {/* Standard dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            className="text-gray-500 hover:bg-transparent hover:text-gray-700 ml-1 flex items-center"
+                                        >
+                                            <span className="text-xs">{chatMode}</span>
+                                            <ChevronDown size={14} className="ml-1" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="start">
+                                        <DropdownMenuItem onClick={() => setChatMode('Standard')}>
+                                            Standard
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setChatMode('Deep Research')}>
+                                            Deep Research
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setChatMode('Quick Summary')}>
+                                            Quick Summary
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setChatMode('Clinical Guidelines')}>
+                                            Clinical Guidelines
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                
+                                {/* AI Provider Toggle in conversation view */}
+                                <div className="ml-auto flex items-center">
+                                    <span className={aiProvider === 'gemini' ? 'text-xs font-medium text-primary' : 'text-xs text-gray-500'}>Gemini</span>
+                                    <button 
+                                        onClick={toggleAIProvider} 
+                                        className="mx-1 relative inline-flex h-4 w-8 items-center rounded-full"
+                                    >
+                                        <span className={cn(
+                                            "inline-block h-3 w-8 rounded-full transition",
+                                            aiProvider === 'gemini' ? 'bg-primary' : 'bg-gray-200'
+                                        )}>
+                                            <span className={cn(
+                                                "block h-2 w-2 rounded-full bg-white transition-transform",
+                                                aiProvider === 'gemini' ? 'translate-x-5' : 'translate-x-1'
+                                            )} />
+                                        </span>
+                                    </button>
+                                    <span className={aiProvider === 'deepseek' ? 'text-xs font-medium text-primary' : 'text-xs text-gray-500'}>DeepSeek</span>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

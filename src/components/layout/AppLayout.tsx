@@ -1,21 +1,21 @@
-import { ReactNode, useState, useEffect, useCallback } from "react"; // Added useCallback
-import { motion, AnimatePresence } from "framer-motion"; // Added AnimatePresence
+import { useState, useEffect, useCallback } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { ActiveCallProvider } from "@/components/followup/context/ActiveCallContext";
-import { cn } from '@/lib/utils';
-import { Outlet, useLocation } from "react-router-dom"; // Import Outlet and useLocation
-import { useTheme } from "@/contexts/ThemeContext"; // Import useTheme
-
-interface AppLayoutProps {}
 
 const AppLayout = () => {
-  const { colorTheme } = useTheme();
-  const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // State for mobile sidebar
   const location = useLocation();
-  const isAgentsPage = location.pathname === '/agents' || location.pathname === '/my-agents';
-
+  
+  // Detect if we're on the /agents page
+  const isAgentsPage = location.pathname.includes('/agents');
+  
+  // State for sidebar toggle in mobile and desktop
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(true);
+  
   // Toggle desktop sidebar function
   const toggleDesktopSidebar = useCallback(() => {
     setIsDesktopSidebarCollapsed(prev => !prev);
@@ -44,7 +44,7 @@ const AppLayout = () => {
   
   return (
     <ActiveCallProvider>
-      {/* Main flex container */}
+      {/* Main flex container - explicit height and overflow settings */}
       <div className="flex h-screen overflow-hidden relative bg-background font-sans" style={{ fontFamily: "var(--font-sans)" }}>
         {/* Mobile Sidebar Overlay */}
         <AnimatePresence>
@@ -91,8 +91,8 @@ const AppLayout = () => {
           onClick={handleContentClick}
         >
           {isAgentsPage ? (
-            // Structure for Agents page
-            <main className="flex-1 page-container">
+            // Structure for Agents page - allow full height scrolling
+            <main className="flex-1 page-container overflow-y-auto">
               <div className="relative z-base h-full panel-wrapper">
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -106,14 +106,16 @@ const AppLayout = () => {
               </div>
             </main>
           ) : (
-            // Structure for other pages
+            // Structure for other pages - include header and scrollable content area
             <>
               {/* Pass mobile toggle to Header */}
               <Header
                 className="tab-nav-bg border-none shadow-none relative z-dropdown"
                 onMobileMenuToggle={toggleMobileSidebar}
               />
-              <main className="flex-1 page-container pt-16">
+              
+              {/* Content with scrolling enabled */}
+              <main className="flex-1 page-container overflow-y-auto">
                 <div className="relative z-base h-full max-w-5xl mx-auto p-4 md:p-8 bg-background rounded-lg shadow-sm border border-border/30 panel-wrapper">
                   <motion.div
                     initial={{ opacity: 0 }}
