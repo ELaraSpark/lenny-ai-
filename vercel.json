@@ -1,7 +1,7 @@
 {
   "name": "leny-ai-doctor-network",
   "framework": "vite",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist",
   "routes": [
     { "handle": "filesystem" },
@@ -9,7 +9,8 @@
   ],
   "alias": ["leny-ai.vercel.app", "lenny-ai.vercel.app"],
   "github": {
-    "silent": true
+    "silent": false,
+    "autoAlias": true
   },
   "headers": [
     {
