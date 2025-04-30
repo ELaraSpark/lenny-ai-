@@ -1,12 +1,19 @@
 {
+<<<<<<< HEAD
   "name": "leny-ai",
   "framework": "vite",
   "buildCommand": "npm run build",
+=======
+  "name": "lenny-ai",
+  "framework": "vite",
+  "buildCommand": "npm run build:vercel",
+>>>>>>> ff82be1893e89089ffb163272ddbabefbad88bdc
   "outputDirectory": "dist",
   "routes": [
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
+<<<<<<< HEAD
   "env": {
     "VITE_SUPABASE_URL": "https://uahphakjrkwfhikyxpqt.supabase.co",
     "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhaHBoYWtqcmt3Zmhpa3l4cHF0Iiwicm9zZSI6ImFub24iLCJpYXQiOjE3NDU0MTk3NDMsImV4cCI6MjA2MDk5NTc0M30.iceEb5GvCBzE4wA7U92DxGJZuLt0m-RNcgqVKBIh0EA"
@@ -16,4 +23,28 @@
     "name": "AI Doctor Network",
     "framework": null
   }
+=======
+  "alias": ["lenny-ai.vercel.app"],
+  "github": {
+    "silent": false,
+    "autoAlias": true,
+    "enabled": true,
+    "deployOnPush": true
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-App-Name",
+          "value": "Lenny AI"
+        },
+        {
+          "key": "X-Organization-Name",
+          "value": "AI Doctor Network"
+        }
+      ]
+    }
+  ]
+>>>>>>> ff82be1893e89089ffb163272ddbabefbad88bdc
 }
