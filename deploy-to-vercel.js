@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 
-console.log('🚀 Starting Vercel deployment for Leny-ai2...');
+console.log('🚀 Starting Vercel deployment for Lenny AI...');
 
 try {
   // Check if Vercel CLI is installed
