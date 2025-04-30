@@ -6,10 +6,7 @@
  */
 
 const { execSync } = require('child_process');
-<<<<<<< HEAD
-=======
 const fs = require('fs');
->>>>>>> ff82be1893e89089ffb163272ddbabefbad88bdc
 
 console.log('🚀 Starting Vercel deployment for Lenny AI...');
 
@@ -24,8 +21,6 @@ try {
     console.log('✅ Vercel CLI installed successfully');
   }
 
-<<<<<<< HEAD
-=======
   // Check if environment variables are properly configured
   console.log('🔍 Checking environment configuration...');
   const envFiles = ['.env', '.env.production'];
@@ -58,21 +53,17 @@ try {
     console.log('⚠️ Clean command failed, continuing anyway...');
   }
 
->>>>>>> ff82be1893e89089ffb163272ddbabefbad88bdc
   // Build the project
   console.log('🔨 Building project...');
   execSync('npm run build:vercel', { stdio: 'inherit' });
   console.log('✅ Build completed successfully');
 
-<<<<<<< HEAD
-=======
   // Ensure _redirects is in the dist folder
   if (fs.existsSync('public/_redirects') && !fs.existsSync('dist/_redirects')) {
     fs.copyFileSync('public/_redirects', 'dist/_redirects');
     console.log('✅ Copied _redirects file to dist folder');
   }
 
->>>>>>> ff82be1893e89089ffb163272ddbabefbad88bdc
   // Deploy to Vercel
   console.log('🚀 Deploying to Vercel...');
   execSync('vercel --prod', { stdio: 'inherit' });
