@@ -7,5 +7,27 @@
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
-  "alias": ["leny-ai.vercel.app"]
+  "alias": ["leny-ai.vercel.app"],
+  "projectSettings": {
+    "name": "AI Doctor Network",
+    "description": "Leny AI - AI Doctor Network"
+  },
+  "github": {
+    "silent": true
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-App-Name",
+          "value": "Leny AI"
+        },
+        {
+          "key": "X-Organization-Name",
+          "value": "AI Doctor Network"
+        }
+      ]
+    }
+  ]
 }

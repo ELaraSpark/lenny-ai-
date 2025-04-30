@@ -2,6 +2,7 @@
   "name": "leny-ai",
   "private": true,
   "version": "1.0.0",
+  "description": "Leny AI - AI Doctor Network",
   "type": "module",
   "scripts": {
     "dev": "vite",
