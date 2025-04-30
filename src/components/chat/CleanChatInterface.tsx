@@ -200,7 +200,7 @@ const CleanChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8 panel-wrapper">
       {/* Header */}
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-900">Medical AI Assistant</h1>
@@ -244,8 +244,8 @@ const CleanChatInterface: React.FC = () => {
         </div>
       </div>
       
-      {/* Messages */}
-      <div className="space-y-8">
+      {/* Messages - with no-nested-scroll to prevent nested scrollbars */}
+      <div className="space-y-8 no-nested-scroll">
         {messages.map((message) => (
           <div key={message.id} className="animate-fade-in">
             {message.role === 'user' ? (
@@ -266,9 +266,9 @@ const CleanChatInterface: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Source header */}
+                {/* Source header - Using semitransparent background */}
                 {message.source && (
-                  <div className="px-6 py-3 bg-amber-50 border-b flex justify-between items-center">
+                  <div className="px-6 py-3 tab-nav-bg border-b flex justify-between items-center">
                     <div className="text-amber-700 font-medium">{message.source.name}</div>
                   </div>
                 )}
@@ -276,7 +276,7 @@ const CleanChatInterface: React.FC = () => {
                 {/* Main content */}
                 <div className="px-6 py-4">
                   <div 
-                    className="prose prose-sm max-w-none"
+                    className="prose prose-sm max-w-none no-nested-scroll"
                     dangerouslySetInnerHTML={{ 
                       __html: formatTextWithCitations(extractContent(message)) 
                     }}
@@ -285,7 +285,7 @@ const CleanChatInterface: React.FC = () => {
                 
                 {/* Citations */}
                 {message.citations && message.citations.length > 0 && (
-                  <div className="px-6 py-4 border-t bg-gray-50">
+                  <div className="px-6 py-4 border-t tab-nav-bg">
                     <div className="text-sm font-medium mb-2">References</div>
                     <ol className="text-sm text-gray-600 pl-5 space-y-2">
                       {message.citations.map((citation, index) => (

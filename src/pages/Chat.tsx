@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { User, Bot, Clock, FileText, Search as SearchIcon, Pill, Sparkles, Coffee, Brain, Image, ToggleLeft, ToggleRight, Layout, LayoutGrid } from 'lucide-react';
+import { User, Bot, Clock, FileText, Search as SearchIcon, Pill, Sparkles, Coffee, Brain, Image, ToggleLeft, ToggleRight, Layout, LayoutGrid, ChevronDown } from 'lucide-react';
 import ChatInput from '@/components/agents/ChatInput';
 import { cn } from '@/lib/utils';
 import { PicassoIllustration } from '@/components/illustrations/PicassoIllustration';
@@ -19,12 +19,16 @@ import {
     getHealthcareTip
 } from '@/lib/personalityUtils';
 import { generateAIResponse, AIProvider, DEFAULT_PROVIDER } from '@/components/agents/services/agentService';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface ChatMessage {
     sender: 'user' | 'bot';
     text: string;
     attachments?: File[];
 }
+
+// Define chat style options
+type ChatStyle = 'Professional' | 'Conversational' | 'Minimalist' | 'Playful';
 
 // This component now renders the core chat UI, assuming parent handles layout
 const Chat = () => {
@@ -45,6 +49,9 @@ const Chat = () => {
     
     // State for message format toggle
     const [useProfessionalFormat, setUseProfessionalFormat] = useState<boolean>(true);
+    
+    // State for more detailed style options
+    const [chatStyle, setChatStyle] = useState<ChatStyle>('Professional');
 
     // Get user's first name from email (temporary until we have proper user profiles)
     const getUserFirstName = () => {
@@ -143,20 +150,20 @@ const Chat = () => {
 
     // Enhanced Greeting Component with personality
     const Greeting = () => (
-        <div className="mb-12"> {/* Removed text-center */}
+        <div className="mb-12"> 
             {/* Flex container to place illustration next to text */}
-            <div className="flex items-center justify-center gap-4"> {/* Added flex container */}
+            <div className="flex items-center justify-center gap-4"> 
                 {/* Decorative element */}
-                <div className="text-primary"> {/* Use new primary color */}
+                <div className="text-primary"> 
                     <PicassoIllustration
                         name="healing"
                         size="lg"
                         color="text-primary"
                     />
                  </div>
-                  {/* Changed to "Find clinical answers instantly" with larger, bold font - Added responsive size */}
+                  {/* Personalized greeting with gradient text */}
                   <h1 className="text-3xl sm:text-[42px] font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-center"> 
-                      Find clinical answers instantly
+                      {personalizedGreeting || `Find clinical answers instantly`}
                       <span className="block text-lg font-normal text-muted-foreground mt-2">Your friendly AI medical assistant is here to help</span>
                   </h1>
              </div>
@@ -165,15 +172,40 @@ const Chat = () => {
 
     const MessageDisplay = () => (
         <PicassoBackground
-            pattern="abstractArt" // Use the new Picasso-style pattern
+            pattern="abstractArt" 
             color="text-primary"
             opacity={5}
-            className="w-full h-full flex-1 overflow-y-auto space-y-4 pb-4 flex flex-col justify-center"
+            className="w-full h-full flex-1 space-y-4 pb-4 flex flex-col items-center"
         >
-            {/* Format toggle buttons */}
-            {messages.length > 0 && (
-                <div className="flex justify-end mb-4 px-2">
-                    <div className="bg-white border rounded-lg flex overflow-hidden">
+            {/* Format toggle buttons - Always visible now (removed conditional) */}
+            <div className="sticky top-0 z-10 w-full flex justify-end mb-4 px-2 pt-2 bg-gradient-to-b from-background/90 to-transparent backdrop-blur-sm">
+                <div className="flex gap-2">
+                    {/* Style Selector Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="flex items-center gap-1.5 bg-white border shadow-sm">
+                                {chatStyle}
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => setChatStyle('Professional')}>
+                                Professional
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setChatStyle('Conversational')}>
+                                Conversational
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setChatStyle('Minimalist')}>
+                                Minimalist
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setChatStyle('Playful')}>
+                                Playful
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Professional/Standard Toggle */}
+                    <div className="bg-white border rounded-lg flex overflow-hidden shadow-sm">
                         <Button
                             variant={useProfessionalFormat ? "ghost" : "outline"}
                             size="sm"
@@ -195,106 +227,108 @@ const Chat = () => {
                         </Button>
                     </div>
                 </div>
-            )}
+            </div>
             
-            {messages.map((msg, index) => {
-                // For user messages, always use the standard format
-                if (msg.sender === 'user') {
-                    return (
-                        <div key={index} className="flex justify-end">
-                            <div className="max-w-[85%] px-4 py-3 bg-primary text-primary-foreground rounded-lg rounded-br-none">
-                                {/* Attachments display */}
-                                {msg.attachments && msg.attachments.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                        {msg.attachments.map((file, fileIndex) => (
-                                            <div 
-                                                key={fileIndex} 
-                                                className="relative group overflow-hidden rounded-lg border border-border"
-                                            >
-                                                {file.type.startsWith('image/') ? (
-                                                    <div className="w-24 h-24 relative">
-                                                        <img 
-                                                            src={URL.createObjectURL(file)} 
-                                                            alt={file.name}
-                                                            className="w-full h-full object-cover"
-                                                            onLoad={() => URL.revokeObjectURL(URL.createObjectURL(file))}
-                                                        />
-                                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                            <Image className="w-6 h-6 text-white" />
+            <div className="w-full max-w-3xl space-y-6">
+                {messages.map((msg, index) => {
+                    // For user messages, always use the standard format
+                    if (msg.sender === 'user') {
+                        return (
+                            <div key={index} className="flex justify-end">
+                                <div className="max-w-[85%] px-4 py-3 bg-primary text-primary-foreground rounded-lg rounded-br-none">
+                                    {/* Attachments display */}
+                                    {msg.attachments && msg.attachments.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mb-2">
+                                            {msg.attachments.map((file, fileIndex) => (
+                                                <div 
+                                                    key={fileIndex} 
+                                                    className="relative group overflow-hidden rounded-lg border border-border"
+                                                >
+                                                    {file.type.startsWith('image/') ? (
+                                                        <div className="w-24 h-24 relative">
+                                                            <img 
+                                                                src={URL.createObjectURL(file)} 
+                                                                alt={file.name}
+                                                                className="w-full h-full object-cover"
+                                                                onLoad={() => URL.revokeObjectURL(URL.createObjectURL(file))}
+                                                            />
+                                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <Image className="w-6 h-6 text-white" />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="w-24 h-24 bg-muted flex items-center justify-center">
-                                                        <FileText className="w-8 h-8 text-muted-foreground" />
-                                                        <span className="text-xs text-muted-foreground mt-1 px-2 truncate max-w-full">
-                                                            {file.name}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                <p className="whitespace-pre-wrap">{msg.text}</p>
+                                                    ) : (
+                                                        <div className="w-24 h-24 bg-muted flex items-center justify-center">
+                                                            <FileText className="w-8 h-8 text-muted-foreground" />
+                                                            <span className="text-xs text-muted-foreground mt-1 px-2 truncate max-w-full">
+                                                                {file.name}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                                </div>
+                            </div>
+                        );
+                    }
+                    
+                    // For bot messages, use either professional or standard format based on the toggle
+                    return useProfessionalFormat ? (
+                        <ProfessionalChatMessage
+                            key={index}
+                            message={{
+                                id: `msg-${index}`,
+                                role: 'assistant',
+                                content: msg.text,
+                                timestamp: new Date()
+                            }}
+                            selectedAgent={{
+                                id: "leny",
+                                name: "Leny",
+                                specialty: "General Medicine",
+                                description: "AI medical assistant",
+                                icon: () => null,
+                                capabilities: []
+                            }}
+                        />
+                    ) : (
+                        <div key={index} className="flex justify-start">
+                            <div className="flex items-start gap-2.5 max-w-[85%]">
+                                <PicassoAvatar
+                                    name="Leny"
+                                    illustrationType="healing"
+                                    size="sm"
+                                    color="text-primary"
+                                    className="flex-shrink-0"
+                                />
+                                <div className="p-3 rounded-lg text-base bg-muted text-foreground rounded-bl-none">
+                                    <p className="leading-relaxed">{msg.text}</p>
+                                </div>
                             </div>
                         </div>
                     );
-                }
-                
-                // For bot messages, use either professional or standard format based on the toggle
-                return useProfessionalFormat ? (
-                    <ProfessionalChatMessage
-                        key={index}
-                        message={{
-                            id: `msg-${index}`,
-                            role: 'assistant',
-                            content: msg.text,
-                            timestamp: new Date()
-                        }}
-                        selectedAgent={{
-                            id: "leny",
-                            name: "Leny",
-                            specialty: "General Medicine",
-                            description: "AI medical assistant",
-                            icon: () => null,
-                            capabilities: []
-                        }}
-                    />
-                ) : (
-                    <div key={index} className="flex justify-start">
-                        <div className="flex items-start gap-2.5 max-w-[85%]">
+                })}
+                {isSending && (
+                    <div className="flex justify-start">
+                        <div className="flex items-start gap-2.5">
                             <PicassoAvatar
                                 name="Leny"
-                                illustrationType="healing"
+                                illustrationType="brain"
                                 size="sm"
                                 color="text-primary"
                                 className="flex-shrink-0"
                             />
-                            <div className="p-3 rounded-lg text-base bg-muted text-foreground rounded-bl-none">
-                                <p className="leading-relaxed">{msg.text}</p>
+                            {/* Display the random loading message */}
+                            <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground italic">
+                                {loadingMessage}
                             </div>
                         </div>
                     </div>
-                );
-            })}
-            {isSending && (
-                 <div className="flex justify-start">
-                   <div className="flex items-start gap-2.5">
-                     <PicassoAvatar
-                        name="Leny"
-                        illustrationType="brain"
-                        size="sm"
-                        color="text-primary"
-                        className="flex-shrink-0"
-                     />
-                     {/* Display the random loading message */}
-                     <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground italic">
-                        {loadingMessage}
-                     </div>
-                   </div>
-                 </div>
-            )}
-            <div ref={messagesEndRef} />
+                )}
+                <div ref={messagesEndRef} />
+            </div>
         </PicassoBackground>
     );
 

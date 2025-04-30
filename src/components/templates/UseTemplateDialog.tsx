@@ -80,9 +80,9 @@ const UseTemplateDialog = ({ template, isOpen, onOpenChange }: UseTemplateDialog
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      {/* Increased width: max-w-6xl. Use h-[90vh] for near full height */}
-      <DialogContent className="sm:max-w-6xl p-0 h-[90vh] flex flex-col">
-        <DialogHeader className="p-6 pb-4 border-b shrink-0"> {/* Header doesn't scroll */}
+      {/* Using z-modal for proper stacking context */}
+      <DialogContent className="sm:max-w-6xl p-0 h-[90vh] flex flex-col z-modal">
+        <DialogHeader className="p-6 pb-4 border-b shrink-0 tab-nav-bg"> {/* Using tab-nav-bg for semitransparent background */}
           <DialogTitle className="text-xl">Use Template: {template?.name}</DialogTitle>
           <DialogDescription>
             Paste your text, apply the template, and copy the generated output.
@@ -95,8 +95,8 @@ const UseTemplateDialog = ({ template, isOpen, onOpenChange }: UseTemplateDialog
             </Button>
         </DialogClose>
 
-        {/* Scrollable main content area takes up remaining space */}
-        <div className="flex-1 grid md:grid-cols-2 gap-6 p-6 overflow-y-auto min-h-0"> {/* Added flex-1 and min-h-0 */}
+        {/* Adding no-nested-scroll to prevent nested scrollbars */}
+        <div className="flex-1 grid md:grid-cols-2 gap-6 p-6 overflow-y-auto min-h-0 no-nested-scroll panel-wrapper">
             {/* Input Area */}
             <div className="space-y-2 flex flex-col">
                <Label htmlFor="input-text" className="font-semibold">Input Text</Label>
@@ -105,15 +105,14 @@ const UseTemplateDialog = ({ template, isOpen, onOpenChange }: UseTemplateDialog
                  value={inputText}
                  onChange={(e) => setInputText(e.target.value)}
                  placeholder="Paste your clinical notes or text here..."
-                 className="flex-1 resize-none text-sm" // Use flex-1 to grow
-                 // Removed fixed rows, rely on flex-1
+                 className="flex-1 resize-none text-sm"
                />
             </div>
 
-            {/* Output Area */}
+            {/* Output Area - using no-nested-scroll */}
             <div className="space-y-2 flex flex-col">
                <Label htmlFor="output-text" className="font-semibold">Generated Output</Label>
-               <div className="flex-1 border rounded-md bg-muted/30 p-3 text-sm whitespace-pre-wrap overflow-y-auto relative min-h-[300px]">
+               <div className="flex-1 border rounded-md bg-muted/30 p-3 text-sm whitespace-pre-wrap overflow-y-auto relative min-h-[300px] no-nested-scroll">
                   {isTransforming ? (
                      <div className="absolute inset-0 flex items-center justify-center bg-background/50">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -125,23 +124,22 @@ const UseTemplateDialog = ({ template, isOpen, onOpenChange }: UseTemplateDialog
             </div>
         </div>
 
-        {/* Footer with actions - sticky at the bottom */}
-        <DialogFooter className="p-6 pt-4 border-t flex flex-col sm:flex-row sm:justify-between gap-3 shrink-0"> {/* Footer doesn't scroll */}
+        {/* Footer with actions - using tab-nav-bg for semitransparent background */}
+        <DialogFooter className="p-6 pt-4 border-t flex flex-col sm:flex-row sm:justify-between gap-3 shrink-0 tab-nav-bg">
             <Button
                 type="button"
                 onClick={handleGenerateOutput}
                 disabled={isTransforming || !inputText.trim()}
-                className="w-full sm:w-auto order-1 sm:order-none"
+                className="w-full sm:w-auto order-1 sm:order-none card-actions"
                 size="lg"
             >
               {isTransforming ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
               {isTransforming ? 'Generating...' : 'Apply Template'}
             </Button>
-            <div className="flex gap-2 w-full sm:w-auto justify-end order-2 sm:order-none">
+            <div className="flex gap-2 w-full sm:w-auto justify-end order-2 sm:order-none card-actions">
                 <Button type="button" variant="secondary" onClick={handleCopyToClipboard} disabled={!outputText || isTransforming}>
                    <Copy className="mr-2 h-4 w-4" /> Copy Output
                 </Button>
-                {/* Removed the DialogClose button from footer */}
             </div>
         </DialogFooter>
       </DialogContent>

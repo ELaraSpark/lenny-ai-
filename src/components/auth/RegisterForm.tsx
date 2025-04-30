@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -17,6 +16,8 @@ import {
 import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Separator } from "@/components/ui/separator";
+import GoogleAuthButton from "./GoogleAuthButton";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -33,6 +34,7 @@ const formSchema = z.object({
 
 const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const { signUp } = useAuth();
@@ -184,6 +186,19 @@ const RegisterForm = () => {
             </Button>
           </form>
         </Form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Or sign up with
+            </span>
+          </div>
+        </div>
+
+        <GoogleAuthButton mode="signup" isLoading={isGoogleLoading} />
 
         <div className="flex items-center justify-center text-sm text-muted-foreground space-x-2">
           <ShieldCheck size={14} />

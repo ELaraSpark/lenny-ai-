@@ -441,3 +441,109 @@
 
 /* Remove card-hover-lift or update */
 /* .card-hover-lift { ... } */
+
+/* Custom scrollbar for better UI */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--neutral-100);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--neutral-300);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-400);
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neutral-300) var(--neutral-100);
+}
+
+/* Z-index Consistency for UI Elements - Added 2025-04-30 */
+:root {
+  /* Base z-index values for stacking elements */
+  --z-index-base: 10;
+  --z-index-dropdown: 20;
+  --z-index-modal: 30;
+  --z-index-popover: 40;
+  --z-index-tooltip: 50;
+  --z-index-active-overlay: 100;
+}
+
+/* Applied z-index classes */
+.z-base {
+  z-index: var(--z-index-base);
+}
+
+.z-dropdown {
+  z-index: var(--z-index-dropdown);
+}
+
+.z-modal {
+  z-index: var(--z-index-modal);
+}
+
+.z-popover {
+  z-index: var(--z-index-popover);
+}
+
+.z-tooltip {
+  z-index: var(--z-index-tooltip);
+}
+
+.z-active {
+  z-index: var(--z-index-active-overlay);
+}
+
+/* Layout Fixes - Added 2025-04-30 */
+/* Prevent nested scrollbars inside contained elements */
+.no-nested-scroll {
+  overflow: hidden !important;
+}
+
+/* Ensure main page container handles scrolling */
+.page-container {
+  overflow-y: auto;
+  min-height: 100vh;
+  padding-bottom: 2rem; /* Ensure content never sits flush against viewport bottom */
+}
+
+/* Panel bottom padding to prevent flush against viewport */
+.panel-wrapper {
+  padding-bottom: 1.5rem;
+}
+
+/* Card action buttons alignment */
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 2.5rem; /* Consistent height */
+  margin-top: auto; /* Push to bottom of flex container */
+}
+
+.card-actions > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Semi-transparent backgrounds for tabs and nav items */
+.tab-nav-bg {
+  background-color: rgba(255, 255, 255, 0.95); /* 95% opaque white */
+  backdrop-filter: blur(4px);
+}
+
+.dark .tab-nav-bg {
+  background-color: rgba(14, 30, 37, 0.95); /* 95% opaque dark background */
+  backdrop-filter: blur(4px);
+}

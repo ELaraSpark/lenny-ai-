@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  userRole: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{
     error: Error | null;
     success: boolean;
+    data?: any;
   }>;
   signInWithGoogle: () => Promise<{
     error: Error | null;
@@ -20,8 +19,16 @@ type AuthContextType = {
   signUp: (email: string, password: string) => Promise<{
     error: Error | null;
     success: boolean;
+    data?: any;
   }>;
-  signOut: () => Promise<void>;
+  signOut: () => Promise<{
+    error: Error | null;
+    success: boolean;
+  }>;
+  resetPassword: (email: string) => Promise<{
+    error: Error | null;
+    success: boolean;
+  }>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,35 +37,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Helper to fetch user role from users table
-    const fetchUserRole = async (userId: string) => {
-      const { data, error } = await supabase
-        .from('users')
-        .select('user_role')
-        .eq('id', userId)
-        .single();
-      if (error) {
-        setUserRole(null);
-      } else {
-        setUserRole(data?.user_role ?? null);
+    // Check for existing sessions
+    const checkSession = async () => {
+      setLoading(true);
+      
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      } catch (error) {
+        console.error("Error getting session:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (session?.user?.id) {
-        fetchUserRole(session.user.id);
-      } else {
-        setUserRole(null);
-      }
-    });
+    checkSession();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -66,11 +63,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        if (session?.user?.id) {
-          fetchUserRole(session.user.id);
-        } else {
-          setUserRole(null);
-        }
       }
     );
 
@@ -79,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -88,8 +80,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw error;
       }
       
-      navigate("/chat"); // Redirect to /chat to be consistent with RootHandler
-      return { error: null, success: true };
+      // On successful login, redirect to /chat
+      navigate("/chat");
+      return { error: null, success: true, data };
     } catch (error) {
       console.error("Error signing in:", error);
       return { error: error as Error, success: false };
@@ -98,14 +91,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-       const { error } = await supabase.auth.signInWithOAuth({
-         provider: 'google',
-         options: {
-           redirectTo: window.location.origin + "/chat", // Redirect to /chat to be consistent with RootHandler
-         },
-       });
+      // Using signInWithOAuth to start the Google authentication flow
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          skipBrowserRedirect: false,
+          queryParams: {
+            // These help prevent issues with certain browser extensions
+            prompt: 'select_account',
+            access_type: 'offline'
+          }
+        }
+      });
       
       if (error) {
+        console.error("OAuth error:", error);
         throw error;
       }
       
@@ -118,11 +119,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log("Starting signup process for:", email);
+      
+      // Simple redirect URL setup
+      const redirectUrl = `${window.location.origin}/login?verified=true`;
+      console.log("Setting redirect URL:", redirectUrl);
+      
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin + "/chat", // Redirect to /chat to be consistent with RootHandler
+          emailRedirectTo: redirectUrl,
         },
       });
       
@@ -130,9 +137,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw error;
       }
       
-      return { error: null, success: true };
+      console.log("Signup successful, verification email sent to:", email);
+      return { error: null, success: true, data };
     } catch (error) {
-      console.error("Error signing up:", error);
+      console.error("Error in signup:", error);
       return { error: error as Error, success: false };
     }
   };
@@ -141,8 +149,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await supabase.auth.signOut();
       navigate("/login");
+      return { error: null, success: true };
     } catch (error) {
       console.error("Error signing out:", error);
+      return { error: error as Error, success: false };
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return { error: null, success: true };
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      return { error: error as Error, success: false };
     }
   };
 
@@ -151,12 +178,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         user,
-        userRole,
         loading,
         signIn,
         signInWithGoogle,
         signUp,
         signOut,
+        resetPassword,
       }}
     >
       {children}

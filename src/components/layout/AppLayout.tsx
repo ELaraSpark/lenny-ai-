@@ -41,12 +41,9 @@ const AppLayout = () => {
        setIsMobileSidebarOpen(false);
     }
   }, [isDesktopSidebarCollapsed, isMobileSidebarOpen]);
-  const getGradientClass = () => {
-    return 'bg-gradient-green'; // Keep this if needed elsewhere, or remove
-  };
   
   return (
-    <ActiveCallProvider> {/* Keep context provider if still relevant */}
+    <ActiveCallProvider>
       {/* Main flex container */}
       <div className="flex h-screen overflow-hidden relative bg-background font-sans" style={{ fontFamily: "var(--font-sans)" }}>
         {/* Mobile Sidebar Overlay */}
@@ -58,7 +55,7 @@ const AppLayout = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+                className="fixed inset-0 bg-black/50 z-modal lg:hidden"
                 onClick={toggleMobileSidebar} // Close on backdrop click
               />
               {/* Mobile Sidebar */}
@@ -67,7 +64,7 @@ const AppLayout = () => {
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
-                className="fixed top-0 left-0 h-full z-40 lg:hidden" // Position fixed for overlay
+                className="fixed top-0 left-0 h-full z-active lg:hidden" // Using z-active class
               >
                 <Sidebar
                   className="h-full" // Ensure sidebar takes full height
@@ -81,7 +78,7 @@ const AppLayout = () => {
 
         {/* Desktop Sidebar (conditionally hidden on mobile) */}
         <Sidebar
-          className="hidden lg:flex relative z-10" // Hide on mobile, flex on desktop
+          className="hidden lg:flex relative z-base" // Using z-base class
           isCollapsed={isDesktopSidebarCollapsed}
           onMouseEnter={() => setIsDesktopSidebarCollapsed(false)}
           onToggle={toggleDesktopSidebar}
@@ -89,14 +86,14 @@ const AppLayout = () => {
 
         {/* Main content area */}
         <div
-          className="flex-1 flex flex-col overflow-hidden relative z-10"
+          className="flex-1 flex flex-col overflow-hidden relative z-base"
           style={{ background: "var(--background)", fontFamily: "var(--font-sans)" }}
           onClick={handleContentClick}
         >
           {isAgentsPage ? (
             // Structure for Agents page
-            <main className="flex-1 overflow-y-auto relative">
-              <div className="relative z-10 h-full">
+            <main className="flex-1 page-container">
+              <div className="relative z-base h-full panel-wrapper">
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -113,11 +110,11 @@ const AppLayout = () => {
             <>
               {/* Pass mobile toggle to Header */}
               <Header
-                className="bg-transparent border-none shadow-none relative z-20"
+                className="tab-nav-bg border-none shadow-none relative z-dropdown"
                 onMobileMenuToggle={toggleMobileSidebar}
               />
-              <main className="flex-1 overflow-y-auto relative pt-16">
-                <div className="relative z-10 h-full max-w-5xl mx-auto p-4 md:p-8 bg-background rounded-lg shadow-sm border border-border/30">
+              <main className="flex-1 page-container pt-16">
+                <div className="relative z-base h-full max-w-5xl mx-auto p-4 md:p-8 bg-background rounded-lg shadow-sm border border-border/30 panel-wrapper">
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -139,4 +136,3 @@ const AppLayout = () => {
 };
 
 export default AppLayout;
-// Removed duplicated code below this line

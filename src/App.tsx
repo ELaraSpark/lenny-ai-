@@ -59,6 +59,7 @@ import CleanChat from "./pages/CleanChat"; // Import the new clean chat interfac
 
 // Import the new page for security logs if needed
 // import SecurityLogs from "./pages/SecurityLogs";
+import AuthCallback from "./pages/AuthCallback"; // Import the new AuthCallback component
 
 const queryClient = new QueryClient();
 
@@ -74,11 +75,11 @@ const App = () => (
             <AnimatePresence mode="wait">
             <Routes>
               {/* Public Routes - Login, Register, etc. */}
-              {/* Removed /welcome route */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/features" element={<Features />} /> 
               <Route path="/about" element={<AboutUs />} /> 
+              <Route path="/auth/callback" element={<AuthCallback />} /> {/* Add the OAuth callback route */}
               
               {/* Public access to AI agents, smart notes, expert panel, and chat */}
               <Route path="/public/my-agents" element={<PublicLayout><MyAgents isPublicView={true} /></PublicLayout>} />
@@ -87,8 +88,8 @@ const App = () => (
               <Route path="/public/chat" element={<PublicLayout><PublicChat /></PublicLayout>} />
               <Route path="/clean-chat" element={<CleanChat />} />
 
-              {/* Root Route - Now renders PublicChat landing page with PublicLayout */}
-              <Route path="/" element={<PublicLayout><PublicChat /></PublicLayout>} />
+              {/* Root Route - Now properly handles authentication state using RootHandler */}
+              <Route path="/" element={<RootHandler />} />
 
               {/* Authenticated Routes using AppLayout */}
               <Route 

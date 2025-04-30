@@ -148,7 +148,7 @@ const AgentCard = ({
       </div>
 
       {/* Content Area - simplified */}
-      <div className="p-3 flex-grow flex flex-col"> {/* Added flex flex-col */}
+      <div className="p-3 flex-grow flex flex-col"> 
         {/* Tagline */}
         <p className="text-xs text-muted-foreground italic mb-2">{getTagline()}</p> 
         {/* Capabilities Section - more compact */}
@@ -166,23 +166,23 @@ const AgentCard = ({
         )}
       </div>
 
-      {/* Footer with Buttons - larger touch targets for mobile */}
-      <CardFooter className="p-3 mt-auto flex gap-2"> 
+      {/* Footer with Buttons - using card-actions class for consistent height and alignment */}
+      <CardFooter className="p-3 mt-auto card-actions"> 
         <Button 
-          className="flex-1 bg-muted hover:bg-muted/90 text-foreground py-2 rounded-lg text-sm" 
+          className="flex-1 bg-muted hover:bg-muted/90 text-foreground rounded-lg text-sm" 
           variant="outline"
-          onClick={onSecondaryAction} // Use standardized callback
-          disabled={!onSecondaryAction} // Disable if no callback provided
+          onClick={onSecondaryAction} 
+          disabled={!onSecondaryAction} 
         > 
-          <SecondaryIcon className="mr-1.5 h-4 w-4" /> {/* Use configurable icon */}
-          {secondaryActionLabel} {/* Use configurable label */}
+          <SecondaryIcon className="mr-1.5 h-4 w-4" />
+          {secondaryActionLabel}
         </Button>
         <Button 
-          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded-lg text-sm" 
-          onClick={onPrimaryAction} // Use standardized callback
+          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm" 
+          onClick={onPrimaryAction}
         > 
-          <PrimaryIcon className="mr-1.5 h-4 w-4" /> {/* Use configurable icon */}
-          {primaryActionLabel} {/* Use configurable label */}
+          <PrimaryIcon className="mr-1.5 h-4 w-4" />
+          {primaryActionLabel}
         </Button>
       </CardFooter>
     </Card>

@@ -1,17 +1,47 @@
 import React, { useState, useRef } from 'react';
-import { ArrowRight, Paperclip, Lightbulb, ChevronDown } from 'lucide-react';
+import { ArrowRight, Paperclip, Lightbulb, ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BenefitsSection from "@/components/home/BenefitsSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import SecurityBanner from "@/components/home/SecurityBanner"; 
 import CTASection from "@/components/home/CTASection";
 import { Link } from 'react-router-dom';
+import { getSpecialtyBasedSuggestions } from '@/lib/personalityUtils'; // Import the suggestions function
+
+// Dialog/Tooltip components for the paperclip popup
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+// Dropdown menu for the "Clinical Mode" option
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type ChatMode = 'Standard' | 'Quick answers' | 'Research mode';
 
 // This component renders the landing page with the new design
 const PublicChat = () => {
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    
+    // New state variables for the added functionality
+    const [showPaperclipDialog, setShowPaperclipDialog] = useState(false);
+    const [showLightbulbDialog, setShowLightbulbDialog] = useState(false);
+    const [chatMode, setChatMode] = useState<ChatMode>('Standard');
+    
+    // Get suggestions using the imported function
+    const suggestions = getSpecialtyBasedSuggestions();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value);
@@ -26,6 +56,8 @@ const PublicChat = () => {
             // For now, we'll just clear the input
             setInputValue('');
             setIsTyping(false);
+            // Hide lightbulb dialog if it was showing
+            setShowLightbulbDialog(false);
         }
     };
 
@@ -38,6 +70,18 @@ const PublicChat = () => {
         if (inputRef.current) {
             inputRef.current.focus();
         }
+        // Hide lightbulb dialog if it was showing
+        setShowLightbulbDialog(false);
+    };
+    
+    // Toggle the lightbulb dialog
+    const toggleLightbulbDialog = () => {
+        setShowLightbulbDialog(prev => !prev);
+    };
+    
+    // Function to handle setting the chat mode
+    const handleSetChatMode = (mode: ChatMode) => {
+        setChatMode(mode);
     };
 
     return (
@@ -48,7 +92,7 @@ const PublicChat = () => {
             <div className="absolute bottom-[10%] left-[-5%] w-[25vw] h-[25vw] bg-accent opacity-10 rounded-[30%_70%_70%_30%/30%_30%_70%_70%] z-0" 
                 style={{ transform: "rotate(-5deg)" }} />
             
-            {/* Decorative elements */}
+            {/* Decorative elements */} 
             <div className="absolute top-[15%] left-[5%] w-20 h-20 bg-accent opacity-20 z-0"
                 style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)", transform: "rotate(15deg)" }} />
             <div className="absolute bottom-[15%] right-[8%] w-24 h-24 bg-secondary opacity-15 z-0"
@@ -84,20 +128,43 @@ const PublicChat = () => {
                             <div className="px-5 py-3 flex justify-between items-center border-t border-gray-200">
                                 {/* Left side icons */}
                                 <div className="flex gap-3">
-                                    <button type="button" className="text-gray-500 hover:text-gray-700 p-1.5 rounded transition-colors">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowPaperclipDialog(true)} 
+                                        className="text-gray-500 hover:text-gray-700 p-1.5 rounded transition-colors"
+                                    >
                                         <Paperclip size={18} />
                                     </button>
-                                    <button type="button" className="text-gray-500 hover:text-gray-700 p-1.5 rounded transition-colors">
+                                    <button 
+                                        type="button" 
+                                        onClick={toggleLightbulbDialog}
+                                        className={`p-1.5 rounded transition-colors ${showLightbulbDialog ? 'text-primary bg-primary/10' : 'text-gray-500 hover:text-gray-700'}`}
+                                    >
                                         <Lightbulb size={18} />
                                     </button>
                                 </div>
                                 
                                 {/* Right side controls */}
                                 <div className="flex items-center gap-4">
-                                    <div className="bg-gray-100 text-gray-700 text-base px-4 py-2 rounded-md flex items-center gap-2 cursor-pointer hover:bg-gray-200 transition-colors">
-                                        Clinical Mode
-                                        <ChevronDown size={16} className="text-gray-600" />
-                                    </div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <div className="bg-gray-100 text-gray-700 text-base px-4 py-2 rounded-md flex items-center gap-2 cursor-pointer hover:bg-gray-200 transition-colors">
+                                                {chatMode}
+                                                <ChevronDown size={16} className="text-gray-600" />
+                                            </div>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="bg-white border border-gray-200 shadow-md !rounded-md !p-0 overflow-hidden">
+                                            <DropdownMenuItem onClick={() => handleSetChatMode('Standard')} className="bg-white hover:!bg-blue-500 hover:!text-white !rounded-none !cursor-pointer">
+                                                Standard
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleSetChatMode('Quick answers')} className="bg-white hover:!bg-blue-500 hover:!text-white !rounded-none !cursor-pointer">
+                                                Quick answers
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleSetChatMode('Research mode')} className="bg-white hover:!bg-blue-500 hover:!text-white !rounded-none !cursor-pointer">
+                                                Research mode
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                     <button 
                                         type="submit" 
                                         className={cn(
@@ -115,10 +182,77 @@ const PublicChat = () => {
                         </form>
                     </div>
                     
+                    {/* Lightbulb Suggestions Dialog - Updated to match screenshot exactly */}
+                    <Dialog open={showLightbulbDialog} onOpenChange={setShowLightbulbDialog}>
+                        <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg shadow-lg border-0">
+                            <div className="mb-4">
+                                <div className="flex items-center gap-2 text-gray-700">
+                                    <Lightbulb size={20} className="text-blue-500" />
+                                    <span className="font-medium">Try asking about:</span>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-3">
+                                {suggestions.slice(0, 3).map((suggestion, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleQuickAction(suggestion)}
+                                        className="w-full text-left py-2 px-3 rounded-md text-sm hover:bg-blue-50 transition-colors flex items-center gap-2"
+                                    >
+                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-medium">{index + 1}</span>
+                                        {suggestion}
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            {/* Sign-in section at bottom */}
+                            <div className="mt-6 pt-4 border-t border-gray-100">
+                                <div className="bg-blue-50 rounded-md p-4">
+                                    <p className="text-sm text-gray-700 mb-3">
+                                        Sign in to access personalized suggestions and upload files for analysis.
+                                    </p>
+                                    <div className="flex gap-3">
+                                        <Link to="/login" className="px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                            Sign in
+                                        </Link>
+                                        <Link to="/register" className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600">
+                                            Create account
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    
+                    {/* Paperclip Dialog - Updated to match screenshot exactly */}
+                    <Dialog open={showPaperclipDialog} onOpenChange={setShowPaperclipDialog}>
+                        <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg shadow-lg border-0">
+                            <div className="mb-2">
+                                <h3 className="font-semibold text-lg text-gray-800">Sign in to upload files</h3>
+                            </div>
+                            
+                            <p className="text-gray-600 text-sm mb-6">
+                                You need to be logged in to upload files for analysis. Sign in or create an account to access all features.
+                            </p>
+                            
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => setShowPaperclipDialog(false)}
+                                    className="px-4 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <Link to="/login" className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600">
+                                    Sign in
+                                </Link>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    
                     {/* Quick Actions */}
                     <div className={cn(
                         "flex flex-wrap justify-center gap-4 mb-16 transition-opacity duration-300",
-                        isTyping ? "opacity-0" : "opacity-100"
+                        isTyping || showLightbulbDialog ? "opacity-0" : "opacity-100"
                     )}>
                         <button 
                             onClick={() => handleQuickAction("What's the latest research on recent medical breakthroughs?")}

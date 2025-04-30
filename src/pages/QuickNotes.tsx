@@ -227,6 +227,42 @@ const QuickNotes: React.FC<QuickNotesProps> = () => { // Removed props
                             <ClipboardList size={16} className="mr-2" /> Use Template
                         </Button>
                     </div>
+                    
+                    {/* Quick Action Buttons - Added back as per screenshot */}
+                    <div className="quick-actions flex flex-wrap gap-2 mt-3">
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-gray-200 bg-white hover:bg-gray-50" 
+                            onClick={() => handleActionClick(availableActions.find(a => a.id === 'summarize') || availableActions[4])}
+                        >
+                            Summarize
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-gray-200 bg-white hover:bg-gray-50" 
+                            onClick={() => toast.info('Simplify feature coming soon')}
+                        >
+                            Simplify
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-gray-200 bg-white hover:bg-gray-50" 
+                            onClick={() => handleActionClick(availableActions.find(a => a.id === 'translate_es') || availableActions[5])}
+                        >
+                            Translate
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-gray-200 bg-white hover:bg-gray-50" 
+                            onClick={() => toast.info('Format as Bullets feature coming soon')}
+                        >
+                            Format as Bullets
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Actions & Output Panel */}

@@ -2,17 +2,17 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import LoginForm from "@/components/auth/LoginForm";
-// Removed PublicLayout and PicassoBackground imports
-import { PicassoIllustration } from "@/components/illustrations/PicassoIllustration"; // Keep for header icon
+import { PicassoIllustration } from "@/components/illustrations/PicassoIllustration";
 
 const Login = () => {
+  // Using the light cream/beige color from the screenshot
+  const bgColor = "#FDFBF5";
+  
   return (
-    // Main container: Full height, flex, stacks vertically on mobile, row layout on medium+ screens
-    // Using a background color similar to the provided image
-    <div className="flex flex-col md:flex-row h-screen bg-[#FDFBF5]"> 
+    <div className="flex flex-col md:flex-row h-screen" style={{ backgroundColor: bgColor }}> 
       
       {/* Left Column: Login Form */}
-      <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 md:p-12 order-2 md:order-1"> 
+      <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8 md:p-12 order-2 md:order-1" style={{ backgroundColor: bgColor }}> 
         {/* Form Content Container */}
         <div className="w-full max-w-sm"> 
           {/* Welcome header */}
@@ -58,12 +58,12 @@ const Login = () => {
       </div>
 
       {/* Right Column: Image */}
-      {/* Hidden on small screens, flex centered on medium+ */}
-      <div className="w-full md:w-1/2 hidden md:flex items-center justify-center p-8 md:p-12 order-1 md:order-2"> 
+      <div className="w-full md:w-1/2 hidden md:flex items-center justify-center p-8 md:p-12 order-1 md:order-2" style={{ backgroundColor: bgColor }}> 
         <img 
-          src="/illustrations/login-abstract.webp" // Updated file extension
+          src="/illustrations/login-abstract.webp"
           alt="Abstract illustration" 
-          className="max-w-full h-auto max-h-[70vh] object-contain" // Control image size
+          className="max-w-full h-auto max-h-[70vh] object-contain"
+          style={{ backgroundColor: bgColor }}
         />
       </div>
     </div>

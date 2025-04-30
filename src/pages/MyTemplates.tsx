@@ -612,7 +612,43 @@ ${inputText}`;
               
               {/* Empty state guidance removed as requested */}
               
-              {/* Quick command chips */}
+              {/* Quick action buttons - Added sparkling star emoji to each button */}
+              <div className="flex flex-wrap gap-2 mt-3 mb-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => executeCommand('Summarize')}
+                  className="bg-white hover:bg-primary/5 border-gray-300"
+                >
+                  <span className="mr-1">✨</span> Summarize
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => executeCommand('Simplify')}
+                  className="bg-white hover:bg-primary/5 border-gray-300"
+                >
+                  <span className="mr-1">✨</span> Simplify
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => executeCommand('Translate')}
+                  className="bg-white hover:bg-primary/5 border-gray-300"
+                >
+                  <span className="mr-1">✨</span> Translate
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => executeCommand('Format as Bullets')}
+                  className="bg-white hover:bg-primary/5 border-gray-300"
+                >
+                  <span className="mr-1">✨</span> Format as Bullets
+                </Button>
+              </div>
+              
+              {/* Quick command chips - Only show when text is entered */}
               {inputText && (
                 <div className="command-chips flex flex-wrap gap-2 mt-3">
                   {['Summarize', 'Simplify', 'Translate', 'Format as Bullets'].map((cmd) => (
