@@ -1,0 +1,11 @@
+{
+  "projectId": "lenny-ai",
+  "orgId": "elaraspark",
+  "settings": {
+    "framework": "vite",
+    "buildCommand": "npm run build:vercel",
+    "outputDirectory": "dist",
+    "devCommand": "npm run dev",
+    "installCommand": "npm install"
+  }
+}
