@@ -2,8 +2,8 @@
 // This script performs post-build operations for Vercel deployment
 // It copies necessary files to the dist folder in a cross-platform way
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 console.log('🛠️ Running Vercel post-build operations...');
 
