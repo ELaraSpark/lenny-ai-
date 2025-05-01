@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { ArrowRight, Paperclip, Lightbulb, ChevronDown, X } from 'lucide-react';
+import { ArrowRight, Paperclip, Lightbulb, ChevronDown, X, Send, ToggleLeft, ToggleRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BenefitsSection from "@/components/home/BenefitsSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
 import SecurityBanner from "@/components/home/SecurityBanner"; 
 import CTASection from "@/components/home/CTASection";
 import { Link } from 'react-router-dom';
-import { getSpecialtyBasedSuggestions } from '@/lib/personalityUtils'; // Import the suggestions function
+import { getSpecialtyBasedSuggestions } from '@/lib/personalityUtils'; 
+import { generateMockResponse } from '@/mock/mockAIResponse';
+import { AIProvider, DEFAULT_PROVIDER } from '@/components/agents/services/agentService';
 
 // Dialog/Tooltip components for the paperclip popup
 import {
@@ -29,16 +31,40 @@ import {
 
 type ChatMode = 'Standard' | 'Quick answers' | 'Research mode';
 
+// Message type for chat
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  attachments?: string[];
+}
+
 // This component renders the landing page with the new design
 const PublicChat = () => {
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const chatInputRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
     
     // New state variables for the added functionality
     const [showPaperclipDialog, setShowPaperclipDialog] = useState(false);
     const [showLightbulbDialog, setShowLightbulbDialog] = useState(false);
     const [chatMode, setChatMode] = useState<ChatMode>('Standard');
+    const [aiProvider, setAIProvider] = useState<AIProvider>(DEFAULT_PROVIDER);
+    
+    // Toggle the AI provider between gemini and deepseek
+    const toggleAIProvider = () => {
+        setAIProvider(prev => prev === 'gemini' ? 'deepseek' : 'gemini');
+    };
+    
+    // State for chat modal
+    const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+    const [isResponding, setIsResponding] = useState(false);
+    const [chatInputValue, setChatInputValue] = useState('');
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     
     // Get suggestions using the imported function
     const suggestions = getSpecialtyBasedSuggestions();
@@ -48,22 +74,114 @@ const PublicChat = () => {
         setIsTyping(e.target.value.length > 0);
     };
 
+    const handleChatInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setChatInputValue(e.target.value);
+    };
+
+    // Scroll to bottom of chat
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    };
+
+    // Handle submitting the landing page search form
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (inputValue.trim()) {
-            console.log('Submitted:', inputValue);
-            // Here you would normally handle the submission
-            // For now, we'll just clear the input
-            setInputValue('');
-            setIsTyping(false);
-            // Hide lightbulb dialog if it was showing
-            setShowLightbulbDialog(false);
+            // Open chat modal with the query
+            startChat(inputValue);
+        }
+    };
+
+    // Start a chat with an initial query
+    const startChat = (initialQuery: string) => {
+        // Reset the chat state and open the modal
+        setChatMessages([]);
+        setIsChatModalOpen(true);
+        
+        // Create initial user message
+        const userMessage = {
+            role: 'user',
+            content: initialQuery.trim(),
+            timestamp: new Date()
+        };
+        
+        setChatMessages([userMessage]);
+        setInputValue('');
+        setIsTyping(false);
+        setShowLightbulbDialog(false);
+        
+        // Generate AI response
+        handleAIResponse(initialQuery);
+    };
+    
+    // Handle AI response using the mock function
+    const handleAIResponse = async (query: string) => {
+        setIsResponding(true);
+        
+        try {
+            // Use the selected AI provider rather than determining by chat mode
+            const response = await generateMockResponse(query, aiProvider);
+            
+            // Add AI response to chat
+            setChatMessages(prev => [
+                ...prev, 
+                {
+                    role: 'assistant',
+                    content: response,
+                    timestamp: new Date()
+                }
+            ]);
+            
+            // Scroll to see the response
+            setTimeout(scrollToBottom, 100);
+        } catch (error) {
+            console.error('Error getting AI response:', error);
+            // Add error message to chat
+            setChatMessages(prev => [
+                ...prev, 
+                {
+                    role: 'assistant',
+                    content: 'Sorry, I encountered an error. Please try again.',
+                    timestamp: new Date()
+                }
+            ]);
+        } finally {
+            setIsResponding(false);
+        }
+    };
+    
+    // Handle submitting a message in the chat modal
+    const handleChatSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (chatInputValue.trim() || selectedFiles.length > 0) {
+            // Create file attachment names to display
+            const attachmentNames = selectedFiles.map(file => file.name);
+            
+            // Add user message to chat
+            const userMessage = {
+                role: 'user',
+                content: chatInputValue.trim(),
+                timestamp: new Date(),
+                attachments: attachmentNames.length > 0 ? attachmentNames : undefined
+            };
+            
+            setChatMessages(prev => [...prev, userMessage]);
+            
+            // Clear input and reset state
+            setChatInputValue('');
+            setSelectedFiles([]);
+            
+            // Scroll to see the user message
+            setTimeout(scrollToBottom, 100);
+            
+            // Send for AI response
+            await handleAIResponse(userMessage.content);
         }
     };
 
     const handleQuickAction = (query: string) => {
-        console.log('Quick action:', query);
-        // Here you would normally handle the quick action
         // For demo purposes, we'll just set the input value
         setInputValue(query);
         setIsTyping(true);
@@ -82,6 +200,39 @@ const PublicChat = () => {
     // Function to handle setting the chat mode
     const handleSetChatMode = (mode: ChatMode) => {
         setChatMode(mode);
+    };
+    
+    // Handle file upload in the chat modal
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const newFiles = Array.from(e.target.files);
+            setSelectedFiles(prev => [...prev, ...newFiles]);
+        }
+    };
+    
+    // Open file dialog
+    const handleOpenFileDialog = () => {
+        fileInputRef.current?.click();
+    };
+    
+    // Remove a file from selected files
+    const handleRemoveFile = (index: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Format the chat message content with basic markdown-like formatting
+    const formatMessage = (content: string) => {
+        // Replace ** with bold
+        let formatted = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Replace newlines with <br>
+        formatted = formatted.replace(/\n/g, '<br>');
+        
+        // Handle sections like QUESTION:, DIAGNOSIS:, etc.
+        formatted = formatted.replace(/(QUESTION:|DIAGNOSIS\/ANALYSIS:|SUMMARY:|REFERENCES:)/g, 
+            '<strong class="text-blue-600">$1</strong>');
+        
+        return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
     };
 
     return (
@@ -108,7 +259,7 @@ const PublicChat = () => {
                         <span className="absolute bottom-[-10px] left-1/2 transform -translate-x-1/2 w-40 h-[3px] bg-gradient-to-r from-transparent via-primary to-secondary"></span>
                     </h1>
                     <p className="text-center text-gray-600 text-xl mb-10 font-light">
-                        Your pocket clinician: Save time, boost care, go home early
+                        Your pocket clinician: Save time, boost care, get fast answers
                     </p>
                     
                     {/* Search Box */}
@@ -126,15 +277,8 @@ const PublicChat = () => {
                             </div>
                             
                             <div className="px-5 py-3 flex justify-between items-center border-t border-gray-200">
-                                {/* Left side icons */}
+                                {/* Left side icons - only lightbulb, paperclip removed */}
                                 <div className="flex gap-3">
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setShowPaperclipDialog(true)} 
-                                        className="text-gray-500 hover:text-gray-700 p-1.5 rounded transition-colors"
-                                    >
-                                        <Paperclip size={18} />
-                                    </button>
                                     <button 
                                         type="button" 
                                         onClick={toggleLightbulbDialog}
@@ -245,6 +389,199 @@ const PublicChat = () => {
                                 <Link to="/login" className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600">
                                     Sign in
                                 </Link>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    
+                    {/* Chat Modal */}
+                    <Dialog open={isChatModalOpen} onOpenChange={setIsChatModalOpen}>
+                        <DialogContent className="sm:max-w-4xl max-h-[80vh] p-0 overflow-hidden bg-neutral-50 flex flex-col">
+                            <DialogHeader className="bg-primary p-4 text-white">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                                            <span className="text-white font-semibold">L</span>
+                                        </div>
+                                        <div>
+                                            <DialogTitle>Chat with Leny AI Medical Assistant</DialogTitle>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <div className="flex items-center text-xs space-x-2">
+                                                    <span className={aiProvider === 'gemini' ? 'font-medium text-white' : 'text-white/70'}>Gemini</span>
+                                                    <button 
+                                                        onClick={toggleAIProvider} 
+                                                        className="relative inline-flex h-4 w-8 items-center rounded-full"
+                                                    >
+                                                        <span className={cn(
+                                                            "inline-block h-3 w-8 rounded-full transition",
+                                                            aiProvider === 'gemini' ? 'bg-white/30' : 'bg-white/10'
+                                                        )}>
+                                                            <span className={cn(
+                                                                "block h-2 w-2 rounded-full bg-white transition-transform",
+                                                                aiProvider === 'gemini' ? 'translate-x-5' : 'translate-x-1'
+                                                            )} />
+                                                        </span>
+                                                    </button>
+                                                    <span className={aiProvider === 'deepseek' ? 'font-medium text-white' : 'text-white/70'}>DeepSeek</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        className="text-white hover:bg-white/20"
+                                        onClick={() => setIsChatModalOpen(false)}
+                                    >
+                                        <X size={18} />
+                                    </Button>
+                                </div>
+                            </DialogHeader>
+                            
+                            {/* Chat messages area */}
+                            <div 
+                                ref={chatContainerRef}
+                                className="flex-1 overflow-y-auto p-6 space-y-6"
+                                style={{ minHeight: "400px", maxHeight: "60vh" }}
+                            >
+                                {chatMessages.map((msg, index) => (
+                                    <div 
+                                        key={index} 
+                                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                    >
+                                        <div 
+                                            className={cn(
+                                                "max-w-[80%] rounded-lg p-4",
+                                                msg.role === 'user' 
+                                                    ? "bg-blue-500 text-white rounded-tr-none" 
+                                                    : "bg-white shadow-sm border border-gray-200 rounded-tl-none"
+                                            )}
+                                        >
+                                            {msg.attachments && msg.attachments.length > 0 && (
+                                                <div className="mb-2 flex flex-wrap gap-2">
+                                                    {msg.attachments.map((fileName, i) => (
+                                                        <div 
+                                                            key={i} 
+                                                            className={`text-xs px-2 py-1 rounded-full ${msg.role === 'user' ? 'bg-blue-400 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                                        >
+                                                            <Paperclip size={10} className="inline mr-1" />{fileName}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <div className={`${msg.role === 'assistant' ? 'text-gray-700 prose prose-sm' : ''}`}>
+                                                {formatMessage(msg.content)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                
+                                {/* Loading indicator */}
+                                {isResponding && (
+                                    <div className="flex justify-start">
+                                        <div className="bg-white shadow-sm border border-gray-200 rounded-lg rounded-tl-none max-w-[80%] p-4">
+                                            <div className="flex space-x-2">
+                                                <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                                <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                                <div className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Input area */}
+                            <div className="border-t border-gray-200 bg-white p-4">
+                                <form onSubmit={handleChatSubmit} className="relative">
+                                    <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                                        <div className="flex-1 px-4 py-2">
+                                            <textarea
+                                                ref={chatInputRef}
+                                                placeholder="Ask a follow-up question..."
+                                                value={chatInputValue}
+                                                onChange={handleChatInputChange}
+                                                className="w-full border-none outline-none text-gray-700 placeholder:text-gray-400 resize-none min-h-[60px]"
+                                                rows={2}
+                                            />
+                                        </div>
+                                        
+                                        <div className="px-2 flex items-center gap-2 border-l border-gray-100">
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleFileChange}
+                                                className="hidden"
+                                                multiple
+                                            />
+                                            {/* File Upload Button (kept in modal) */}
+                                            <button 
+                                                type="button" 
+                                                onClick={handleOpenFileDialog} 
+                                                className="text-gray-500 hover:text-gray-700 p-1.5 rounded transition-colors"
+                                            >
+                                                <Paperclip size={18} />
+                                            </button>
+
+                                            {/* Suggestions Button (kept in modal) */}
+                                            <button 
+                                                type="button" 
+                                                onClick={toggleLightbulbDialog}
+                                                className={`p-1.5 rounded transition-colors ${showLightbulbDialog ? 'text-primary bg-primary/10' : 'text-gray-500 hover:text-gray-700'}`}
+                                            >
+                                                <Lightbulb size={18} />
+                                            </button>
+                                            
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <div className="bg-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-md flex items-center gap-1 cursor-pointer hover:bg-gray-200 transition-colors">
+                                                        {chatMode}
+                                                        <ChevronDown size={14} className="text-gray-600" />
+                                                    </div>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="bg-white border border-gray-200 shadow-md !rounded-md !p-0 overflow-hidden">
+                                                    <DropdownMenuItem onClick={() => handleSetChatMode('Standard')} className="bg-white hover:!bg-blue-500 hover:!text-white !rounded-none !cursor-pointer">
+                                                        Standard
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleSetChatMode('Quick answers')} className="bg-white hover:!bg-blue-500 hover:!text-white !rounded-none !cursor-pointer">
+                                                        Quick answers
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleSetChatMode('Research mode')} className="bg-white hover:!bg-blue-500 hover:!text-white !rounded-none !cursor-pointer">
+                                                        Research mode
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                            
+                                            <button 
+                                                type="submit" 
+                                                className={cn(
+                                                    "w-10 h-10 ml-1 flex items-center justify-center bg-blue-500 text-white rounded-full transition-all",
+                                                    "hover:bg-blue-600",
+                                                    "disabled:opacity-50 disabled:cursor-not-allowed"
+                                                )}
+                                                disabled={!chatInputValue.trim() && selectedFiles.length === 0 || isResponding}
+                                            >
+                                                <Send size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Selected files display */}
+                                    {selectedFiles.length > 0 && (
+                                        <div className="mt-2 flex flex-wrap gap-2">
+                                            {selectedFiles.map((file, index) => (
+                                                <div key={index} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-md flex items-center">
+                                                    <span className="truncate max-w-[120px]">{file.name}</span>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => handleRemoveFile(index)}
+                                                        className="ml-1 text-gray-500 hover:text-gray-700"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </form>
                             </div>
                         </DialogContent>
                     </Dialog>

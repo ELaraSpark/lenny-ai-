@@ -1,6 +1,9 @@
 // DeepSeek API client for Leny AI app
 // This file handles communication with the DeepSeek API
 
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from './types';
+
 // Types for DeepSeek API requests and responses
 export interface DeepSeekMessage {
   role: 'user' | 'assistant' | 'system';
@@ -43,9 +46,16 @@ export interface DeepSeekResponse {
 // Default model to use
 export const DEFAULT_MODEL = 'deepseek-chat';
 
-// Environment variables
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '';
+// Environment variables with fallback for development
+const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || 'sk-86a00317cf934ec9b2b3ad91196b184a';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+// Debug for development
+if (import.meta.env.DEV) {
+  console.log('DeepSeek API configuration:', { 
+    apiKey: DEEPSEEK_API_KEY ? 'Configured ✓' : 'Missing ✗'
+  });
+}
 
 /**
  * Validates if the DeepSeek API key is configured

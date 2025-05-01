@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface GoogleAuthButtonProps {
@@ -7,14 +7,33 @@ interface GoogleAuthButtonProps {
 }
 
 const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ mode, isLoading = false }) => {
-  // Use your Supabase project URL from environment variables
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  // State to track if URLs are properly loaded
+  const [isConfigLoaded, setIsConfigLoaded] = useState(false);
+  
+  // Use your Supabase project URL from environment variables with fallback
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://uahphakjrkwfhikyxpqt.supabase.co';
+  
+  // Verify configuration on component mount
+  useEffect(() => {
+    if (supabaseUrl) {
+      setIsConfigLoaded(true);
+    } else {
+      console.error('Supabase URL is not configured properly. Google auth will not work.');
+    }
+  }, [supabaseUrl]);
   
   // Create the direct auth URL to bypass any browser extension interference
   const handleGoogleAuth = () => {
+    if (!supabaseUrl) {
+      console.error('Cannot proceed with Google authentication: Supabase URL is missing');
+      return;
+    }
+    
     // This creates a direct URL to Supabase's OAuth endpoint
     const redirectUrl = `${window.location.origin}/auth/callback`;
     const googleAuthUrl = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}`;
+    
+    console.log('Redirecting to Google auth URL:', googleAuthUrl);
     
     // Navigate directly to the auth URL
     window.location.href = googleAuthUrl;
@@ -24,11 +43,13 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ mode, isLoading = f
     <Button
       variant="outline"
       onClick={handleGoogleAuth}
-      disabled={isLoading}
+      disabled={isLoading || !isConfigLoaded}
       className="w-full py-6"
     >
       {isLoading ? (
         "Connecting..."
+      ) : !isConfigLoaded ? (
+        "Configuration Error"
       ) : (
         <>
           <svg

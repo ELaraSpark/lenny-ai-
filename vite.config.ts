@@ -5,8 +5,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
-  // Load env file based on mode
-  const env = loadEnv(mode, process.cwd(), '');
+  // Load env file based on mode with VITE_ prefix
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
   
   return {
     base: '/', // Explicitly set base path for assets
@@ -27,6 +27,10 @@ export default defineConfig(({ command, mode }) => {
     // Ensure environment variables are properly processed
     define: {
       __APP_ENV__: JSON.stringify(mode),
+      // Explicitly expose the environment variables to the client
+      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
+      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
+      'import.meta.env.VITE_DEEPSEEK_API_KEY': JSON.stringify(env.VITE_DEEPSEEK_API_KEY),
     },
     build: {
       // Generate source maps for better debugging

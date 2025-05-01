@@ -1,10 +1,16 @@
-// Mock AI response generator for testing
-// This file provides mock responses for both Gemini and DeepSeek AI providers
+// AI response generator for the application
+// This file provides responses for both Gemini and DeepSeek AI providers
 
-export const generateMockResponse = (prompt: string, provider: 'gemini' | 'deepseek' = 'gemini'): string => {
+import {
+  DEFAULT_MODEL,
+  generateDeepSeekResponse as callDeepSeekAPI,
+  isDeepSeekConfigured
+} from '../integrations/deepseek/client';
+
+export const generateMockResponse = async (prompt: string, provider: 'gemini' | 'deepseek' = 'gemini'): Promise<string> => {
   // Create a structured response based on the provider
   if (provider === 'deepseek') {
-    return generateDeepSeekResponse(prompt);
+    return await generateDeepSeekResponse(prompt);
   } else {
     return generateGeminiResponse(prompt);
   }
@@ -114,7 +120,46 @@ REFERENCES:
   }
 };
 
-const generateDeepSeekResponse = (prompt: string): string => {
+const generateDeepSeekResponse = async (prompt: string): Promise<string> => {
+  // Check if DeepSeek API is configured
+  if (isDeepSeekConfigured()) {
+    try {
+      // Format the medical prompt to get a structured response
+      const formattedPrompt = `You are a medical AI assistant. Please respond to the following question in a structured format with QUESTION, DIAGNOSIS/ANALYSIS, SUMMARY, and REFERENCES sections:\n\n${prompt}`;
+      
+      // Call the real DeepSeek API
+      const response = await callDeepSeekAPI({
+        model: DEFAULT_MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a knowledgeable medical assistant providing evidence-based information for healthcare professionals. Structure your responses with sections for Question, Diagnosis/Analysis, Summary, and References.'
+          },
+          {
+            role: 'user',
+            content: formattedPrompt
+          }
+        ],
+        temperature: 0.3, // Lower temperature for more focused, factual responses
+        max_tokens: 2048
+      });
+      
+      // Return the assistant's response
+      return response.choices[0].message.content as string;
+    } catch (error) {
+      console.error('Error calling DeepSeek API:', error);
+      // Fall back to mock response if the API call fails
+      return fallbackDeepSeekResponse(prompt);
+    }
+  } else {
+    // If API key is not configured, fall back to mock response
+    console.warn('DeepSeek API key not configured, using mock response');
+    return fallbackDeepSeekResponse(prompt);
+  }
+};
+
+// Fallback mock responses when the API is not available
+const fallbackDeepSeekResponse = (prompt: string): string => {
   // Check for specific conditions in the prompt
   if (prompt.toLowerCase().includes('brucellosis')) {
     return `QUESTION:
