@@ -83,7 +83,7 @@ const App = () => (
               
               {/* Public access to AI agents, smart notes, expert panel, and chat */}
               <Route path="/public/my-agents" element={<PublicLayout><MyAgents isPublicView={true} /></PublicLayout>} />
-              <Route path="/public/my-templates" element={<PublicLayout><QuickNotes isPublicView={true} /></PublicLayout>} />
+              <Route path="/public/my-templates" element={<PublicLayout forceHideHeader={true}><QuickNotes isPublicView={true} /></PublicLayout>} />
               <Route path="/public/tumor-board" element={<PublicLayout><ExpertPanelView isPublicView={true} /></PublicLayout>} />
               <Route path="/public/chat" element={<PublicLayout><PublicChat /></PublicLayout>} />
               <Route path="/clean-chat" element={<CleanChat />} />
@@ -118,7 +118,7 @@ const App = () => (
                 <Route path="/tumor-board" element={<ExpertPanelView />} /> 
                 <Route path="/recent-chats" element={<RecentChats />} />
                 <Route path="/my-agents" element={<MyAgents />} />
-                <Route path="/my-templates" element={<QuickNotes />} />
+                <Route path="/my-templates" element={<AppLayout hideHeader={true}><QuickNotes /></AppLayout>} />
                 <Route path="/quick-notes" element={<Navigate to="/my-templates" replace />} /> {/* Redirect to MyTemplates */}
                 <Route path="/integrations" element={<Integrations />} />
                 <Route path="/tasks" element={<Tasks />} />

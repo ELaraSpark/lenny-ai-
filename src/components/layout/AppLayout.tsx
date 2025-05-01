@@ -1,12 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import React from "react"; // Import React
 
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { ActiveCallProvider } from "@/components/followup/context/ActiveCallContext";
 
-const AppLayout = () => {
+interface AppLayoutProps {
+  hideHeader?: boolean;
+  children?: React.ReactNode; // Added children prop
+}
+
+const AppLayout: React.FC<AppLayoutProps> = ({ hideHeader, children }) => { // Added children to props
   const location = useLocation();
   
   // Detect if we're on the /agents page
@@ -109,10 +115,12 @@ const AppLayout = () => {
             // Structure for other pages - include header and scrollable content area
             <>
               {/* Pass mobile toggle to Header */}
-              <Header
-                className="tab-nav-bg border-none shadow-none relative z-dropdown"
-                onMobileMenuToggle={toggleMobileSidebar}
-              />
+              {!hideHeader && (
+                <Header
+                  className="tab-nav-bg border-none shadow-none relative z-dropdown"
+                  onMobileMenuToggle={toggleMobileSidebar}
+                />
+              )}
               
               {/* Content with scrolling enabled */}
               <main className="flex-1 page-container overflow-y-auto">
@@ -124,7 +132,7 @@ const AppLayout = () => {
                     transition={{ duration: 0.2 }}
                     className="h-full"
                   >
-                    <Outlet />
+                    {children ? children : <Outlet />} {/* Render children if provided, otherwise Outlet */}
                   </motion.div>
                 </div>
               </main>
