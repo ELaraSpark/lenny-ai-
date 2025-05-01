@@ -12,10 +12,6 @@
     "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhaHBoYWtqcmt3Zmhpa3l4cHF0Iiwicm9zZSI6ImFub24iLCJpYXQiOjE3NDU0MTk3NDMsImV4cCI6MjA2MDk5NTc0M30.iceEb5GvCBzE4wA7U92DxGJZuLt0m-RNcgqVKBIh0EA"
   },
   "alias": ["lenny-ai.vercel.app"],
-  "projectSettings": {
-    "name": "AI Doctor Network",
-    "framework": null
-  },
   "github": {
     "silent": false,
     "autoAlias": true,
