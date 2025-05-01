@@ -7,6 +7,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 console.log('🚀 Starting Vercel deployment for Lenny AI...');
 
@@ -35,13 +36,24 @@ try {
   }
   
   if (!hasValidEnv) {
-    console.log('⚠️ No environment file found. Creating .env.production from template...');
-    // Copy from the existing environment file with the unusual name
-    if (fs.existsSync('cUserssnymaDocumentsGitHubLeny-ai2.env')) {
-      fs.copyFileSync('cUserssnymaDocumentsGitHubLeny-ai2.env', '.env.production');
-      console.log('✅ Created .env.production file');
-    } else {
-      console.error('❌ No environment template found. Deployment may fail without proper environment variables.');
+    console.log('⚠️ No environment file found. Creating .env.production from vercel.json...');
+    // Create a basic .env.production file from vercel.json env values
+    try {
+      const vercelConfig = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
+      if (vercelConfig.env) {
+        const envContent = Object.entries(vercelConfig.env)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('\n');
+        fs.writeFileSync('.env.production', envContent);
+        console.log('✅ Created .env.production file from vercel.json configuration');
+        hasValidEnv = true;
+      }
+    } catch (error) {
+      console.log('⚠️ Could not create environment file from vercel.json:', error.message);
+    }
+    
+    if (!hasValidEnv) {
+      console.error('❌ No environment configuration found. Deployment may fail without proper environment variables.');
     }
   }
 
@@ -51,6 +63,22 @@ try {
     execSync('npm run clean', { stdio: 'inherit' });
   } catch (error) {
     console.log('⚠️ Clean command failed, continuing anyway...');
+    // Create clean directory if it doesn't exist
+    if (fs.existsSync('dist')) {
+      try {
+        if (process.platform === 'win32') {
+          execSync('rmdir /s /q dist', { stdio: 'inherit' });
+        } else {
+          execSync('rm -rf dist', { stdio: 'inherit' });
+        }
+      } catch (e) {
+        console.log('⚠️ Could not remove dist directory, continuing anyway...');
+      }
+    }
+    // Create dist directory
+    if (!fs.existsSync('dist')) {
+      fs.mkdirSync('dist');
+    }
   }
 
   // Build the project

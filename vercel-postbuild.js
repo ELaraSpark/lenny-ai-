@@ -11,6 +11,12 @@ console.log('🛠️ Running Vercel post-build operations...');
 function copyFileIfExists(source, destination) {
   try {
     if (fs.existsSync(source)) {
+      // Ensure the destination directory exists
+      const destDir = path.dirname(destination);
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+      }
+      
       fs.copyFileSync(source, destination);
       console.log(`✅ Copied ${source} to ${destination}`);
       return true;
@@ -24,6 +30,46 @@ function copyFileIfExists(source, destination) {
   }
 }
 
+// Function to recursively copy a directory
+function copyDirectory(source, destination) {
+  try {
+    if (!fs.existsSync(source)) {
+      console.log(`⚠️ Source directory not found: ${source}`);
+      return false;
+    }
+
+    // Create the destination directory if it doesn't exist
+    if (!fs.existsSync(destination)) {
+      fs.mkdirSync(destination, { recursive: true });
+    }
+
+    // Read all items in the source directory
+    const items = fs.readdirSync(source);
+    
+    // Copy each item
+    for (const item of items) {
+      const srcPath = path.join(source, item);
+      const destPath = path.join(destination, item);
+      
+      const stats = fs.statSync(srcPath);
+      
+      if (stats.isDirectory()) {
+        // Recursively copy subdirectories
+        copyDirectory(srcPath, destPath);
+      } else {
+        // Copy files
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+    
+    console.log(`✅ Copied directory ${source} to ${destination}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Error copying directory ${source} to ${destination}:`, error);
+    return false;
+  }
+}
+
 // Ensure dist directory exists
 if (!fs.existsSync('dist')) {
   console.error('❌ Error: dist directory does not exist');
@@ -33,7 +79,7 @@ if (!fs.existsSync('dist')) {
 // Copy _redirects file if it exists
 copyFileIfExists('public/_redirects', 'dist/_redirects');
 
-// Copy other important files from public to dist if needed
+// Copy other important files from public to dist
 const otherImportantFiles = [
   'favicon.ico',
   'og-image.png',
@@ -41,10 +87,10 @@ const otherImportantFiles = [
 ];
 
 for (const file of otherImportantFiles) {
-  copyFileIfExists(`public/${file}`, `dist/${file}`);
+  copyFileIfExists(path.join('public', file), path.join('dist', file));
 }
 
-// Ensure agents and illustrations directories are copied if they exist
+// Ensure agents, illustrations, and logos directories are copied
 const directories = [
   { src: 'public/agents', dest: 'dist/agents' },
   { src: 'public/illustrations', dest: 'dist/illustrations' },
@@ -53,14 +99,7 @@ const directories = [
 
 for (const dir of directories) {
   if (fs.existsSync(dir.src)) {
-    if (!fs.existsSync(dir.dest)) {
-      fs.mkdirSync(dir.dest, { recursive: true });
-    }
-    
-    const files = fs.readdirSync(dir.src);
-    for (const file of files) {
-      copyFileIfExists(path.join(dir.src, file), path.join(dir.dest, file));
-    }
+    copyDirectory(dir.src, dir.dest);
   }
 }
 
