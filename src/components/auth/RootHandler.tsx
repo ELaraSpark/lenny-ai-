@@ -23,7 +23,7 @@ export const RootHandler = () => {
   // Always show the public chat interface first, regardless of authentication status
   // This ensures that when users click on Leny AI in the header, they get the mock interface
   return (
-    <PublicLayout>
+    <PublicLayout showFooter={true}>
       <PublicChat />
     </PublicLayout>
   );

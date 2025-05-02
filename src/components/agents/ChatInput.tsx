@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { ArrowUp, Lightbulb, ChevronDown, Paperclip, X, AlertCircle } from "lucide-react";
 import SuggestionsDropdown from "@/components/onboarding/SuggestionsDropdown";
@@ -256,14 +255,16 @@ const ChatInput = ({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant="ghost" // Ghost variant now uses primary hover from button.tsx update
+                    variant="ghost"
                     size="sm" 
-                    className="h-8 text-xs text-gray-500 flex items-center gap-1 rounded-full px-2 transition-colors" // Removed explicit hover colors
+                    className="h-8 text-xs sm:text-sm text-gray-500 flex items-center gap-1 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 transition-colors"
                   >
-                    {selectedStyle} <ChevronDown className="h-3 w-3" />
+                    <span className="hidden xs:inline">{selectedStyle}</span>
+                    <span className="xs:hidden">Style</span>
+                    <ChevronDown className="h-3 w-3 ml-0.5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="min-w-[120px]">
                   <DropdownMenuItem onClick={() => {
                     setSelectedStyle("Professional");
                     if (onStyleChange) onStyleChange("Professional");
@@ -302,16 +303,16 @@ const ChatInput = ({
               }}
               disabled={(!chatInput.trim() && attachments.length === 0) || isLoading}
               aria-label="Send message"
-              variant="default" // Default variant now uses primary green from button.tsx update
+              variant="default"
               size="sm"
               className={cn(
-                "rounded-full w-12 h-12 flex items-center justify-center text-white shadow-sm hover:shadow-md transition-all",
+                "rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white shadow-sm hover:shadow-md transition-all",
                 submitButtonColor === 'secondary' ? 'bg-secondary hover:bg-secondary/90' : 
                 submitButtonColor === 'accent' ? 'bg-accent hover:bg-accent/90' : 
                 'bg-primary hover:bg-primary/90'
               )}
             >
-              <ArrowUp className="h-6 w-6" />
+              <ArrowUp className="h-5 w-5 sm:h-6 sm:w-6" />
             </Button>
           </div>
         </div>

@@ -81,11 +81,11 @@ const App = () => (
               <Route path="/about" element={<AboutUs />} /> 
               <Route path="/auth/callback" element={<AuthCallback />} /> {/* Add the OAuth callback route */}
               
-              {/* Public access to AI agents, smart notes, expert panel, and chat */}
-              <Route path="/public/my-agents" element={<PublicLayout><MyAgents isPublicView={true} /></PublicLayout>} />
-              <Route path="/public/my-templates" element={<PublicLayout forceHideHeader={true}><QuickNotes isPublicView={true} /></PublicLayout>} />
-              <Route path="/public/tumor-board" element={<PublicLayout><ExpertPanelView isPublicView={true} /></PublicLayout>} />
-              <Route path="/public/chat" element={<PublicLayout><PublicChat /></PublicLayout>} />
+              {/* Public access to AI agents, smart notes, expert panel, and chat - now with showFooter={false} */}
+              <Route path="/public/my-agents" element={<PublicLayout showFooter={false}><MyAgents isPublicView={true} /></PublicLayout>} />
+              <Route path="/public/my-templates" element={<PublicLayout forceHideHeader={true} showFooter={false}><QuickNotes isPublicView={true} /></PublicLayout>} />
+              <Route path="/public/tumor-board" element={<PublicLayout showFooter={false}><ExpertPanelView isPublicView={true} /></PublicLayout>} />
+              <Route path="/public/chat" element={<PublicLayout showFooter={false}><PublicChat /></PublicLayout>} />
               <Route path="/clean-chat" element={<CleanChat />} />
 
               {/* Root Route - Now properly handles authentication state using RootHandler */}

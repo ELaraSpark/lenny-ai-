@@ -22,6 +22,15 @@
       transform: translateY(0px);
     }
   }
+  
+  /* Quick Actions scrollbar hiding */
+  .quick-actions {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .quick-actions::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes fadeIn {
