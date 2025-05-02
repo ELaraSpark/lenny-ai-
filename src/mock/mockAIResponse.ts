@@ -1,5 +1,5 @@
 // AI response generator for the application
-// This file provides responses for both Gemini and DeepSeek AI providers
+// This file provides responses for the DeepSeek AI provider
 
 import {
   DEFAULT_MODEL,
@@ -7,117 +7,9 @@ import {
   isDeepSeekConfigured
 } from '../integrations/deepseek/client';
 
-export const generateMockResponse = async (prompt: string, provider: 'gemini' | 'deepseek' = 'gemini'): Promise<string> => {
+export const generateMockResponse = async (prompt: string, provider: 'deepseek' = 'deepseek'): Promise<string> => {
   // Create a structured response based on the provider
-  if (provider === 'deepseek') {
-    return await generateDeepSeekResponse(prompt);
-  } else {
-    return generateGeminiResponse(prompt);
-  }
-};
-
-const generateGeminiResponse = (prompt: string): string => {
-  // Check for specific conditions in the prompt
-  if (prompt.toLowerCase().includes('brucellosis')) {
-    return `QUESTION:
-What is the treatment for brucellosis?
-
-DIAGNOSIS/ANALYSIS:
-**Brucellosis** is a bacterial infection caused by various species of the genus Brucella. It's primarily a zoonotic disease, meaning it's transmitted from animals to humans, typically through consumption of unpasteurized dairy products or direct contact with infected animals [1]. The treatment of brucellosis requires a combination of antibiotics to effectively eradicate the bacteria and prevent relapse.
-
-The **first-line treatment** for uncomplicated brucellosis is a combination of **doxycycline and rifampicin for at least 6 weeks** [1]. This regimen is recommended by the Centers for Disease Control and Prevention (CDC) and the World Health Organization (WHO) due to its efficacy in clearing the infection and preventing relapse [2].
-
-For more complicated cases of brucellosis, such as those involving endocarditis, meningitis, or osteomyelitis, the treatment regimen should be extended and may include an aminoglycoside. Specifically, a combination of **doxycycline, rifampicin, and an aminoglycoside (such as streptomycin or gentamicin)** is recommended, with the duration of therapy extended to 4-6 months [1].
-
-SUMMARY:
-1. Uncomplicated brucellosis: Doxycycline and rifampicin for ≥6 weeks [1].
-2. Complicated brucellosis: Doxycycline, rifampicin, and an aminoglycoside for 4-6 months [1].
-3. Alternative regimens such as doxycycline plus trimethoprim-sulfamethoxazole or doxycycline plus quinolones may be considered in specific patient populations [3-4].
-
-REFERENCES:
-1. Brucellosis: Diagnosis, Treatment, and Management. Centers for Disease Control and Prevention. 2021.
-2. Antibiotics for Treating Human Brucellosis. Yousefi-Nooraie R, et al. The Cochrane Database of Systematic Reviews. 2012;10:CD007179.
-3. Treatment of Human Brucellosis: Systematic Review and Meta-Analysis of Randomised Controlled Trials. Skalsky K, et al. BMJ. 2008;336:701-704.
-4. Brucellosis: A Worldwide Zoonosis. Pappas G, et al. Current Opinion in Infectious Diseases. 2006;19:272-279.`;
-  } else if (prompt.toLowerCase().includes('asthma')) {
-    return `QUESTION:
-What is the treatment for asthma?
-
-DIAGNOSIS/ANALYSIS:
-Asthma is a chronic respiratory condition characterized by airway inflammation, hyperresponsiveness, and variable airflow obstruction. The treatment for asthma involves a stepwise approach tailored to the severity of the disease and individual patient factors. The primary goals of asthma management are to control symptoms, reduce the risk of exacerbations, and minimize adverse effects of medications [1].
-
-For **mild asthma**, the preferred treatment is an **inhaled glucocorticoid–formoterol combination as needed**. Alternative options include the use of combination inhaled glucocorticoid–albuterol as needed or low-dose maintenance inhaled glucocorticoid plus a short-acting β2-agonist (SABA) reliever as needed [1].
-
-For **moderate-to-severe asthma**, the preferred treatment is **single maintenance and reliever therapy (SMART)** with a low- or medium-dose inhaled glucocorticoid–formoterol combination (either budesonide–formoterol or beclomethasone–formoterol). This regimen simplifies treatment by using one inhaler for both quick-relief and maintenance therapy. Alternative treatments include maintenance low- or medium-dose inhaled glucocorticoid–long-acting β2-agonist (LABA) plus as-needed SABA or as-needed combination inhaled glucocorticoid–SABA [1].
-
-For **severe asthma** that remains uncontrolled despite high-dose inhaled glucocorticoid–LABA therapy, additional controller medications may be considered. These include **long-acting muscarinic antagonists (LAMAs)** such as tiotropium, **leukotriene receptor antagonists (LTRAs)** such as montelukast, and **biologic therapies** targeting specific inflammatory pathways [2].
-
-SUMMARY:
-1. Mild asthma: Inhaled glucocorticoid–formoterol as needed or low-dose maintenance inhaled glucocorticoid plus SABA as needed [1].
-2. Moderate-to-severe asthma: SMART with inhaled glucocorticoid–formoterol or maintenance inhaled glucocorticoid–LABA plus as-needed SABA [1].
-3. Severe uncontrolled asthma: Consider adding LAMAs, LTRAs, or biologic therapies based on specific phenotypes [2].
-4. Non-pharmacologic management includes asthma education, trigger avoidance, regular physical activity, weight management, and smoking cessation [4].
-
-REFERENCES:
-1. Global Initiative for Asthma. Global Strategy for Asthma Management and Prevention, 2023 Update.
-2. Holguin F, Cardet JC, Chung KF, et al. Management of Severe Asthma: a European Respiratory Society/American Thoracic Society Guideline. Eur Respir J. 2020;55(1):1900588.
-3. Menzies-Gow A, Canonica GW, Winders TA, et al. A Charter to Improve Patient Care in Severe Asthma. Adv Ther. 2018;35(10):1485-1496.
-4. Cloutier MM, Baptist AP, Blake KV, et al. 2020 Focused Updates to the Asthma Management Guidelines: A Report from the National Asthma Education and Prevention Program Coordinating Committee Expert Panel Working Group. J Allergy Clin Immunol. 2020;146(6):1217-1270.`;
-  } else if (prompt.toLowerCase().includes('pneumonia')) {
-    return `QUESTION:
-What is the treatment for pneumonia?
-
-DIAGNOSIS/ANALYSIS:
-**Pneumonia** is an infection that inflames the air sacs in one or both lungs, which may fill with fluid or pus. The infection can be caused by various pathogens, including bacteria, viruses, and fungi [1]. The treatment approach depends on the type of pneumonia, the causative pathogen, the severity of symptoms, and patient factors such as age and comorbidities.
-
-For **bacterial pneumonia**, which is the most common type requiring specific treatment, **antibiotics** are the mainstay of therapy [1]. The choice of antibiotic depends on several factors, including whether the pneumonia is community-acquired (CAP) or hospital-acquired (HAP), the suspected pathogen, and local resistance patterns [2].
-
-For **mild to moderate community-acquired pneumonia** in otherwise healthy adults, oral antibiotics such as **amoxicillin, doxycycline, or a macrolide** (azithromycin or clarithromycin) are typically recommended as first-line treatments [2]. For patients with comorbidities or risk factors for drug-resistant pathogens, a **respiratory fluoroquinolone** (levofloxacin or moxifloxacin) or a **beta-lactam plus a macrolide** combination may be more appropriate [3].
-
-For **severe pneumonia** requiring hospitalization, **intravenous antibiotics** are typically initiated. Common regimens include a **beta-lactam (such as ceftriaxone) plus a macrolide or a respiratory fluoroquinolone** [3]. For patients with risk factors for Pseudomonas aeruginosa, an **antipseudomonal beta-lactam** (piperacillin-tazobactam, cefepime, meropenem, or imipenem) plus either a fluoroquinolone or an aminoglycoside is recommended [2].
-
-SUMMARY:
-1. Mild to moderate community-acquired pneumonia: Oral antibiotics such as amoxicillin, doxycycline, or a macrolide for 5-7 days [2].
-2. Severe community-acquired pneumonia: Intravenous beta-lactam plus either a macrolide or a respiratory fluoroquinolone [3].
-3. Hospital-acquired pneumonia: Broader-spectrum antibiotics based on local resistance patterns and patient risk factors [4].
-4. Supportive care including adequate hydration, oxygen therapy if needed, and antipyretics for fever is essential for all patients with pneumonia [1].
-
-REFERENCES:
-1. Pneumonia Diagnosis and Treatment. Mayo Clinic. 2021.
-2. Metlay JP, Waterer GW, Long AC, et al. Diagnosis and Treatment of Adults with Community-acquired Pneumonia. An Official Clinical Practice Guideline of the American Thoracic Society and Infectious Diseases Society of America. Am J Respir Crit Care Med. 2019;200(7):e45-e67.
-3. National Institute for Health and Care Excellence (NICE). Pneumonia in adults: diagnosis and management. Clinical guideline [CG191]. 2019.
-4. Kalil AC, Metersky ML, Klompas M, et al. Management of Adults With Hospital-acquired and Ventilator-associated Pneumonia: 2016 Clinical Practice Guidelines by the Infectious Diseases Society of America and the American Thoracic Society. Clin Infect Dis. 2016;63(5):e61-e111.`;
-  } else {
-    // Default response for other queries
-    return `QUESTION:
-${prompt}
-
-DIAGNOSIS/ANALYSIS:
-I don't have specific information about "${prompt}" in my knowledge base. This appears to be a medical question that would require specialized knowledge.
-
-For accurate medical information, I recommend:
-
-1. **Consulting with a healthcare professional** who can provide personalized advice based on your specific situation.
-
-2. **Checking reputable medical sources** such as:
-   - Mayo Clinic (mayoclinic.org)
-   - National Institutes of Health (nih.gov)
-   - Centers for Disease Control and Prevention (cdc.gov)
-   - World Health Organization (who.int)
-
-3. **Speaking with a specialist** if this relates to a specific medical condition you're experiencing.
-
-Medical information should be accurate, up-to-date, and personalized to your situation, which is why direct consultation with healthcare providers is always the best approach for medical questions.
-
-SUMMARY:
-1. Consult with a healthcare professional for personalized advice.
-2. Check reputable medical sources for general information.
-3. Speak with a specialist for condition-specific guidance.
-
-REFERENCES:
-1. Medical Information on the Internet. National Library of Medicine. 2022.
-2. Evaluating Health Information. MedlinePlus. 2021.`;
-  }
+  return await generateDeepSeekResponse(prompt);
 };
 
 const generateDeepSeekResponse = async (prompt: string): Promise<string> => {

@@ -54,11 +54,6 @@ const PublicChat = () => {
     const [chatMode, setChatMode] = useState<ChatMode>('Standard');
     const [aiProvider, setAIProvider] = useState<AIProvider>(DEFAULT_PROVIDER);
     
-    // Toggle the AI provider between gemini and deepseek
-    const toggleAIProvider = () => {
-        setAIProvider(prev => prev === 'gemini' ? 'deepseek' : 'gemini');
-    };
-    
     // State for chat modal
     const [isChatModalOpen, setIsChatModalOpen] = useState(false);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -406,22 +401,7 @@ const PublicChat = () => {
                                             <DialogTitle>Chat with Leny AI Medical Assistant</DialogTitle>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <div className="flex items-center text-xs space-x-2">
-                                                    <span className={aiProvider === 'gemini' ? 'font-medium text-white' : 'text-white/70'}>Gemini</span>
-                                                    <button 
-                                                        onClick={toggleAIProvider} 
-                                                        className="relative inline-flex h-4 w-8 items-center rounded-full"
-                                                    >
-                                                        <span className={cn(
-                                                            "inline-block h-3 w-8 rounded-full transition",
-                                                            aiProvider === 'gemini' ? 'bg-white/30' : 'bg-white/10'
-                                                        )}>
-                                                            <span className={cn(
-                                                                "block h-2 w-2 rounded-full bg-white transition-transform",
-                                                                aiProvider === 'gemini' ? 'translate-x-5' : 'translate-x-1'
-                                                            )} />
-                                                        </span>
-                                                    </button>
-                                                    <span className={aiProvider === 'deepseek' ? 'font-medium text-white' : 'text-white/70'}>DeepSeek</span>
+                                                    <span className="font-medium text-white">DeepSeek</span>
                                                 </div>
                                             </div>
                                         </div>

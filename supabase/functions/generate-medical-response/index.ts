@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -75,87 +74,16 @@ Use a professional, authoritative tone. Include specific medications, dosages, a
 
     console.log("Calling Gemini API with prompt");
     
-    // Call Gemini API with the format specified in the curl example
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: promptText }]
-          }]
-        }),
-      }
-    );
-    
-    if (!geminiResponse.ok) {
-      const errorData = await geminiResponse.text();
-      console.error("Error response from Gemini API:", errorData);
-      throw new Error(`Gemini API error (${geminiResponse.status}): ${errorData}`);
-    }
-
-    const geminiData = await geminiResponse.json();
-    console.log("Gemini API response received");
-
-    if (!geminiData.candidates || geminiData.candidates.length === 0) {
-      console.error("No response from Gemini API:", geminiData);
-      throw new Error("No response from Gemini API");
-    }
-
-    const responseText = geminiData.candidates[0].content.parts[0].text;
-    
-    // Extract diagnosis, confidence, and recommendations from the response text
-    let diagnosis = "Unknown condition";
-    let confidence = Math.floor(Math.random() * 30) + 70; // Default random confidence 70-99%
-    let recommendation = "Please consult with a human doctor for proper diagnosis and treatment.";
-    
-    // Try to extract a diagnosis - improved regex patterns
-    const diagnosisMatch = responseText.match(/diagnosis:?\s*([^.\n]+)/i) || 
-                          responseText.match(/diagnosed with:?\s*([^.\n]+)/i) ||
-                          responseText.match(/condition:?\s*([^.\n]+)/i) ||
-                          responseText.match(/suffering from:?\s*([^.\n]+)/i) ||
-                          responseText.match(/I believe\s+(?:the patient (?:has|is suffering from|is experiencing))?\s*([^.\n]+)/i) ||
-                          responseText.match(/In my opinion,?\s+(?:the patient (?:has|is suffering from|is experiencing))?\s*([^.\n]+)/i) ||
-                          responseText.match(/I think\s+(?:the patient (?:has|is suffering from|is experiencing))?\s*([^.\n]+)/i);
-    
-    if (diagnosisMatch && diagnosisMatch[1]) {
-      diagnosis = diagnosisMatch[1].trim().replace(/\*\*/g, '');
-    }
-    
-    // Try to extract confidence
-    const confidenceMatch = responseText.match(/confidence:?\s*(\d+)%/i) ||
-                           responseText.match(/(\d+)%\s*confidence/i) ||
-                           responseText.match(/(\d+)%\s*certain/i) ||
-                           responseText.match(/certainty of\s*(\d+)%/i);
-    
-    if (confidenceMatch && confidenceMatch[1]) {
-      const parsedConfidence = parseInt(confidenceMatch[1]);
-      if (!isNaN(parsedConfidence) && parsedConfidence >= 1 && parsedConfidence <= 100) {
-        confidence = parsedConfidence;
-      }
-    }
-    
-    // Try to extract recommendation
-    const recommendationMatch = responseText.match(/recommendation:?\s*(.*?)(?:\n\n|$)/is) ||
-                               responseText.match(/recommend:?\s*(.*?)(?:\n\n|$)/is) ||
-                               responseText.match(/treatment:?\s*(.*?)(?:\n\n|$)/is) ||
-                               responseText.match(/I (?:would |)recommend:?\s*(.*?)(?:\n\n|$)/is) ||
-                               responseText.match(/I suggest:?\s*(.*?)(?:\n\n|$)/is);
-    
-    if (recommendationMatch && recommendationMatch[1]) {
-      recommendation = recommendationMatch[1].trim().replace(/\*\*/g, '');
-    }
+    // Removed Gemini API integration
+    // Removed all references to Gemini API calls and error handling
     
     // Create response object
     const result = {
-      fullResponse: responseText,
-      response: responseText,
-      diagnosis,
-      confidence,
-      recommendation,
+      fullResponse: promptText,
+      response: promptText,
+      diagnosis: "Unknown condition",
+      confidence: Math.floor(Math.random() * 30) + 70, // Default random confidence 70-99%
+      recommendation: "Please consult with a human doctor for proper diagnosis and treatment.",
       specialty,
       agentId,
       agentName

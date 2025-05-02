@@ -52,7 +52,7 @@ const Chat = () => {
     
     // Toggle AI provider
     const toggleAIProvider = () => {
-        setAIProvider(prev => prev === 'gemini' ? 'deepseek' : 'gemini');
+        setAIProvider(prev => prev === 'deepseek' ? 'deepseek' : 'deepseek');
     };
     
     // Handle input change
@@ -211,38 +211,6 @@ const Chat = () => {
                         <p className="text-lg text-gray-500 text-center mb-10">
                             Your friendly AI medical assistant is here to help
                         </p>
-                        
-                        {/* AI Provider Toggle */}
-                        <div className="mb-8 flex justify-center items-center">
-                            <span className={cn(
-                                "mr-2",
-                                aiProvider === 'gemini' ? 'font-medium text-primary' : 'text-gray-500'
-                            )}>
-                                Gemini
-                            </span>
-                            
-                            <button 
-                                onClick={toggleAIProvider} 
-                                className="relative inline-flex h-6 w-11 items-center rounded-full"
-                            >
-                                <span className={cn(
-                                    "inline-block h-5 w-10 rounded-full transition",
-                                    aiProvider === 'gemini' ? 'bg-primary' : 'bg-gray-200'
-                                )}>
-                                    <span className={cn(
-                                        "block h-4 w-4 rounded-full bg-white transition-transform",
-                                        aiProvider === 'gemini' ? 'translate-x-5' : 'translate-x-1'
-                                    )} />
-                                </span>
-                            </button>
-                            
-                            <span className={cn(
-                                "ml-2",
-                                aiProvider === 'deepseek' ? 'font-medium text-primary' : 'text-gray-500'
-                            )}>
-                                DeepSeek
-                            </span>
-                        </div>
                         
                         {/* Input Form */}
                         <form 
@@ -587,26 +555,6 @@ const Chat = () => {
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
-                                
-                                {/* AI Provider Toggle in conversation view */}
-                                <div className="ml-auto flex items-center">
-                                    <span className={aiProvider === 'gemini' ? 'text-xs font-medium text-primary' : 'text-xs text-gray-500'}>Gemini</span>
-                                    <button 
-                                        onClick={toggleAIProvider} 
-                                        className="mx-1 relative inline-flex h-4 w-8 items-center rounded-full"
-                                    >
-                                        <span className={cn(
-                                            "inline-block h-3 w-8 rounded-full transition",
-                                            aiProvider === 'gemini' ? 'bg-primary' : 'bg-gray-200'
-                                        )}>
-                                            <span className={cn(
-                                                "block h-2 w-2 rounded-full bg-white transition-transform",
-                                                aiProvider === 'gemini' ? 'translate-x-5' : 'translate-x-1'
-                                            )} />
-                                        </span>
-                                    </button>
-                                    <span className={aiProvider === 'deepseek' ? 'text-xs font-medium text-primary' : 'text-xs text-gray-500'}>DeepSeek</span>
-                                </div>
                             </div>
                         </form>
                     </div>

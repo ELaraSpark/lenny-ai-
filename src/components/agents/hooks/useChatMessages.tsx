@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Message, Agent } from "../types/agentTypes";
 import { generateAIResponse } from "../services/agentService";
@@ -31,7 +30,7 @@ export const useChatMessages = (selectedAgent: Agent) => {
     setIsLoading(true);
     
     try {
-      // Call the Gemini API through our edge function
+      // Call the DeepSeek API through our edge function
       const response = await generateAIResponse(chatInput, selectedAgent);
       
       // Add AI response to chat
