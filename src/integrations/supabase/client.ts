@@ -3,8 +3,8 @@ import type { Database } from './types';
 
 // Using environment variables for Supabase credentials
 // With fallback values for development environments
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://uahphakjrkwfhikyxpqt.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhaHBoYWtqcmt3Zmhpa3l4cHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU0MTk3NDMsImV4cCI6MjA2MDk5NTc0M30.iceEb5GvCBzE4wA7U92DxGJZuLt0m-RNcgqVKBIh0EA';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://correct-supabase-url.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'correct-anon-key';
 
 // Debug for development
 if (import.meta.env.DEV) {
