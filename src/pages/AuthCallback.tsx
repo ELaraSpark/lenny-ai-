@@ -11,6 +11,7 @@ const AuthCallback = () => {
     const handleAuthCallback = async () => {
       try {
         setLoading(true);
+        console.log("Auth callback processing started");
         
         // Get the URL hash and search parameters
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -45,7 +46,7 @@ const AuthCallback = () => {
           }
           
           if (sessionData.session) {
-            console.log("Session successfully established");
+            console.log("Session successfully established via access token");
             navigate("/");
             return;
           }
@@ -55,16 +56,26 @@ const AuthCallback = () => {
         const code = searchParams.get('code');
         if (code) {
           console.log("Found authorization code, exchanging for session");
-          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          
-          if (exchangeError) {
-            console.error("Error exchanging code for session:", exchangeError);
-            setError(exchangeError.message);
+          try {
+            const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+            
+            if (exchangeError) {
+              console.error("Error exchanging code for session:", exchangeError);
+              setError(exchangeError.message);
+              return;
+            }
+            console.log("Successfully exchanged code for session");
+          } catch (codeError) {
+            console.error("Exception during code exchange:", codeError);
+            setError("Failed to process authentication code. Please try again.");
             return;
           }
+        } else if (!accessToken) {
+          console.warn("No code or token found in URL");
         }
 
-        // Verify session
+        // Final verification - get the session
+        console.log("Verifying session after authentication...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -75,11 +86,11 @@ const AuthCallback = () => {
 
         if (session) {
           // Success! Redirect to landing page
-          console.log("Authentication successful");
+          console.log("Authentication successful, user:", session.user.email);
           navigate("/"); // Redirecting to root path which shows the landing page
         } else {
           console.error("No session found after authentication");
-          setError("Authentication failed - no session found");
+          setError("Authentication failed - no session found. Please try logging in again.");
         }
       } catch (err) {
         console.error("Error in auth callback:", err);

@@ -91,8 +91,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      // Create a properly constructed redirect URL using the current origin
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+      // Get the current domain - use hard-coded production domain if we detect one of our production domains
+      const currentDomain = window.location.origin;
+      let redirectUrl = `${currentDomain}/auth/callback`;
+      
+      // If we're on localhost, use dynamic redirect
+      if (currentDomain.includes('localhost')) {
+        redirectUrl = `${window.location.origin}/auth/callback`;
+      }
+      // If we're on one of our known production domains, ensure we use the correct one
+      else if (currentDomain.includes('doctor-leny-ai.vercel.app') || 
+               currentDomain.includes('doctor-leny-ai-leny-ai.vercel.app') ||
+               currentDomain.includes('lenny-ai.vercel.app')) {
+        // Always use the primary domain that's configured in Google Console
+        redirectUrl = `https://doctor-leny-ai.vercel.app/auth/callback`;
+      }
+
       console.log("Using Google Auth redirect URL:", redirectUrl);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
