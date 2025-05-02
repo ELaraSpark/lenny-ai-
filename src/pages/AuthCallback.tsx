@@ -26,10 +26,37 @@ const AuthCallback = () => {
           return;
         }
 
-        // Handle code exchange
+        // Handle access token in hash (common with OAuth implicit flow)
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        
+        if (accessToken) {
+          console.log("Found access token in URL hash, setting session manually");
+          
+          const { data: sessionData, error: setSessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || '',
+          });
+          
+          if (setSessionError) {
+            console.error("Error setting session:", setSessionError);
+            setError(setSessionError.message);
+            return;
+          }
+          
+          if (sessionData.session) {
+            console.log("Session successfully established");
+            navigate("/");
+            return;
+          }
+        }
+
+        // Handle code exchange (authorization code flow)
         const code = searchParams.get('code');
         if (code) {
+          console.log("Found authorization code, exchanging for session");
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          
           if (exchangeError) {
             console.error("Error exchanging code for session:", exchangeError);
             setError(exchangeError.message);

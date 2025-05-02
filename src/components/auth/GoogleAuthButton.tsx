@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface GoogleAuthButtonProps {
   mode: 'signin' | 'signup';
@@ -7,49 +8,26 @@ interface GoogleAuthButtonProps {
 }
 
 const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ mode, isLoading = false }) => {
-  // State to track if URLs are properly loaded
-  const [isConfigLoaded, setIsConfigLoaded] = useState(false);
+  const { signInWithGoogle } = useAuth();
   
-  // Use your Supabase project URL from environment variables with fallback
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://uahphakjrkwfhikyxpqt.supabase.co';
-  
-  // Verify configuration on component mount
-  useEffect(() => {
-    if (supabaseUrl) {
-      setIsConfigLoaded(true);
-    } else {
-      console.error('Supabase URL is not configured properly. Google auth will not work.');
+  const handleGoogleAuth = async () => {
+    try {
+      console.log('Starting Google authentication...');
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Google auth error:', error);
     }
-  }, [supabaseUrl]);
-  
-  // Create the direct auth URL to bypass any browser extension interference
-  const handleGoogleAuth = () => {
-    if (!supabaseUrl) {
-      console.error('Cannot proceed with Google authentication: Supabase URL is missing');
-      return;
-    }
-    
-    // This creates a direct URL to Supabase's OAuth endpoint
-    const redirectUrl = `${window.location.origin}/auth/callback`;
-    const googleAuthUrl = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}`;
-    
-    console.log('Redirecting to Google auth URL:', googleAuthUrl);
-    
-    // Navigate directly to the auth URL
-    window.location.href = googleAuthUrl;
   };
 
   return (
     <Button
       variant="outline"
       onClick={handleGoogleAuth}
-      disabled={isLoading || !isConfigLoaded}
+      disabled={isLoading}
       className="w-full py-6"
     >
       {isLoading ? (
         "Connecting..."
-      ) : !isConfigLoaded ? (
-        "Configuration Error"
       ) : (
         <>
           <svg
