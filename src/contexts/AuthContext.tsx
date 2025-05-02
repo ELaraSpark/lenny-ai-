@@ -80,8 +80,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw error;
       }
       
-      // On successful login, redirect to /chat
-      navigate("/chat");
+      // On successful login, redirect to landing page
+      navigate("/");
       return { error: null, success: true, data };
     } catch (error) {
       console.error("Error signing in:", error);
@@ -91,16 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      // Using signInWithOAuth to start the Google authentication flow
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          skipBrowserRedirect: false,
+          redirectTo: 'https://uahphakjrkwfhikyxpqt.supabase.co/auth/v1/callback',
           queryParams: {
-            // These help prevent issues with certain browser extensions
-            prompt: 'select_account',
-            access_type: 'offline'
+            next_path: '/' // This ensures after auth completion it goes to root path
           }
         }
       });

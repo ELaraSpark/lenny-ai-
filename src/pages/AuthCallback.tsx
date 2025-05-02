@@ -12,67 +12,47 @@ const AuthCallback = () => {
       try {
         setLoading(true);
         
-        // Check if we have code and/or error in the URL (standard OAuth flow)
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const errorParam = urlParams.get('error');
-        const errorDescription = urlParams.get('error_description');
+        // Get the URL hash and search parameters
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const searchParams = new URLSearchParams(window.location.search);
         
-        // Handle explicit errors first
+        // Check for errors first
+        const errorParam = searchParams.get('error');
+        const errorDescription = searchParams.get('error_description');
+        
         if (errorParam) {
           console.error("OAuth error:", errorParam, errorDescription);
           setError(errorDescription || errorParam);
           return;
         }
-        
-        // If we have a code, this is a successful redirect from OAuth provider
+
+        // Handle code exchange
+        const code = searchParams.get('code');
         if (code) {
-          // Let Supabase handle the auth exchange
-          const { data, error: sessionError } = await supabase.auth.getSession();
-          
-          if (sessionError) {
-            console.error("Session error:", sessionError);
-            setError(sessionError.message);
-          } else if (data && data.session) {
-            // Success! Redirect to chat
-            console.log("OAuth authentication successful");
-            navigate("/chat");
-          } else {
-            console.log("No error but also no session - completing setup");
-            // Try to complete the OAuth process manually
-            const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-            
-            if (exchangeError) {
-              console.error("Error exchanging code for session:", exchangeError);
-              setError(exchangeError.message);
-            } else {
-              navigate("/chat");
-            }
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) {
+            console.error("Error exchanging code for session:", exchangeError);
+            setError(exchangeError.message);
+            return;
           }
-          return;
         }
-        
-        // Check for hash params (implicit flow)
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        
-        if (accessToken) {
-          console.log("Auth successful via access token, redirecting...");
-          navigate("/chat");
-          return;
-        }
-        
-        // If we got here, there's no code, no error, and no hash params
-        // Just check if we have a session anyway
-        const { data, error: sessionError } = await supabase.auth.getSession();
+
+        // Verify session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
+          console.error("Session error:", sessionError);
           setError(sessionError.message);
-        } else if (data && data.session) {
-          navigate("/chat");
+          return;
+        }
+
+        if (session) {
+          // Success! Redirect to landing page
+          console.log("Authentication successful");
+          navigate("/"); // Redirecting to root path which shows the landing page
         } else {
-          console.log("No authentication data found, returning to login");
-          navigate("/login");
+          console.error("No session found after authentication");
+          setError("Authentication failed - no session found");
         }
       } catch (err) {
         console.error("Error in auth callback:", err);
