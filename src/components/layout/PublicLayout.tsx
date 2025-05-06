@@ -179,12 +179,6 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                           <Link to="/my-agents" className="cursor-pointer">
-                             <UsersIcon size={16} className="mr-3 text-muted-foreground" />
-                             <span>My Agents</span>
-                           </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
                            <Link to="/my-templates" className="cursor-pointer">
                              <Bookmark size={16} className="mr-3 text-muted-foreground" />
                              <span>My Templates</span>

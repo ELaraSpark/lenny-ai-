@@ -46,7 +46,6 @@ interface SidebarProps {
 // Navigation Items
 const navItems = [
   { to: '/chat', label: 'Ask Leny', icon: MessageSquare, subItem: { to: '/recent-chats', label: 'View all chats', icon: Clock } },
-  { to: '/my-agents', label: 'AI Agents', icon: Users, subItem: { to: '/tasks', label: 'My Tasks', icon: List } },
   { to: '/my-templates', label: 'Smart Notes', icon: Zap },
   { to: '/tumor-board', label: 'Expert Panel', icon: ClipboardList },
   // Removed Rewards & Lounge from main nav

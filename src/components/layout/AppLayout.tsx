@@ -94,12 +94,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ hideHeader, children }) => { // A
           onClick={handleContentClick}
         >
           {/* Pass mobile toggle to Header */}
-          {!hideHeader && (
-            <Header
-              className="tab-nav-bg border-none shadow-none relative z-dropdown"
-              onMobileMenuToggle={toggleMobileSidebar}
-            />
-          )}
+          <Header
+            className="tab-nav-bg border-none shadow-none relative z-dropdown"
+            onMobileMenuToggle={toggleMobileSidebar}
+          />
           
           {/* Content with scrolling enabled */}
           <main className="flex-1 page-container overflow-y-auto">
