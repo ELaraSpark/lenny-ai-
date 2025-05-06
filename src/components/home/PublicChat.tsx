@@ -282,7 +282,7 @@ const PublicChat = () => {
                         <span className="absolute bottom-[-6px] sm:bottom-[-10px] left-1/2 transform -translate-x-1/2 w-20 sm:w-32 md:w-40 h-[2px] sm:h-[3px] bg-gradient-to-r from-transparent via-primary to-secondary"></span>
                     </h1>
                     <p className="text-center text-gray-600 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 md:mb-10 font-light px-4 sm:px-6">
-                        Your pocket clinician: Save time, boost care, get fast answers
+                        Your pocket clinician: Save Time, Boost Care, Get Fast Answers
                     </p>
                     
                     {/* Search Box */}
