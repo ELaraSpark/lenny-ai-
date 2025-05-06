@@ -644,25 +644,6 @@ ${inputText}`;
                   <span className="hidden md:inline">Ask Leny</span>
                 </Link>
                 
-                {/* AI Agents */}
-                <Link
-                  to="/public/my-agents"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                    location.pathname === '/public/my-agents'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center justify-center">
-                    <Users size={18} className={
-                      location.pathname === '/public/my-agents'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">AI Agents</span>
-                </Link>
-                
                 {/* Smart Notes */}
                 <Link
                   to="/public/my-templates"

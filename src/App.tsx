@@ -82,11 +82,14 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} /> {/* Add the OAuth callback route */}
               
               {/* Public access to AI agents, smart notes, expert panel, and chat - now with showFooter={false} */}
-              <Route path="/public/my-agents" element={<PublicLayout showFooter={false}><MyAgents isPublicView={true} /></PublicLayout>} />
+              {/* === Archived AI Agents routes === */}
+              {/* <Route path="/public/my-agents" element={<PublicLayout showFooter={false}><MyAgents isPublicView={true} /></PublicLayout>} /> */}
               <Route path="/public/my-templates" element={<PublicLayout forceHideHeader={true} showFooter={false}><QuickNotes isPublicView={true} /></PublicLayout>} />
               <Route path="/public/tumor-board" element={<PublicLayout showFooter={false}><ExpertPanelView isPublicView={true} /></PublicLayout>} />
               <Route path="/public/chat" element={<PublicLayout showFooter={false}><PublicChat /></PublicLayout>} />
               <Route path="/clean-chat" element={<CleanChat />} />
+              
+              {/* These routes are now hidden but preserved for future restoration. */}
 
               {/* Root Route - Now properly handles authentication state using RootHandler */}
               <Route path="/" element={<RootHandler />} />
@@ -106,7 +109,8 @@ const App = () => (
                 
                 {/* Define child routes here. They will render inside AppLayout */}
                 <Route path="/patients" element={<PatientRecords />} />
-                <Route path="/agents" element={<Navigate to="/my-agents" replace />} /> {/* Redirect */}
+                {/* === Archived AI Agents routes === */}
+                {/* <Route path="/agents" element={<Navigate to="/my-agents" replace />} /> */} {/* Redirect */}
                 <Route path="/collaboration" element={<Collaboration />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/settings/*" element={<SettingsView />} />
@@ -117,22 +121,27 @@ const App = () => (
                 {/* Expert Panel needs protection if it's not public */}
                 <Route path="/tumor-board" element={<ExpertPanelView />} /> 
                 <Route path="/recent-chats" element={<RecentChats />} />
-                <Route path="/my-agents" element={<MyAgents />} />
+                
+                {/* === Archived AI Agents routes === */}
+                {/* <Route path="/my-agents" element={<MyAgents />} /> */}
+                {/* <Route path="/agents/create" element={<CreateAgentPage />} /> */}
+                {/* <Route path="/agents/:agentId" element={<AgentDetailPage />} /> */}
+                
                 <Route path="/my-templates" element={<AppLayout hideHeader={true}><QuickNotes /></AppLayout>} />
                 <Route path="/quick-notes" element={<Navigate to="/my-templates" replace />} /> {/* Redirect to MyTemplates */}
                 <Route path="/integrations" element={<Integrations />} />
                 <Route path="/tasks" element={<Tasks />} />
-                <Route path="/agents/create" element={<CreateAgentPage />} />
                 <Route path="/referrals" element={<Referrals />} />
                 <Route path="/library" element={<Library />} />
                 <Route path="/chat" element={<Chat />} />
-                <Route path="/agents/:agentId" element={<AgentDetailPage />} /> {/* Added agent detail route */}
                 <Route path="/templates/create" element={<CreateTemplatePage />} /> {/* Added create template route */}
                 <Route path="/templates/:templateId/edit" element={<EditTemplatePage />} /> {/* Added edit template route */}
                 <Route path="/doctors-lounge" element={<DoctorsLounge />} /> {/* Added Doctor's Lounge route */}
                 <Route path="/card-comparison" element={<CardComparisonPage />} /> {/* Added Card Comparison route */}
                 {/* Add other authenticated routes as needed */}
               </Route>
+
+              {/* These routes are now hidden but preserved for future restoration. */}
 
               {/* Catch-all Not Found Route */}
               <Route path="*" element={<NotFound />} />

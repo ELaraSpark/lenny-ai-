@@ -39,10 +39,6 @@ const navItems = [
       { to: '/recent-chats', label: 'View all chats', icon: Clock }
     ]
   },
-  { to: '/my-agents', label: 'AI Agents', icon: Users, subItems: [ // Updated label
-      { to: '/tasks', label: 'My Tasks', icon: List } 
-    ] 
-  },
   { to: '/my-templates', label: 'Smart Notes', icon: FileText }, // Updated label
   { to: '/tumor-board', label: 'Expert Panel', icon: ClipboardList },
   // Small gap before non-medical items

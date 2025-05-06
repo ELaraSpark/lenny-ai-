@@ -3,7 +3,6 @@ import NavItem from "./NavItem";
 import {
   Brain,
   FileText,
-  Users,
   Bell,
   ClipboardList,
 } from 'lucide-react';
@@ -20,11 +19,6 @@ const NavItems = ({ collapsed }: NavItemsProps) => {
         to="/chat"
         icon={Brain}
         label="Ask Leny"
-      />
-      <NavItem
-        to="/agents"
-        icon={Users}
-        label="AI Agents"
       />
       <NavItem
         to="/my-templates"
