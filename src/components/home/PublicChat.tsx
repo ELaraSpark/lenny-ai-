@@ -63,6 +63,45 @@ const PublicChat = () => {
         setInputValue(e.target.value);
         setIsTyping(e.target.value.length > 0);
     };
+    
+    // Handle key press in the textarea - with direct form submission
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Submit on Enter (without Shift key)
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); // Prevent default to avoid new line
+            
+            // Only submit if there's content or files and we're not already responding
+            if ((inputValue.trim() || selectedFiles.length > 0) && !isResponding) {
+                // Call handleSubmit directly with a synthetic event
+                handleSubmit(new Event('submit') as unknown as React.FormEvent);
+            }
+        }
+    };
+
+    // Extract the sending logic into a separate function 
+    const handleSendMessage = () => {
+        // Create file attachment names to display
+        const attachmentNames = selectedFiles.map(file => file.name);
+        
+        // Create user message
+        const userMessage = {
+            role: 'user',
+            content: inputValue.trim(),
+            timestamp: new Date(),
+            attachments: attachmentNames.length > 0 ? attachmentNames : undefined
+        };
+        
+        // Add to chat messages
+        setChatMessages(prev => [...prev, userMessage]);
+        
+        // Clear input
+        setInputValue('');
+        setIsTyping(false);
+        setShowLightbulbDialog(false);
+        
+        // Generate AI response
+        handleAIResponse(userMessage.content);
+    };
 
     // Scroll to bottom of chat
     const scrollToBottom = () => {
@@ -291,6 +330,7 @@ const PublicChat = () => {
                                         placeholder="Ask me anything medical..."
                                         value={inputValue}
                                         onChange={handleInputChange}
+                                        onKeyDown={handleKeyDown}
                                         className="w-full border-none outline-none text-gray-700 placeholder:text-gray-500 resize-none min-h-[60px]"
                                         rows={1}
                                     />
