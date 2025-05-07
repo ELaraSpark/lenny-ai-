@@ -201,30 +201,56 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
       }
     };
     
+    // Handle scroll events - close only if scroll happens outside the dropdown
+    const handleScroll = (event: Event) => {
+      // Check if the target of the scroll event is within our dropdown
+      const isInsideDropdown = dropdownRef.current && 
+        (dropdownRef.current === event.target || 
+         dropdownRef.current.contains(event.target as Node));
+      
+      // Only close if scrolling happens outside our dropdown
+      if (!isInsideDropdown) {
+        onClose();
+      }
+    };
+    
     if (isVisible) {
       document.addEventListener('mousedown', handleClickOutside);
+      // Use capture phase to get all scroll events
+      window.addEventListener('scroll', handleScroll, true);
     }
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll, true);
     };
   }, [isVisible, onClose, triggerRef]);
 
   // Calculate position relative to trigger element
-  const [position, setPosition] = React.useState({ top: 0, left: 0 });
+  const [position, setPosition] = React.useState({ top: 0 });
 
+  // Update position when trigger moves (e.g., during scrolling)
   React.useEffect(() => {
-    if (isVisible && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY || window.pageYOffset;
-      const scrollX = window.scrollX || window.pageXOffset;
-      
-      // Position the dropdown below the trigger button
-      setPosition({
-        top: rect.bottom + scrollY,
-        left: rect.left + scrollX - 300 + rect.width / 2, // Center it horizontally
-      });
-    }
+    const updatePosition = () => {
+      if (isVisible && triggerRef.current) {
+        // We don't need to track the button position as we'll display at top of screen
+        setPosition({
+          top: window.scrollY, // This will position it at the top of viewport
+        });
+      }
+    };
+    
+    // Initial position
+    updatePosition();
+    
+    // Update position on scroll and resize
+    window.addEventListener('scroll', updatePosition, { passive: true });
+    window.addEventListener('resize', updatePosition, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', updatePosition);
+    };
   }, [isVisible, triggerRef]);
 
   return (
@@ -232,20 +258,24 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
       {isVisible && (
         <motion.div
           ref={dropdownRef}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 0.95, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.2 }}
-          className="fixed border border-gray-100 rounded-xl shadow-xl z-[9999] overflow-hidden max-h-[80vh] overflow-y-auto w-[90%] max-w-md"
+          className="fixed rounded-xl shadow-xl z-[9999] overflow-hidden max-h-[90vh] overflow-y-auto"
           style={{ 
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-            backgroundColor: '#FFFFFF',
+            boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)',
+            backgroundColor: 'rgba(255, 255, 255, 0.97)',
             top: `${position.top}px`,
-            left: `${position.left}px`,
+            left: '50%',
+            width: '90%',
+            maxWidth: '600px',
+            transform: 'translateX(-50%)',
+            border: '1px solid rgba(230, 230, 230, 1)'
           }}
         >
           <div className="p-0">
-            <div className="flex items-center justify-between p-4 border-b border-gray-100" style={{ backgroundColor: '#FFFFFF' }}>
+            <div className="flex items-center justify-between p-4 border-b border-gray-100" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
               <div className="flex items-center gap-2">
                 <Lightbulb className="h-4 w-4 text-primary" />
                 <h3 className="text-sm font-medium">Medical Suggestions</h3>
@@ -260,7 +290,7 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
               </button>
             </div>
             
-            <div className="px-2 py-4" style={{ backgroundColor: '#FFFFFF' }}>
+            <div className="px-2 py-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.97)' }}>
               {categories.map((category, index) => (
                 <SuggestionCategory
                   key={index}

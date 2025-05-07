@@ -28,11 +28,31 @@ const CleanChatInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null); // Add ref for container
 
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Add scroll event listener to close dropdowns when scrolling outside container
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      // Check if the scroll event is coming from outside our container
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        // Close any open dropdowns or popups here
+        // If you have specific dropdown state like showLightbulbDialog, set it to false here
+      }
+    };
+
+    // Add event listener to the window
+    window.addEventListener('scroll', handleScroll, true);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, []);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,7 +220,7 @@ const CleanChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 panel-wrapper">
+    <div className="max-w-3xl mx-auto px-4 py-8 panel-wrapper" ref={containerRef}>
       {/* Header */}
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-900">Medical AI Assistant</h1>

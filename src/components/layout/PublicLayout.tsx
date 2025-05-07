@@ -85,58 +85,40 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
                 {/* Ask Leny */}
                 <Link
                   to="/public/chat"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium ${
                     location.pathname === '/public/chat' || location.pathname === '/'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-teal-100 text-teal-900"
+                      : "bg-teal-100/70 text-teal-900/70 hover:bg-teal-100 hover:text-teal-900"
                   }`}
                 >
-                  <div className="flex items-center justify-center">
-                    <MessageSquare size={18} className={
-                      location.pathname === '/public/chat' || location.pathname === '/'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">Ask Leny</span>
+                  <MessageSquare size={16} className="mr-1" />
+                  <span>Ask Leny</span>
                 </Link>
                 
                 {/* Smart Notes */}
                 <Link
                   to="/public/my-templates"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium ${
                     location.pathname === '/public/my-templates'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-teal-100 text-teal-900"
+                      : "bg-teal-100/70 text-teal-900/70 hover:bg-teal-100 hover:text-teal-900"
                   }`}
                 >
-                  <div className="flex items-center justify-center">
-                    <Zap size={18} className={
-                      location.pathname === '/public/my-templates'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">Smart Notes</span>
+                  <Zap size={16} className="mr-1" />
+                  <span>Smart Notes</span>
                 </Link>
 
                 {/* Expert Panel */}
                 <Link
                   to="/public/tumor-board"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors duration-200 text-sm font-medium ${
                     location.pathname === '/public/tumor-board'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-teal-100 text-teal-900"
+                      : "bg-teal-100/70 text-teal-900/70 hover:bg-teal-100 hover:text-teal-900"
                   }`}
                 >
-                  <div className="flex items-center justify-center">
-                    <List size={18} className={
-                      location.pathname === '/tumor-board'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">Expert Panel</span>
+                  <List size={16} className="mr-1" />
+                  <span>Expert Panel</span>
                 </Link>
               </div>
               
@@ -211,8 +193,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
                   </DropdownMenu>
                 ) : (
                   <Link to="/login">
-                    <Button variant="outline" size="sm" className="font-medium">
-                      <User size={16} className="mr-2" />
+                    <Button className="bg-pink-400 hover:bg-pink-500 text-white font-medium rounded-lg px-5 py-1.5">
                       Sign In
                     </Button>
                   </Link>
