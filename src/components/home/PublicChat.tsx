@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ArrowRight, Paperclip, Lightbulb, ChevronDown, X, Send, ToggleLeft, ToggleRight } from 'lucide-react';
+import { ArrowRight, Paperclip, Lightbulb, ChevronDown, X, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BenefitsSection from "@/components/home/BenefitsSection";
 import FeaturesSection from "@/components/home/FeaturesSection";
@@ -10,6 +10,7 @@ import { getSpecialtyBasedSuggestions } from '@/lib/personalityUtils';
 import { generateMockResponse } from '@/mock/mockAIResponse';
 import { AIProvider, DEFAULT_PROVIDER } from '@/components/agents/services/agentService';
 import QuickActions from '@/components/home/QuickActions';
+import SuggestionsDropdown from '@/components/onboarding/SuggestionsDropdown';
 
 // Dialog/Tooltip components for the paperclip popup
 import {
@@ -20,7 +21,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 // Dropdown menu for the "Clinical Mode" option
 import {
@@ -50,6 +50,10 @@ const PublicChat = () => {
     const landingFileInputRef = useRef<HTMLInputElement>(null); // New ref for landing page file input
     const chatContainerRef = useRef<HTMLDivElement>(null);
     
+    // Refs for lightbulb buttons
+    const landingLightbulbRef = useRef<HTMLButtonElement>(null);
+    const chatLightbulbRef = useRef<HTMLButtonElement>(null);
+    
     // New state variables for the added functionality
     const [showLightbulbDialog, setShowLightbulbDialog] = useState(false);
     const [chatMode, setChatMode] = useState<ChatMode>('Standard');
@@ -62,6 +66,9 @@ const PublicChat = () => {
     const [isResponding, setIsResponding] = useState(false);
     const [chatInputValue, setChatInputValue] = useState('');
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    
+    // State to track which lightbulb was clicked
+    const [activeLightbulbRef, setActiveLightbulbRef] = useState<React.RefObject<HTMLButtonElement> | null>(null);
     
     // Get suggestions using the imported function
     const suggestions = getSpecialtyBasedSuggestions();
@@ -193,13 +200,20 @@ const PublicChat = () => {
         if (inputRef.current) {
             inputRef.current.focus();
         }
+        
         // Hide lightbulb dialog if it was showing
         setShowLightbulbDialog(false);
     };
     
-    // Toggle the lightbulb dialog
-    const toggleLightbulbDialog = () => {
-        setShowLightbulbDialog(prev => !prev);
+    // Handle suggestion click from the suggestions modal
+    const handleSuggestionClick = (query: string) => {
+        setInputValue(query);
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+        
+        // Hide modal
+        setShowLightbulbDialog(false);
     };
     
     // Function to handle setting the chat mode
@@ -223,29 +237,44 @@ const PublicChat = () => {
         }
     };
     
-    // Open file dialog
-    const handleOpenFileDialog = () => {
-        fileInputRef.current?.click();
-    };
-    
-    // Open file dialog for landing page
-    const handleOpenLandingFileDialog = () => {
-        landingFileInputRef.current?.click();
-    };
-    
-    // Remove a file from selected files
+    // Remove a file from the selected files in chat modal
     const handleRemoveFile = (index: number) => {
         setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     };
-
-    // Remove a file from landing page selected files
+    
+    // Remove a file from the landing selected files
     const handleRemoveLandingFile = (index: number) => {
         setLandingSelectedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Format the chat message content with basic markdown-like formatting
+    // Open file dialog for chat modal
+    const handleOpenFileDialog = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+    
+    // Open file dialog for landing page
+    const handleOpenLandingFileDialog = () => {
+        if (landingFileInputRef.current) {
+            landingFileInputRef.current.click();
+        }
+    };
+    
+    // Toggle the lightbulb dialog and set the active reference
+    const toggleLandingLightbulb = () => {
+        setActiveLightbulbRef(landingLightbulbRef);
+        setShowLightbulbDialog(prev => !prev);
+    };
+    
+    // Toggle the chat lightbulb dialog and set the active reference
+    const toggleChatLightbulb = () => {
+        setActiveLightbulbRef(chatLightbulbRef);
+        setShowLightbulbDialog(prev => !prev);
+    };
+    
+    // Format message with basic markdown (bold for now)
     const formatMessage = (content: string) => {
-        // Replace ** with bold
         let formatted = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         
         // Replace newlines with <br>
@@ -262,13 +291,9 @@ const PublicChat = () => {
         <div className="min-h-screen bg-neutral-50 relative overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute top-[5%] right-[-5%] w-[30vw] h-[30vw] bg-tertiary opacity-15 rounded-[40%_60%_65%_35%/40%_45%_55%_60%] z-0" 
-                style={{ transform: "rotate(15deg)" }} />
-            <div className="absolute bottom-[10%] left-[-5%] w-[25vw] h-[25vw] bg-accent opacity-10 rounded-[30%_70%_70%_30%/30%_30%_70%_70%] z-0" 
-                style={{ transform: "rotate(-5deg)" }} />
-            
-            {/* Decorative elements */} 
-            <div className="absolute top-[15%] left-[5%] w-20 h-20 bg-accent opacity-20 z-0"
-                style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%)", transform: "rotate(15deg)" }} />
+                style={{ transform: "rotate(20deg)" }} />
+            <div className="absolute bottom-[18%] left-[-10%] w-[40vw] h-[40vw] bg-primary opacity-10 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] z-0"
+                style={{ transform: "rotate(-15deg)" }} />
             <div className="absolute bottom-[15%] right-[8%] w-24 h-24 bg-secondary opacity-15 z-0"
                 style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)", transform: "rotate(-10deg)" }} />
             
@@ -318,9 +343,10 @@ const PublicChat = () => {
                                         <Paperclip size={16} className="sm:size-18" />
                                     </button>
                                     <button 
-                                        type="button" 
-                                        onClick={toggleLightbulbDialog}
-                                        className={`p-1.5 rounded transition-colors ${showLightbulbDialog ? 'text-primary bg-primary/10' : 'text-gray-500 hover:text-gray-700'}`}
+                                        type="button"
+                                        ref={landingLightbulbRef}
+                                        onClick={toggleLandingLightbulb}
+                                        className={`p-1.5 rounded transition-colors ${showLightbulbDialog && activeLightbulbRef === landingLightbulbRef ? 'text-primary bg-primary/10' : 'text-gray-500 hover:text-gray-700'}`}
                                         aria-label="Show suggestions"
                                     >
                                         <Lightbulb size={16} className="sm:size-18" />
@@ -356,59 +382,41 @@ const PublicChat = () => {
                                             "disabled:opacity-50 disabled:cursor-not-allowed"
                                         )}
                                         disabled={!inputValue.trim() && landingSelectedFiles.length === 0}
-                                        style={{ borderRadius: "50% 30% 45% 40%" }}
-                                        aria-label="Submit query"
+                                        aria-label="Send message"
                                     >
                                         <ArrowRight size={18} className="sm:size-20" />
                                     </button>
                                 </div>
                             </div>
+                            
+                            {/* Display selected files with remove button under the search box */}
+                            {landingSelectedFiles.length > 0 && (
+                                <div className="px-3 sm:px-5 py-2 border-t border-gray-200 flex flex-wrap gap-2">
+                                    {landingSelectedFiles.map((file, index) => (
+                                        <div key={index} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-md flex items-center">
+                                            <span className="mr-1">{file.name}</span>
+                                            <button 
+                                                type="button" 
+                                                onClick={() => handleRemoveLandingFile(index)}
+                                                className="ml-1 text-gray-500 hover:text-gray-700"
+                                                aria-label={`Remove ${file.name}`}
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </form>
-                        
-                        {/* Selected files display */}
-                        {landingSelectedFiles.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                {landingSelectedFiles.map((file, index) => (
-                                    <div key={index} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-md flex items-center">
-                                        <span className="truncate max-w-[60px] xs:max-w-[80px] sm:max-w-[120px]">{file.name}</span>
-                                        <button 
-                                            type="button" 
-                                            onClick={() => handleRemoveLandingFile(index)}
-                                            className="ml-1 text-gray-500 hover:text-gray-700"
-                                            aria-label={`Remove ${file.name}`}
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
                     
-                    {/* Lightbulb Suggestions Dialog - Updated to match screenshot exactly */}
-                    <Dialog open={showLightbulbDialog} onOpenChange={setShowLightbulbDialog}>
-                        <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg shadow-lg border-0">
-                            <div className="mb-4">
-                                <div className="flex items-center gap-2 text-gray-700">
-                                    <Lightbulb size={20} className="text-blue-500" />
-                                    <span className="font-medium">Try asking about:</span>
-                                </div>
-                            </div>
-                            
-                            <div className="space-y-3">
-                                {suggestions.slice(0, 3).map((suggestion, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleQuickAction(suggestion)}
-                                        className="w-full text-left py-2 px-3 rounded-md text-sm hover:bg-blue-50 transition-colors flex items-center gap-2"
-                                    >
-                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-medium">{index + 1}</span>
-                                        {suggestion}
-                                    </button>
-                                ))}
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    {/* Suggestions Dropdown */}
+                    <SuggestionsDropdown 
+                        isVisible={showLightbulbDialog}
+                        onSuggestionClick={handleSuggestionClick}
+                        onClose={() => setShowLightbulbDialog(false)}
+                        triggerRef={activeLightbulbRef || landingLightbulbRef}
+                    />
                     
                     {/* Chat Modal */}
                     <Dialog open={isChatModalOpen} onOpenChange={setIsChatModalOpen}>
@@ -460,6 +468,7 @@ const PublicChat = () => {
                                                     ))}
                                                 </div>
                                             )}
+                                            
                                             <div className={`${msg.role === 'assistant' ? 'text-gray-700 prose prose-xs xs:prose-sm max-w-full' : 'text-xs xs:text-sm sm:text-base'}`}>
                                                 {formatMessage(msg.content)}
                                             </div>
@@ -508,8 +517,8 @@ const PublicChat = () => {
                                                 {/* File Upload Button */}
                                                 <button 
                                                     type="button" 
-                                                    onClick={handleOpenFileDialog} 
-                                                    className="text-gray-500 hover:text-gray-700 p-1 xs:p-1.5 rounded transition-colors"
+                                                    onClick={handleOpenFileDialog}
+                                                    className="p-1 xs:p-1.5 rounded transition-colors text-gray-500 hover:text-gray-700"
                                                     aria-label="Attach files"
                                                 >
                                                     <Paperclip size={14} className="xs:size-16 sm:size-18" />
@@ -517,9 +526,10 @@ const PublicChat = () => {
 
                                                 {/* Suggestions Button */}
                                                 <button 
-                                                    type="button" 
-                                                    onClick={toggleLightbulbDialog}
-                                                    className={`p-1 xs:p-1.5 rounded transition-colors ${showLightbulbDialog ? 'text-primary bg-primary/10' : 'text-gray-500 hover:text-gray-700'}`}
+                                                    type="button"
+                                                    ref={chatLightbulbRef}
+                                                    onClick={toggleChatLightbulb}
+                                                    className={`p-1 xs:p-1.5 rounded transition-colors ${showLightbulbDialog && activeLightbulbRef === chatLightbulbRef ? 'text-primary bg-primary/10' : 'text-gray-500 hover:text-gray-700'}`}
                                                     aria-label="Show suggestions"
                                                 >
                                                     <Lightbulb size={14} className="xs:size-16 sm:size-18" />

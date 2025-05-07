@@ -70,12 +70,14 @@ interface SuggestionsDropdownProps {
   isVisible: boolean;
   onSuggestionClick: (searchQuery: string) => void;
   onClose: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement>;
 }
 
 const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({ 
   isVisible, 
   onSuggestionClick,
-  onClose
+  onClose,
+  triggerRef
 }) => {
   const categories = [
     {
@@ -189,7 +191,12 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
   
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current && 
+        !triggerRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -201,7 +208,24 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isVisible, onClose]);
+  }, [isVisible, onClose, triggerRef]);
+
+  // Calculate position relative to trigger element
+  const [position, setPosition] = React.useState({ top: 0, left: 0 });
+
+  React.useEffect(() => {
+    if (isVisible && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset;
+      const scrollX = window.scrollX || window.pageXOffset;
+      
+      // Position the dropdown below the trigger button
+      setPosition({
+        top: rect.bottom + scrollY,
+        left: rect.left + scrollX - 300 + rect.width / 2, // Center it horizontally
+      });
+    }
+  }, [isVisible, triggerRef]);
 
   return (
     <AnimatePresence>
@@ -212,15 +236,16 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-primary/10 rounded-xl shadow-xl z-[9999] overflow-hidden max-h-[80vh] overflow-y-auto w-[90%] max-w-[800px]"
+          className="fixed border border-gray-100 rounded-xl shadow-xl z-[9999] overflow-hidden max-h-[80vh] overflow-y-auto w-[90%] max-w-md"
           style={{ 
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
             backgroundColor: '#FFFFFF',
-            position: 'relative'
+            top: `${position.top}px`,
+            left: `${position.left}px`,
           }}
         >
-          <div className="p-3" style={{ backgroundColor: '#FFFFFF' }}>
-            <div className="flex items-center justify-between mb-4 px-4 py-2 border-b border-gray-100" style={{ backgroundColor: '#FFFFFF' }}>
+          <div className="p-0">
+            <div className="flex items-center justify-between p-4 border-b border-gray-100" style={{ backgroundColor: '#FFFFFF' }}>
               <div className="flex items-center gap-2">
                 <Lightbulb className="h-4 w-4 text-primary" />
                 <h3 className="text-sm font-medium">Medical Suggestions</h3>
@@ -235,7 +260,7 @@ const SuggestionsDropdown: React.FC<SuggestionsDropdownProps> = ({
               </button>
             </div>
             
-            <div className="space-y-4" style={{ backgroundColor: '#FFFFFF' }}>
+            <div className="px-2 py-4" style={{ backgroundColor: '#FFFFFF' }}>
               {categories.map((category, index) => (
                 <SuggestionCategory
                   key={index}
