@@ -36,7 +36,7 @@ export interface ClientChatSession {
 // then a distinct type would be useful. For now, it's redundant.
 
 
-const ChatPage: React.FC = () => {
+const TestChatPage: React.FC = () => {
     const { user } = useAuthStore(); // isAuthenticated can be derived from user !== null
     const navigate = useNavigate();
     const isAuthenticated = user !== null; // Derived authentication status
@@ -418,4 +418,4 @@ const ChatPage: React.FC = () => {
     );
 };
 
-export default ChatPage;
+export default TestChatPage;

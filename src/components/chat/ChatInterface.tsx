@@ -23,7 +23,7 @@ interface Message {
   citations?: Citation[];
 }
 
-const CleanChatInterface: React.FC = () => {
+const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -354,4 +354,4 @@ const CleanChatInterface: React.FC = () => {
   );
 };
 
-export default CleanChatInterface;
+export default ChatInterface;

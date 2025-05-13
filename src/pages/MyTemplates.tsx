@@ -12,7 +12,7 @@ import {
     MoreHorizontal, Palette, Check, MessageSquare, Zap, List, User, LogOut, Clock,
     Settings
 } from 'lucide-react';
-import { useAuth } from "@/contexts/AuthContext";
+import useAuthStore from "@/stores/authStore"; // Import the Zustand store
 import { PicassoAvatar } from "@/components/illustrations/PicassoAvatar";
 import {
   DropdownMenu,
@@ -158,941 +158,298 @@ Exercise Habits:
 ];
 
 // Define props to accept isPublicView
-interface MyTemplatesProps {
-  isPublicView?: boolean;
+interface MyTemplatesPageProps {
+  isPublicView?: boolean; // Add isPublicView as an optional prop
 }
 
-const QuickNotes: React.FC<MyTemplatesProps> = ({ isPublicView = false }) => {
+const MyTemplatesPage: React.FC<MyTemplatesPageProps> = ({ isPublicView }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuthStore(); // Use Zustand store
   const isAuthenticated = !!user;
   const { toast } = useToast();
-  const [isScrolled, setIsScrolled] = useState(false);
-  
-  // State for template functions
-  const [templates, setTemplates] = useState<Template[]>(exampleTemplates);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState('Processing...');
-  
-  // Input/Output state
-  const [inputText, setInputText] = useState('');
-  const [outputText, setOutputText] = useState('');
-  const [outputTitle, setOutputTitle] = useState('Generated Document');
-  const [showOutput, setShowOutput] = useState(false);
-  const [isOutputEditable, setIsOutputEditable] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [outputStyle, setOutputStyle] = useState<string>('default');
-  
-  // Output style options
-  const styleOptions = [
-    { id: 'default', name: 'Default', icon: <Check size={14} /> },
-    { id: 'professional', name: 'Professional', icon: <FileText size={14} /> },
-    { id: 'friendly', name: 'Friendly', icon: <Users size={14} /> },
-    { id: 'print', name: 'Print-friendly', icon: <FileText size={14} /> },
-    { id: 'contrast', name: 'High Contrast', icon: <Monitor size={14} /> },
-  ];
-  
-  // Style class mapping
-  const getStyleClass = (style: string) => {
-    switch(style) {
-      case 'professional':
-        return 'font-serif text-gray-800 leading-relaxed';
-      case 'friendly':
-        return 'font-sans text-gray-700 leading-loose rounded-xl bg-blue-50/50';
-      case 'print':
-        return 'font-mono text-black leading-snug';
-      case 'contrast':
-        return 'font-sans text-white bg-gray-900 leading-relaxed text-lg';
-      default:
-        return '';
-    }
-  };
-  
+  const [isScrolled, setIsScrolled] = useState(false); // Keep for potential future use with sticky headers etc.
+
+  // State for AI Template Generation
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [generatedTemplateContent, setGeneratedTemplateContent] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // State for existing user templates (can be refined later)
+  const [userTemplates, setUserTemplates] = useState<Template[]>(exampleTemplates);
+  const [searchTermExisting, setSearchTermExisting] = useState('');
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null); // For editing existing templates
+
   // Refs
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const outputRef = useRef<HTMLDivElement>(null);
+  const generatedTemplateOutputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Common commands/prompts that can be suggested
-  const suggestedCommands = [
-    "Translate to Spanish",
-    "Translate to French",
-    "Summarize",
-    "Simplify language",
-    "Format as bullet points",
-    "Convert to patient-friendly language",
-    "Extract medication list",
-    "Extract diagnoses",
-    "Format as SOAP note"
-  ];
-  
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isCommand, setIsCommand] = useState(false);
-  const [showStyleOptions, setShowStyleOptions] = useState(false);
-  
-  // Filter templates based on search term or handle as command
-  const filteredTemplates = templates.filter(template =>
-    template.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.category?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  // Handle command execution
-  const executeCommand = (command: string) => {
-    if (!inputText.trim()) {
-      toast.error('Please enter some text in the input document first.');
+
+  // Mock AI Template Generation Logic
+  const handleGenerateTemplate = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error("Please enter a description for the template you want to generate.");
       return;
     }
-    
-    setLoadingText(`Processing: ${command}...`);
-    setIsLoading(true);
-    setIsCommand(true);
-    
-    // Simulate processing the command
-    setTimeout(() => {
-      try {
-        let processedText = '';
-        let title = '';
-        
-        // Handle different commands
-        if (command.toLowerCase().includes('translate to spanish')) {
-          title = 'Spanish Translation';
-          // This is a mock implementation - in a real app, you'd call a translation API
-          processedText = `<h3>Original Text:</h3>
-${inputText}
+    setIsGenerating(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-<h3>Spanish Translation:</h3>
-[This is where the Spanish translation would appear. In a real implementation, 
-this would be translated using a service like Google Translate API.]`;
-        } 
-        else if (command.toLowerCase().includes('translate to french')) {
-          title = 'French Translation';
-          processedText = `<h3>Original Text:</h3>
-${inputText}
+    let mockContent = `// Default generated template for: "${aiPrompt}"\n\nYour content here.`;
+    const lowerCasePrompt = aiPrompt.toLowerCase();
 
-<h3>French Translation:</h3>
-[This is where the French translation would appear. In a real implementation, 
-this would be translated using a service like Google Translate API.]`;
-        }
-        else if (command.toLowerCase().includes('summarize')) {
-          title = 'Summary';
-          processedText = `<h3>Original Text:</h3>
-${inputText}
-
-<h3>Summary:</h3>
-[This is where a summary of the text would appear. In a real implementation, 
-this would use an AI service to generate a concise summary.]`;
-        }
-        else if (command.toLowerCase().includes('simplify')) {
-          title = 'Simplified Text';
-          processedText = `<h3>Original Text:</h3>
-${inputText}
-
-<h3>Simplified Version:</h3>
-[This is where a simplified version of the text would appear. In a real implementation, 
-this would use an AI service to generate text with simpler language.]`;
-        }
-        else if (command.toLowerCase().includes('bullet')) {
-          title = 'Bullet Point Format';
-          // Simple mock implementation
-          const lines = inputText.split('\n').filter(line => line.trim());
-          const bulletPoints = lines.map(line => `• ${line}`).join('\n');
-          processedText = `<h3>Bullet Point Format:</h3>
-${bulletPoints}`;
-        }
-        else if (command.toLowerCase().includes('patient-friendly')) {
-          title = 'Patient-Friendly Version';
-          processedText = `<h3>Original Text:</h3>
-${inputText}
-
-<h3>Patient-Friendly Version:</h3>
-[This is where a patient-friendly version would appear. In a real implementation, 
-this would use an AI service to translate medical jargon into plain language.]`;
-        }
-        else if (command.toLowerCase().includes('medication')) {
-          title = 'Medication List';
-          processedText = `<h3>Extracted Medication List:</h3>
-[This is where an extracted medication list would appear. In a real implementation, 
-this would use NLP to identify and list all medications mentioned in the text.]`;
-        }
-        else if (command.toLowerCase().includes('diagnoses')) {
-          title = 'Diagnoses List';
-          processedText = `<h3>Extracted Diagnoses:</h3>
-[This is where extracted diagnoses would appear. In a real implementation, 
-this would use NLP to identify and list all diagnoses mentioned in the text.]`;
-        }
-        else if (command.toLowerCase().includes('soap')) {
-          title = 'SOAP Note Format';
-          processedText = `<h3>SOAP Note:</h3>
-
-<h4>Subjective:</h4>
-[Patient complaints and history extracted from the text]
-
-<h4>Objective:</h4>
-[Examination findings and test results extracted from the text]
-
-<h4>Assessment:</h4>
-[Diagnoses and clinical impressions extracted from the text]
-
-<h4>Plan:</h4>
-[Treatment plans and follow-up instructions extracted from the text]`;
-        }
-        else {
-          // Generic command handling
-          title = 'Processed Text';
-          processedText = `<h3>Command: ${command}</h3>
-<p>Applied to:</p>
-${inputText}
-
-<p>[This is a placeholder for the actual implementation of "${command}"]</p>`;
-        }
-        
-        setOutputText(processedText);
-        setOutputTitle(title);
-        setShowOutput(true);
-        setIsOutputEditable(true);
-        setIsLoading(false);
-        toast.success(`Command "${command}" executed successfully.`);
-      } catch (error) {
-        console.error("Error executing command:", error);
-        setIsLoading(false);
-        toast.error('Failed to execute command.');
-      }
-    }, 1500);
-  };
-
-  // --- Template Actions ---
-  const handleTemplateClick = useCallback((template: Template) => {
-    setSelectedTemplate(template);
-    
-    if (inputText.trim()) {
-      // If there's input text, apply the template to it
-      setLoadingText('Applying template...');
-      setIsLoading(true);
-      
-      // Simulate processing
-      setTimeout(() => {
-        try {
-          // This is a simplified example - in a real app, you'd have more sophisticated template application logic
-          const processedText = `<h2>${template.title}</h2>
-          
-${template.content}
-
-<h3>Applied to Input:</h3>
-${inputText}`;
-          
-          setOutputText(processedText);
-          setOutputTitle(template.title);
-          setShowOutput(true);
-          setIsOutputEditable(true);
-          setIsLoading(false);
-          toast.success('Template applied successfully.');
-        } catch (error) {
-          console.error("Error applying template:", error);
-          setIsLoading(false);
-          toast.error('Failed to apply template.');
-        }
-      }, 1000);
+    if (lowerCasePrompt.includes("soap note")) {
+      mockContent = exampleTemplates.find(t => t.id === 'tpl1')?.content || `<h3>SOAP Note for ${aiPrompt}</h3>\n<p>Details...</p>`;
+      toast.success("SOAP Note template generated!");
+    } else if (lowerCasePrompt.includes("referral letter")) {
+      mockContent = `<h3>Referral Letter</h3>
+<h4>Dear Specialist,</h4>
+<p>I am referring [Patient Name] for consultation regarding ${aiPrompt}.</p>
+<p>Relevant history includes...</p>
+<p>Thank you for your attention to this matter.</p>
+<h4>Sincerely,</h4>
+<p>${user?.name || 'Healthcare Provider'}</p>`; {/* Use user.name from Zustand store */}
+    toast.success("Referral letter template generated!");
+  } else if (lowerCasePrompt.includes("discharge summary")) {
+        mockContent = exampleTemplates.find(t => t.id === 'tpl2')?.content || `<h3>Discharge Summary for ${aiPrompt}</h3>\n<p>Details...</p>`;
+        toast.success("Discharge summary template generated!");
     } else {
-      // If no input text, just show the template content
-      setOutputText(template.content);
-      setOutputTitle(template.title);
-      setShowOutput(true);
-      setIsOutputEditable(true); // Enable editing by default for templates
+      toast.info("Generated a generic template based on your request.");
     }
-  }, [inputText]);
 
-  const handleCreateTemplate = () => {
-    navigate('/templates/create');
-  };
-  
-  const handleEditTemplate = (templateId: string) => {
-    navigate(`/templates/${templateId}/edit`);
+    setGeneratedTemplateContent(mockContent);
+    setIsGenerating(false);
   };
 
-  const handleDeleteTemplate = (templateId: string) => {
-    if (confirm('Are you sure you want to delete this template?')) {
-      setTemplates(prev => prev.filter(t => t.id !== templateId));
+  // --- Existing Template Actions (to be reviewed and integrated) ---
+  const handleEditExistingTemplate = (template: Template) => {
+    // For now, let's just log or set it to a state.
+    // In a full implementation, this might open a modal or an inline editor.
+    setEditingTemplate(template);
+    // For simplicity, we can load its content into the AI generation output for editing
+    setGeneratedTemplateContent(template.content);
+    toast.info(`Editing template: ${template.title}. Modify in the 'Generated Template' area and save.`);
+  };
+
+  const handleDeleteExistingTemplate = (templateId: string) => {
+    if (window.confirm('Are you sure you want to delete this template?')) {
+      setUserTemplates(prev => prev.filter(t => t.id !== templateId));
       toast.success('Template deleted successfully.');
-      
-      // Clear output if the deleted template was selected
-      if (selectedTemplate?.id === templateId) {
-        setSelectedTemplate(null);
-        setShowOutput(false);
+      if (editingTemplate?.id === templateId) {
+        setEditingTemplate(null);
+        setGeneratedTemplateContent(''); // Clear if the deleted template was being "edited"
       }
     }
-  };
-
-  const handleSaveTemplate = () => {
-    if (!outputText.trim()) {
-      toast.error('Cannot save empty template.');
-      return;
-    }
-    
-    if (selectedTemplate) {
-      // Update existing template
-      setTemplates(prev => prev.map(t => 
-        t.id === selectedTemplate.id 
-          ? {...t, content: outputText, date: new Date()} 
-          : t
-      ));
-      toast.success('Template updated successfully.');
-    } else {
-      // Create new template
-      const title = prompt('Enter a title for your template:', outputTitle || 'New Template');
-      if (title) {
-        const newTemplate: Template = {
-          id: `tpl${Date.now()}`,
-          title,
-          content: outputText,
-          date: new Date(),
-          category: 'Custom'
-        };
-        setTemplates(prev => [...prev, newTemplate]);
-        setSelectedTemplate(newTemplate);
-        toast.success('Template saved successfully.');
-      }
-    }
-  };
-
-  // --- Input Actions ---
-  const handleClearInput = () => {
-    setInputText('');
-    toast.info('Input cleared.');
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target?.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setInputText(e.target.result as string);
-          toast.success(`File "${file.name}" loaded.`);
-        } else {
-          toast.error(`Error reading file content from "${file.name}".`);
-        }
-      };
-      reader.onerror = () => {
-        toast.error(`Error reading file "${file.name}".`);
-      };
-      reader.readAsText(file);
-    }
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  // --- Output Actions ---
-  const handleClearOutput = () => {
-    setOutputText('');
-    setShowOutput(false);
-    toast.info('Output cleared.');
   };
   
-  const handleCopyOutput = () => {
-    if (outputRef.current?.innerText && navigator.clipboard) {
-      navigator.clipboard.writeText(outputRef.current.innerText)
-        .then(() => toast.success('Output copied to clipboard.'))
-        .catch(err => toast.error('Failed to copy output.'));
-    } else {
-      toast.info('Nothing to copy.');
-    }
-  };
-
-  const handleDownloadOutput = () => {
-    if (!outputRef.current?.innerText) {
-      toast.info('Nothing to download.');
+  const handleSaveGeneratedTemplate = () => {
+    if (!generatedTemplateContent.trim()) {
+      toast.error("Cannot save an empty template.");
       return;
     }
-    try {
-      const textContent = outputRef.current.innerText;
-      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      const filename = (outputTitle || 'document').replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      link.href = url;
-      link.download = `${filename}.txt`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success('Downloading as text file.');
-    } catch (err) {
-      console.error("Download failed:", err);
-      toast.error('Failed to initiate download.');
-    }
-  };
-
-  const handleToggleEditOutput = () => {
-    setIsOutputEditable(prev => {
-      if (outputRef.current) {
-        outputRef.current.contentEditable = String(!prev);
-        if (!prev) {
-          outputRef.current.focus();
-          toast.info('Output editing enabled.');
-        } else {
-          toast.info('Output editing disabled.');
-          // Save changes
-          setOutputText(outputRef.current.innerHTML);
-        }
-      }
-      return !prev;
-    });
-  };
-
-  // Apply template to input text
-  const handleApplyToInput = () => {
-    if (!inputText.trim()) {
-      toast.error('Please enter some text in the input document.');
-      return;
-    }
-    
-    if (!outputText.trim()) {
-      toast.error('No template selected.');
-      return;
-    }
-    
-    setLoadingText('Applying template...');
-    setIsLoading(true);
-    
-    // Simulate processing
-    setTimeout(() => {
-      try {
-        // This is a simplified example - in a real app, you'd have more sophisticated template application logic
-        const processedText = `<h2>${outputTitle}</h2>
-        
-${outputText}
-
-<h3>Applied to Input:</h3>
-${inputText}`;
-        
-        setOutputText(processedText);
-        setIsLoading(false);
-        toast.success('Template applied successfully.');
-      } catch (error) {
-        console.error("Error applying template:", error);
-        setIsLoading(false);
-        toast.error('Failed to apply template.');
-      }
-    }, 1000);
-  };
-
-  // Scroll to output when it appears
-  useEffect(() => {
-    if (showOutput) {
-      outputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [showOutput]);
-
-  // Track scroll position for header behavior
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
+    const title = prompt("Enter a title for your new template:", editingTemplate?.title || "New AI Generated Template");
+    if (title) {
+      if (editingTemplate) {
+        // Update existing template
+        setUserTemplates(prev => prev.map(t =>
+          t.id === editingTemplate.id
+            ? { ...t, title, content: generatedTemplateContent, date: new Date() }
+            : t
+        ));
+        toast.success(`Template "${title}" updated!`);
+        setEditingTemplate(null);
       } else {
-        setIsScrolled(false);
+        // Create new template
+        const newTemplate: Template = {
+          id: `user_tpl_${Date.now()}`,
+          title,
+          content: generatedTemplateContent,
+          category: 'AI Generated',
+          date: new Date(),
+        };
+        setUserTemplates(prev => [newTemplate, ...prev]);
+        toast.success(`Template "${title}" saved!`);
       }
-    };
-    
+      setGeneratedTemplateContent(''); // Clear the generation area
+      setAiPrompt(''); // Clear the prompt
+    }
+  };
+
+
+  // Filter existing templates
+  const filteredExistingTemplates = userTemplates.filter(template =>
+    template.title.toLowerCase().includes(searchTermExisting.toLowerCase()) ||
+    template.category?.toLowerCase().includes(searchTermExisting.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    signOut();
-    toast({
-      title: "Logged out",
-      description: "You have been logged out successfully."
-    });
-    navigate("/");
-  };
 
   return (
-    <>
-      {/* Add top navigation bar */}
-      <header className={`sticky top-0 z-50 w-full backdrop-blur-md transition-all duration-300 ${isScrolled ? 'bg-background/90 shadow-md' : 'bg-transparent'}`}>
-        <div className="container mx-auto px-4 sm:px-6">
-          <nav className="flex items-center justify-between py-4">
-            {/* Logo and Nav Items */}
-            <div className="flex items-center gap-8">
-              {/* Playful Logo/Accent - Using the landing page style */}
-              <Link to="/" className="text-2xl font-semibold text-neutral-900 flex items-center transform -rotate-1 mr-8">
-                <span className="inline-block w-2.5 h-2.5 bg-secondary rounded-full mr-2 transform -translate-y-1"></span>
-                Leny<span className="text-primary">.ai</span>
-              </Link>
-              
-              {/* Navigation Menu */}
-              <div className="flex items-center gap-2 md:gap-5">
-                {/* Ask Leny */}
-                <Link
-                  to="/public/chat"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                    location.pathname === '/public/chat' || location.pathname === '/'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center justify-center">
-                    <MessageSquare size={18} className={
-                      location.pathname === '/public/chat' || location.pathname === '/'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">Ask Leny</span>
-                </Link>
-                
-                {/* Smart Notes */}
-                <Link
-                  to="/public/my-templates"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                    location.pathname === '/public/my-templates'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center justify-center">
-                    <Zap size={18} className={
-                      location.pathname === '/public/my-templates'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">Smart Notes</span>
-                </Link>
-
-                {/* Expert Panel */}
-                <Link
-                  to="/public/tumor-board"
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium ${
-                    location.pathname === '/public/tumor-board'
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center justify-center">
-                    <List size={18} className={
-                      location.pathname === '/tumor-board'
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    } />
-                  </div>
-                  <span className="hidden md:inline">Expert Panel</span>
-                </Link>
-              </div>
-            </div>
-            
-            {/* User Actions */}
-            <div className="flex items-center gap-3">
-              {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <div className="cursor-pointer">
-                      <PicassoAvatar
-                        email={user?.email || 'User'}
-                        size="sm"
-                        color="text-primary"
-                      />
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64 border border-border shadow-lg rounded-lg bg-white">
-                    {/* User Info Section */}
-                    <div className="p-4 border-b border-border bg-white">
-                      <div className="flex items-center">
-                        <PicassoAvatar
-                          email={user?.email || 'User'}
-                          size="md"
-                          color="text-primary"
-                          className="mr-3"
-                        />
-                        <div>
-                          <div className="font-medium text-sm">Medical User</div>
-                          <div className="text-xs text-muted-foreground">{user?.email || 'user@hospital.org'}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Menu Items Section */}
-                    <div className="py-2 bg-white">
-                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
-                        <Link to="/recent-chats" className="cursor-pointer">
-                          <Clock size={16} className="mr-3 text-muted-foreground" />
-                          <span>Recent Chats</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
-                         <Link to="/my-agents" className="cursor-pointer">
-                           <Users size={16} className="mr-3 text-muted-foreground" />
-                           <span>My Agents</span>
-                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
-                         <Link to="/my-templates" className="cursor-pointer">
-                           <FileText size={16} className="mr-3 text-muted-foreground" />
-                           <span>My Templates</span>
-                         </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="bg-white hover:bg-primary/5">
-                        <Link to="/settings" className="cursor-pointer">
-                          <Settings size={16} className="mr-3 text-muted-foreground" />
-                          <span>Account Settings</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </div>
-
-                    <DropdownMenuSeparator className="bg-border" />
-                    
-                    {/* Logout Option */}
-                    <div className="py-2 bg-white">
-                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50 font-medium bg-white">
-                        <LogOut size={16} className="mr-3" />
-                        <span>Log Out</span>
-                      </DropdownMenuItem>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link to="/login">
-                  <Button variant="outline" size="sm" className="font-medium">
-                    <User size={16} className="mr-2" />
-                    Sign In
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </nav>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4 sm:p-6 lg:p-8 flex flex-col">
+      <header className="mb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-pink-400 to-purple-500">
+          My Templates & AI Generator
+        </h1>
+        <p className="text-slate-400 mt-1">
+          Craft new templates with AI or manage your existing ones.
+        </p>
       </header>
 
-      {/* Main layout - Maximizing screen usage with a flexible grid */}
-      <div className="h-[calc(100vh-5rem)] flex flex-col">
-        {/* No top bar - functionality integrated into panels */}
-        
-        {/* Main content area - Flexible layout with input first, then templates */}
-        <div className="flex-1 grid grid-cols-12 gap-4 overflow-hidden">
-          {/* Left area - Input */}
-          <div className={`${showOutput ? 'col-span-3 bg-background/80' : 'col-span-7 bg-background'} rounded-xl shadow-lg p-3 flex flex-col transition-all duration-300`}>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-base font-medium">Tell me what you're working on...</h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => {
-                  // Clear input text
-                  setInputText('');
-                  // Clear output and hide output panel
-                  setOutputText('');
-                  setShowOutput(false);
-                  // Reset selected template
-                  setSelectedTemplate(null);
-                  // Reset search term
-                  setSearchTerm('');
-                  // Show success message
-                  toast.info('Starting fresh!');
-                }} 
-                className="text-xs text-red-600 hover:bg-red-50"
-              >
-                <Trash2 size={14} className="mr-1.5" /> Start Fresh
-              </Button>
-            </div>
-            <div className="flex-1 flex flex-col"> {/* Re-added flex-1 */}
-              <Textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Paste or type your medical text here..."
-                className="flex-1 resize-none text-base p-4 focus:ring-2 focus:ring-primary focus:border-primary min-h-[150px]" // Removed shadow-sm, border, rounded-lg
-                autoFocus
-              />
-              
-              {/* Empty state guidance removed as requested */}
-              
-              {/* Quick action buttons at bottom with sparkle emoji */}
-              <div className="flex flex-wrap gap-2 mt-3 mb-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => executeCommand('Summarize')}
-                  className="bg-white hover:bg-primary/5 border-gray-300"
-                >
-                  <span className="text-primary mr-1">✨</span> Summarize
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => executeCommand('Simplify')}
-                  className="bg-white hover:bg-primary/5 border-gray-300"
-                >
-                  <span className="text-primary mr-1">✨</span> Simplify
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => executeCommand('Translate')}
-                  className="bg-white hover:bg-primary/5 border-gray-300"
-                >
-                  <span className="text-primary mr-1">✨</span> Translate
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => executeCommand('Format as Bullets')}
-                  className="bg-white hover:bg-primary/5 border-gray-300"
-                >
-                  <span className="text-primary mr-1">✨</span> Format as Bullets
-                </Button>
-              </div>
-              
-              {/* Removed Upload File button and input */}
-            </div>
-          </div>
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* AI Template Generation Section */}
+        <section className="bg-slate-800/50 p-6 rounded-xl shadow-2xl flex flex-col">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-300 flex items-center">
+            <Brain size={28} className="mr-3 text-pink-400" />
+            AI-Powered Template Generation
+          </h2>
           
-          {/* Center area - Templates - Always visible */}
-          <div className={`${showOutput ? 'col-span-3 bg-background/80' : 'col-span-5 bg-background'} rounded-xl shadow-lg p-3 flex flex-col transition-all duration-300`}>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-base font-medium">Leny's Magic Templates</h3>
-              <Button 
-                size="sm" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                onClick={handleCreateTemplate}
-              >
-                <Plus size={14} className="mr-1" />
-                Create
-              </Button>
-            </div>
-            
-            {/* Search Bar with Suggestions */}
-            <div className="relative mb-3">
-              <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search templates or type a command..."
-                className="pl-9 pr-3 py-1.5 text-sm w-full" // Removed shadow-sm
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow clicking suggestions
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && searchTerm.trim()) {
-                    // Check if it's a command (not matching any template)
-                    const isCommand = !filteredTemplates.some(t => 
-                      t.title.toLowerCase() === searchTerm.toLowerCase() ||
-                      t.category?.toLowerCase() === searchTerm.toLowerCase()
-                    );
-                    
-                    if (isCommand) {
-                      executeCommand(searchTerm);
-                      setSearchTerm('');
-                    }
-                  }
-                }}
-              />
-              
-              {/* Suggestions Dropdown */}
-              {showSuggestions && (
-                <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-y-auto">
-                  {suggestedCommands.length > 0 && (
-                    <>
-                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
-                        Magic Phrases ✨
-                      </div>
-                      {suggestedCommands.map((command, index) => (
-                        <div
-                          key={index}
-                          className="px-3 py-2 text-sm cursor-pointer hover:bg-primary/5 flex items-center"
-                          onClick={() => {
-                            setSearchTerm(command);
-                            executeCommand(command);
-                          }}
-                        >
-                          <Languages size={14} className="mr-2 text-primary" />
-                          {command}
-                        </div>
-                      ))}
-                      
-                      {filteredTemplates.length > 0 && (
-                        <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 mt-1">
-                          Matching Templates
-                        </div>
-                      )}
-                    </>
-                  )}
-                  
-                  {filteredTemplates.length === 0 && searchTerm && (
-                    <div className="px-3 py-2 text-sm text-gray-500">
-                      Press Enter to execute "{searchTerm}" as a command
-                    </div>
-                  )}
-                </div>
+          <div className="flex-1 flex flex-col space-y-4">
+            <Textarea
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder="Describe the template you need (e.g., 'SOAP note for lower back pain', 'Referral to cardiologist for palpitations')..."
+              className="bg-slate-700 border-slate-600 placeholder-slate-500 text-white resize-none focus:ring-pink-500 focus:border-pink-500 min-h-[100px] text-base"
+              rows={4}
+            />
+            <Button
+              onClick={handleGenerateTemplate}
+              disabled={isGenerating}
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold py-3 text-base transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isGenerating ? (
+                <>
+                  <RotateCcw size={20} className="mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Zap size={20} className="mr-2" />
+                  Generate Template
+                </>
               )}
-            </div>
-            
-            {/* Templates List - Vertical for better visibility */}
-            <div className="templates-list flex-1 space-y-2 pr-1 overflow-y-auto">
-              {filteredTemplates.map((template) => (
-                <button
-                  key={template.id}
-                  onClick={() => handleTemplateClick(template)}
-                  className={`template-card text-left bg-white border-2 border-gray-500 rounded-lg p-3 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:border-primary w-full flex flex-col ${
-                    selectedTemplate?.id === template.id ? 'ring-2 ring-primary border-primary bg-primary/5' : ''
-                  }`}
-                >
-                  <div className="template-card-header flex items-center gap-2 mb-1">
-                    <div className="template-icon w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-4 h-4 text-primary" strokeWidth={1.5} />
-                    </div>
-                    <h4 className="text-sm font-semibold text-gray-900 truncate">{template.title}</h4>
-                  </div>
-                  <p className="text-xs text-gray-500 line-clamp-1">{template.content.replace(/<[^>]*>/g, ' ').substring(0, 60)}...</p>
-                  <div className="template-footer flex justify-between items-center mt-1 pt-1 border-t border-gray-100">
-                    <span className="text-xs text-gray-400">{template.category}</span>
-                    <div className="template-actions flex gap-1">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditTemplate(template.id);
-                        }}
-                        className="p-1 text-gray-400 hover:text-primary"
-                      >
-                        <Edit size={12} />
-                      </button>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteTemplate(template.id);
-                        }}
-                        className="p-1 text-gray-400 hover:text-red-500"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  </div>
-                </button>
-              ))}
-              
-              {/* Add a "More" card at the end */}
-              <button
-                onClick={() => navigate('/my-templates')}
-                className="template-card text-left bg-primary/5 border border-dashed border-primary/30 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary w-full flex items-center justify-center gap-2 h-12"
-              >
-                <MoreHorizontal className="w-4 h-4 text-primary" />
-                <p className="text-sm font-medium text-primary">More Templates</p>
-              </button>
-            </div>
-            
-            {/* No Apply Template button needed - templates apply automatically when clicked */}
-          </div>
-          
-          {/* Right area - Output (only shown when there's output) */}
-          {showOutput && (
-            <div className="col-span-6 bg-gradient-to-br from-background to-primary/5 rounded-xl shadow-lg p-4 flex flex-col animate-fadeIn">
-              <div className="mb-3">
-                <h3 className="text-lg font-medium text-primary">Here's what I've created for you ✨</h3>
-              </div>
-              
-              <div className="output-header flex justify-between items-center mb-3 bg-white/80 p-2 rounded-lg shadow-sm">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-semibold text-primary">{outputTitle}</h4>
-                  <div className="relative">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-7 px-2 flex items-center gap-1"
-                      onClick={() => setShowStyleOptions(prev => !prev)}
+            </Button>
+
+            { (generatedTemplateContent || isGenerating) && (
+              <div className="mt-4 flex-1 flex flex-col">
+                <label htmlFor="generatedTemplateOutput" className="block text-sm font-medium text-slate-300 mb-1">
+                  Generated Template (Editable)
+                </label>
+                <Textarea
+                  id="generatedTemplateOutput"
+                  ref={generatedTemplateOutputRef}
+                  value={generatedTemplateContent}
+                  onChange={(e) => setGeneratedTemplateContent(e.target.value)}
+                  placeholder="AI will generate content here..."
+                  className="bg-slate-700/80 border-slate-600 placeholder-slate-500 text-white resize-none focus:ring-blue-500 focus:border-blue-500 flex-1 min-h-[200px] text-sm"
+                  readOnly={isGenerating}
+                />
+                {!isGenerating && generatedTemplateContent && (
+                    <Button
+                        onClick={handleSaveGeneratedTemplate}
+                        className="mt-3 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 text-sm"
                     >
-                      <Palette size={14} />
-                      <span className="text-xs">Style</span>
+                        <Save size={18} className="mr-2" />
+                        Save This Template
                     </Button>
-                    
-                    {/* Style Options Dropdown */}
-                    {showStyleOptions && (
-                      <div className="absolute z-10 mt-1 bg-white rounded-md shadow-lg border border-gray-200 w-48">
-                        <div className="py-1">
-                          {styleOptions.map(style => (
-                            <button
-                              key={style.id}
-                              className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between hover:bg-gray-100 ${
-                                outputStyle === style.id ? 'bg-primary/5 text-primary' : ''
-                              }`}
-                              onClick={() => {
-                                setOutputStyle(style.id);
-                                setShowStyleOptions(false);
-                                toast.success(`Style changed to ${style.name}`);
-                              }}
-                            >
-                              <span className="flex items-center gap-2">
-                                {style.icon}
-                                {style.name}
-                              </span>
-                              {outputStyle === style.id && <Check size={14} className="text-primary" />}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Existing User Templates Section */}
+        <section className="bg-slate-800/50 p-6 rounded-xl shadow-2xl flex flex-col">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-300 flex items-center">
+            <ListChecks size={28} className="mr-3 text-green-400" />
+            Your Saved Templates
+          </h2>
+          <div className="mb-4">
+            <Input
+              type="search"
+              placeholder="Search your templates..."
+              value={searchTermExisting}
+              onChange={(e) => setSearchTermExisting(e.target.value)}
+              className="bg-slate-700 border-slate-600 placeholder-slate-500 text-white focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 -mr-2 custom-scrollbar">
+            {filteredExistingTemplates.length > 0 ? (
+              filteredExistingTemplates.map((template) => (
+                <div key={template.id} className="bg-slate-700/70 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-lg text-slate-100">{template.title}</h3>
+                      <p className="text-xs text-slate-400 mb-1">
+                        Category: {template.category || 'Uncategorized'} | Last Updated: {template.date.toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-slate-300 line-clamp-2">
+                        {template.content.replace(/<[^>]*>/g, ' ').substring(0, 100)}...
+                      </p>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hover:bg-slate-600">
+                          <MoreHorizontal size={20} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-slate-700 border-slate-600 text-white">
+                        <DropdownMenuItem
+                          onClick={() => handleEditExistingTemplate(template)}
+                          className="hover:bg-slate-600 cursor-pointer"
+                        >
+                          <Edit size={16} className="mr-2" /> Edit / View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            navigator.clipboard.writeText(template.content)
+                              .then(() => toast.success(`Copied "${template.title}" to clipboard!`))
+                              .catch(() => toast.error("Failed to copy template."));
+                          }}
+                          className="hover:bg-slate-600 cursor-pointer"
+                        >
+                          <Copy size={16} className="mr-2" /> Copy Content
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-slate-600"/>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteExistingTemplate(template.id)}
+                          className="text-red-400 hover:bg-red-500/20 hover:text-red-300 cursor-pointer"
+                        >
+                          <Trash2 size={16} className="mr-2" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
-                <div className="output-actions flex gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => {
-                      // Open a prompt to allow the user to make changes
-                      const userPrompt = prompt("What changes would you like to make to your document?");
-                      if (userPrompt && userPrompt.trim()) {
-                        setLoadingText(`Updating: ${userPrompt.substring(0, 20)}${userPrompt.length > 20 ? '...' : ''}`);
-                        setIsLoading(true);
-                        
-                        // Simulate processing the changes
-                        setTimeout(() => {
-                          // In a real implementation, this would call an AI service
-                          // For now, we'll just append the request to the document
-                          const updatedText = `${outputText}\n\n<div class="p-3 bg-primary/10 rounded-lg mt-4 border border-primary/20">
-<p class="font-medium text-primary">Requested changes: "${userPrompt}"</p>
-<p class="text-sm mt-2">Changes applied! (This is a simulation - in a real implementation, the AI would actually modify the document based on your request)</p>
-</div>`;
-                          
-                          setOutputText(updatedText);
-                          setIsLoading(false);
-                          toast.success("Document updated based on your request!");
-                        }, 1500);
-                      }
-                    }}
-                    disabled={!outputText}
-                    className="h-7 px-2 text-primary group relative"
-                    title="AI Modify (Ctrl+M)"
-                  >
-                    <span className="text-xl">✨</span>
-                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                      AI Modify (Ctrl+M)
-                    </span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-7 px-2" onClick={handleToggleEditOutput}>
-                    {isOutputEditable ? 'Stop Editing' : 'Edit'}
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={handleClearOutput}>
-                    <Trash2 size={14} />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={handleCopyOutput}>
-                    <Copy size={14} />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={handleDownloadOutput}>
-                    <Download size={14} />
-                  </Button>
-                </div>
-              </div>
-              <div 
-                ref={outputRef} 
-                className={`flex-1 overflow-y-auto prose lg:prose-lg ${getStyleClass(outputStyle)}`} 
-                dangerouslySetInnerHTML={{ __html: outputText }} 
-              />
-            </div>
-          )} {/* End of right area - Output */}
-        </div>
+              ))
+            ) : (
+              <p className="text-slate-400 text-center py-4">
+                {searchTermExisting ? "No templates match your search." : "You haven't saved any templates yet."}
+              </p>
+            )}
+          </div>
+           <Button
+              onClick={() => {
+                setAiPrompt('');
+                setGeneratedTemplateContent('');
+                setEditingTemplate(null);
+                toast.info("Cleared AI generator. Describe a new template!");
+              }}
+              variant="outline"
+              className="mt-4 w-full border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+            >
+              <Plus size={18} className="mr-2" /> Create New with AI
+            </Button>
+        </section>
       </div>
-    </>
+      <footer className="mt-8 text-center text-sm text-slate-500">
+        Powered by Leny AI ✨
+      </footer>
+    </div>
   );
 };
 
-export default QuickNotes;
+export default MyTemplatesPage;

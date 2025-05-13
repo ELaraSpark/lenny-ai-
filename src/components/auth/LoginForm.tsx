@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import useAuthStore from "@/stores/authStore"; // Import the Zustand store
 import { Separator } from "@/components/ui/separator";
 import GoogleAuthButton from "./GoogleAuthButton";
 
@@ -27,10 +28,9 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  // const [isGoogleLoading, setIsGoogleLoading] = useState(false); // Removed: GoogleAuthButton will use store's isLoading
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn } = useAuth();
+  const { signInWithPassword, isLoading, error: authError, user } = useAuthStore(); // Use Zustand store, include user
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,23 +41,22 @@ const LoginForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    
-    try {
-      const { error, success } = await signIn(values.email, values.password);
-      
-      if (error) {
-        toast.error(error.message || "Login failed. Please check your credentials.");
-      } else if (success) {
-        toast.success("Login successful");
-      }
-    } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    await signInWithPassword({ email: values.email, password: values.password });
+    // The useEffect below will handle toast messages based on store changes.
   }
+
+  // useEffect to handle toast messages based on store changes
+  React.useEffect(() => {
+    // Only show toast if the form was submitted, to avoid showing old errors on component mount
+    if (form.formState.isSubmitted) {
+      if (authError && !isLoading) { // Check !isLoading to ensure the async operation has finished
+        toast.error(typeof authError === 'string' ? authError : authError.message);
+      } else if (user && !isLoading && !authError) { // Check for user, no loading, and no error
+        toast.success("Login successful!");
+        // Navigation will be handled by ProtectedRoute or RootHandler
+      }
+    }
+  }, [authError, user, isLoading, form.formState.isSubmitted]);
 
   return (
     <div className="w-full"> 
@@ -151,7 +150,7 @@ const LoginForm = () => {
           </div>
         </div>
 
-        <GoogleAuthButton mode="signin" isLoading={isGoogleLoading} />
+        <GoogleAuthButton mode="signin" /> {/* isLoading prop removed */}
       </div>
     </div>
   );

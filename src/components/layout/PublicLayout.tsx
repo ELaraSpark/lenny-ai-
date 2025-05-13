@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react"; 
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext"; 
-import { 
+import useAuthStore from "@/stores/authStore"; // Import the Zustand store
+import { useTheme } from "@/contexts/ThemeContext";
+import {
   User, Settings, LogOut, Clock, Search as SearchIcon, 
   Users as UsersIcon, Bookmark, Zap, List, Gift, Menu, X,
   MessageSquare
@@ -32,10 +32,10 @@ type PublicLayoutProps = {
 const PublicLayout: React.FC<PublicLayoutProps> = ({ 
   children, 
   showHeader = true, 
-  showFooter = true, 
-  forceHideHeader = false 
+  showFooter = true,
+  forceHideHeader = false
 }) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuthStore(); // Use Zustand store
   const isAuthenticated = !!user;
   const navigate = useNavigate();
   const location = useLocation();
@@ -129,7 +129,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
                     <DropdownMenuTrigger asChild>
                       <div className="cursor-pointer">
                         <PicassoAvatar
-                          email={user?.email || 'User'}
+                          email={user?.name || user?.email || 'User'} // Prefer user.name
                           size="sm"
                           color="text-primary"
                         />
@@ -140,13 +140,13 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
                       <div className="p-4 border-b border-border">
                         <div className="flex items-center">
                           <PicassoAvatar
-                            email={user?.email || 'User'}
+                            email={user?.name || user?.email || 'User'} // Prefer user.name
                             size="md"
                             color="text-primary"
                             className="mr-3"
                           />
                           <div>
-                            <div className="font-medium text-sm">Medical User</div>
+                            <div className="font-medium text-sm">{user?.name || 'Medical User'}</div> {/* Display user.name or fallback */}
                             <div className="text-xs text-muted-foreground">{user?.email || 'user@hospital.org'}</div>
                           </div>
                         </div>

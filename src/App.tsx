@@ -4,19 +4,22 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom"; // Added Outlet
 import { AnimatePresence } from "framer-motion"; // Removed motion import if not used directly here
-import { AuthProvider } from "@/contexts/AuthContext";
+// AuthProvider is removed
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import useAuthStore, { initializeAuthListener, cleanupAuthListener } from "@/stores/authStore"; // Import the Zustand store and listeners
+import React, { useEffect } from "react"; // Import useEffect
 
 // Remove toast components that show notifications at the bottom right
 // import { Toaster } from "@/components/ui/toaster";
 // import { Toaster as Sonner } from "@/components/ui/sonner";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { RootHandler } from "@/components/auth/RootHandler"; 
+import { RootHandler } from "@/components/auth/RootHandler";
 import AppLayout from "@/components/layout/AppLayout"; // Import the main AppLayout
-import PublicLayout from "@/components/layout/PublicLayout"; // Import the PublicLayout
+// PublicLayout is no longer needed as RootHandler manages root path redirection
+// import PublicLayout from "@/components/layout/PublicLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 // import Dashboard from "./pages/Dashboard"; // Removed unused import
@@ -32,8 +35,8 @@ import FollowupScheduler from "./pages/FollowupScheduler";
 import Features from "./pages/Features";
 import AboutUs from "./pages/AboutUs";
 import Notifications from "./pages/Notifications";
-import AIExpertsSettings from "./pages/AIExpertsSettings";
-import EditAIExpert from "./pages/EditAIExpert";
+// import AIExpertsSettings from "./pages/AIExpertsSettings"; // Commented out - missing module
+// import EditAIExpert from "./pages/EditAIExpert"; // Commented out - missing module
 import DocumentTransformer from "./pages/DocumentTransformer";
 import CollaborationHub from "./pages/CollaborationHub";
 import ExpertPanelView from "@/components/tumor-board/TumorBoardView"; // Updated import name
@@ -41,36 +44,49 @@ import Chat from "./pages/Chat";
 // Import new placeholder pages
 import RecentChats from "./pages/RecentChats";
 import RecentSearches from "./pages/RecentSearches"; // This import might be unused now
-import MyAgents from "./pages/MyAgents";
+// import MyAgents from "./pages/MyAgents"; // Commented out - missing module
 import QuickNotes from "./pages/MyTemplates"; // Import as QuickNotes since that's the exported name
 import Integrations from "./pages/Integrations";
 import Tasks from "./pages/Tasks";
-import CreateAgentPage from "./pages/CreateAgentPage";
-import Referrals from "./pages/Referrals"; 
-import Library from "./pages/Library"; 
-import LandingPage from "./pages/LandingPage";
-import PublicChat from "@/components/home/PublicChat"; // Import PublicChat component
-import AgentDetailPage from "./pages/AgentDetailPage"; 
-import CreateTemplatePage from "./pages/CreateTemplatePage"; 
+// import CreateAgentPage from "./pages/CreateAgentPage"; // Commented out - missing module
+import Referrals from "./pages/Referrals";
+import Library from "./pages/Library";
+import LandingPage from "./pages/LandingPage"; // This might be for /features or /about, or could be removed if not used.
+// PublicChat is no longer needed as RootHandler manages root path redirection
+// import PublicChat from "@/components/home/PublicChat";
+// import AgentDetailPage from "./pages/AgentDetailPage";  // Commented out - missing module
+import CreateTemplatePage from "./pages/CreateTemplatePage";
 import EditTemplatePage from "./pages/EditTemplatePage"; // Import edit template page
 import DoctorsLounge from "./pages/DoctorsLounge"; // Import Doctor's Lounge page
 import CardComparisonPage from "./pages/CardComparisonPage"; // Import card comparison page
 import CleanChat from "./pages/CleanChat"; // Import the new clean chat interface
-
-// Import the new page for security logs if needed
+import TestChatPage from "./pages/TestChatPage"; // Import the TestChatPage
+ 
+ // Import the new page for security logs if needed
 // import SecurityLogs from "./pages/SecurityLogs";
 import AuthCallback from "./pages/AuthCallback"; // Import the new AuthCallback component
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      {/* Removed toast components that were showing intrusive notifications */}
-      {/* <Toaster /> */}
-      {/* <Sonner /> */}
-      <BrowserRouter>
-        <AuthProvider>
+const App = () => {
+  // const { checkAuthState } = useAuthStore(); // checkAuthState is now called within initializeAuthListener
+
+  useEffect(() => {
+    // checkAuthState(); // No longer needed here, called by initializeAuthListener
+    initializeAuthListener();
+    return () => {
+      cleanupAuthListener();
+    };
+  }, []); // Empty dependency array ensures this runs once on mount and cleans up on unmount
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        {/* Removed toast components that were showing intrusive notifications */}
+        {/* <Toaster /> */}
+        {/* <Sonner /> */}
+        <BrowserRouter>
+          {/* AuthProvider removed */}
           <ThemeProvider>
             <AnimatePresence mode="wait">
             <Routes>
@@ -81,33 +97,26 @@ const App = () => (
               <Route path="/about" element={<AboutUs />} /> 
               <Route path="/auth/callback" element={<AuthCallback />} /> {/* Add the OAuth callback route */}
               
-              {/* Public access to AI agents, smart notes, expert panel, and chat - now with showFooter={false} */}
-              {/* === Archived AI Agents routes === */}
-              {/* <Route path="/public/my-agents" element={<PublicLayout showFooter={false}><MyAgents isPublicView={true} /></PublicLayout>} /> */}
-              <Route path="/public/my-templates" element={<PublicLayout forceHideHeader={true} showFooter={false}><QuickNotes isPublicView={true} /></PublicLayout>} />
-              <Route path="/public/tumor-board" element={<PublicLayout showFooter={false}><ExpertPanelView isPublicView={true} /></PublicLayout>} />
-              <Route path="/public/chat" element={<PublicLayout showFooter={false}><PublicChat /></PublicLayout>} />
-              <Route path="/clean-chat" element={<CleanChat />} />
+              {/* Public access routes like /public/* and /clean-chat are removed. */}
+              {/* RootHandler will now redirect to /login or /chat. */}
+              {/* The /features and /about routes remain public. */}
+              {/* LandingPage component might be used for /features or /about, or can be removed if not. */}
               
-              {/* These routes are now hidden but preserved for future restoration. */}
-
               {/* Root Route - Now properly handles authentication state using RootHandler */}
               <Route path="/" element={<RootHandler />} />
 
               {/* Authenticated Routes using AppLayout */}
-              <Route 
+              {/* Authenticated Routes - AppLayout wrapper removed */}
+              <Route
                 element={
                   <ProtectedRoute>
                     <AppLayout>
-                      {/* Outlet will render child routes */}
+                      <Outlet /> {/* Added Outlet for nested routes */}
                     </AppLayout>
                   </ProtectedRoute>
                 }
               >
-                {/* Default authenticated route (e.g., redirect '/' here if RootHandler didn't) */}
-                {/* <Route index element={<Navigate to="/chat" replace />} /> */} 
-                
-                {/* Define child routes here. They will render inside AppLayout */}
+                {/* Define child routes here. They will render without the main AppLayout */}
                 <Route path="/patients" element={<PatientRecords />} />
                 {/* === Archived AI Agents routes === */}
                 {/* <Route path="/agents" element={<Navigate to="/my-agents" replace />} /> */} {/* Redirect */}
@@ -122,18 +131,19 @@ const App = () => (
                 <Route path="/tumor-board" element={<ExpertPanelView />} /> 
                 <Route path="/recent-chats" element={<RecentChats />} />
                 
-                {/* === Archived AI Agents routes === */}
+                {/* === Archived AI Agents routes (Commented out due to missing modules) === */}
                 {/* <Route path="/my-agents" element={<MyAgents />} /> */}
                 {/* <Route path="/agents/create" element={<CreateAgentPage />} /> */}
                 {/* <Route path="/agents/:agentId" element={<AgentDetailPage />} /> */}
                 
-                <Route path="/my-templates" element={<AppLayout hideHeader={true}><QuickNotes /></AppLayout>} />
+                <Route path="/my-templates" element={<QuickNotes />} /> {/* AppLayout removed, QuickNotes is already blank */}
                 <Route path="/quick-notes" element={<Navigate to="/my-templates" replace />} /> {/* Redirect to MyTemplates */}
                 <Route path="/integrations" element={<Integrations />} />
                 <Route path="/tasks" element={<Tasks />} />
                 <Route path="/referrals" element={<Referrals />} />
                 <Route path="/library" element={<Library />} />
                 <Route path="/chat" element={<Chat />} />
+                <Route path="/test-chat" element={<TestChatPage />} /> {/* Added Test Chat Page route */}
                 <Route path="/templates/create" element={<CreateTemplatePage />} /> {/* Added create template route */}
                 <Route path="/templates/:templateId/edit" element={<EditTemplatePage />} /> {/* Added edit template route */}
                 <Route path="/doctors-lounge" element={<DoctorsLounge />} /> {/* Added Doctor's Lounge route */}
@@ -148,10 +158,10 @@ const App = () => (
             </Routes>
             </AnimatePresence>
           </ThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
-
+          {/* AuthProvider removed */}
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 export default App;

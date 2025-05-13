@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { History, Coffee, Bell, Menu } from 'lucide-react'; // Added Menu icon
 import { Button } from '@/components/ui/button';
 import { ChatHistoryModal, ChatHistoryEntry } from '@/components/agents/ChatHistoryModal';
-import { useAuth } from '@/contexts/AuthContext'; // Import useAuth to get user info
+import useAuthStore from '@/stores/authStore'; // Import the Zustand store
 import { getMedicalJoke, getMedicalFact, getHealthcareTip } from '@/lib/personalityUtils'; // Import personality utilities
 
 // Mock data for chat history
@@ -50,7 +50,7 @@ const Header = ({ className, onMobileMenuToggle }: HeaderProps) => {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [showTip, setShowTip] = useState(false);
   const [currentTip, setCurrentTip] = useState("");
-  const { user } = useAuth(); // Get user from auth context
+  const { user } = useAuthStore(); // Use Zustand store
   const tipButtonRef = useRef<HTMLButtonElement>(null);
   const tipPopupRef = useRef<HTMLDivElement>(null);
 

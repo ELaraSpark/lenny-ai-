@@ -22,7 +22,7 @@ import {
   X 
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import useAuthStore from "@/stores/authStore"; // Import the Zustand store
 
 interface Notification {
   id: string;
@@ -35,7 +35,7 @@ interface Notification {
 }
 
 const NotificationsView = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore(); // Use Zustand store
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("all");
   const [notifications, setNotifications] = useState<Notification[]>([]);

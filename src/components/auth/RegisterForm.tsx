@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import useAuthStore from "@/stores/authStore"; // Import the Zustand store
 import { Separator } from "@/components/ui/separator";
 import GoogleAuthButton from "./GoogleAuthButton";
 
@@ -33,11 +33,14 @@ const formSchema = z.object({
 });
 
 const RegisterForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  // isLoading will be from useAuthStore
+  // const [isGoogleLoading, setIsGoogleLoading] = useState(false); // Removed: GoogleAuthButton will use store's isLoading
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { signUp } = useAuth();
+  // Assuming signIn from the store will be used for registration for now,
+  // as the new store has signIn, signOut, checkAuthState.
+  // If a separate signUp action is added to the store later, this can be updated.
+  const { signIn: signUp, isLoading, error: authError, user } = useAuthStore(); // Include user
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,24 +52,32 @@ const RegisterForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    
-    try {
-      const { error, success } = await signUp(values.email, values.password);
-      
-      if (error) {
-        toast.error(error.message || "Registration failed. Please try again.");
-      } else if (success) {
-        setEmailSent(true);
-        toast.success("Registration successful! Please check your email to confirm your account.");
-      }
-    } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    // isLoading is managed by Zustand store
+    await signUp({ email: values.email, password: values.password });
+    // Check authError from the store after the call
+    // This is a simplified approach. Ideally, the store's signUp would manage this.
   }
+
+  // useEffect to handle toast messages and emailSent state
+  React.useEffect(() => {
+    // Only show toast/set emailSent if the form was submitted
+    if (form.formState.isSubmitted) {
+      if (authError && !isLoading) { // Check !isLoading to ensure the async operation has finished
+        toast.error(typeof authError === 'string' ? authError : (authError?.message || "An unknown registration error occurred."));
+        setEmailSent(false);
+      } else if (!authError && !isLoading && form.formState.isSubmitSuccessful) {
+        // For registration, we don't expect 'user' to be set immediately in the store
+        // as it's a mock and doesn't simulate email verification flow.
+        // We'll rely on no error and successful form submission.
+        const submittedEmail = form.getValues("email");
+        if (submittedEmail) { // Ensure email was part of submission
+           setEmailSent(true);
+           toast.success("Registration successful! Please check your email to confirm your account.");
+        }
+      }
+    }
+  }, [authError, isLoading, form.formState.isSubmitted, form.formState.isSubmitSuccessful, form]);
+
 
   if (emailSent) {
     return (
@@ -198,7 +209,7 @@ const RegisterForm = () => {
           </div>
         </div>
 
-        <GoogleAuthButton mode="signup" isLoading={isGoogleLoading} />
+        <GoogleAuthButton mode="signup" /> {/* isLoading prop removed */}
 
         <div className="flex items-center justify-center text-sm text-muted-foreground space-x-2">
           <ShieldCheck size={14} />

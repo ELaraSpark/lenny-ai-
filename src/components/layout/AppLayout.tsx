@@ -34,6 +34,35 @@ const AppLayout: React.FC<AppLayoutProps> = ({ hideHeader, children }) => { // A
     setIsMobileSidebarOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    console.log('%c[AppLayout] Component instance MOUNTED. Path: ' + location.pathname, 'color: green; font-weight: bold;');
+    const instanceId = Math.random().toString(36).substring(2, 8); // Unique ID for this instance
+    console.log(`%c[AppLayout] Mounted Instance ID: ${instanceId}`, 'color: green;');
+    return () => {
+      console.log('%c[AppLayout] Component instance UNMOUNTED. Path: ' + location.pathname + ` (Instance ID: ${instanceId})`, 'color: red; font-weight: bold;');
+    };
+  }, []); // Empty dependency array ensures this runs only once on mount and cleanup on unmount
+
+  useEffect(() => {
+    console.log('[AppLayout] States updated: isMobileSidebarOpen:', isMobileSidebarOpen, 'isDesktopSidebarCollapsed:', isDesktopSidebarCollapsed);
+  }, [isMobileSidebarOpen, isDesktopSidebarCollapsed]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && isMobileSidebarOpen) { // 1024px is a common breakpoint for 'lg'
+        console.log('[AppLayout] Window resized to desktop width with mobile sidebar open. Closing mobile sidebar.');
+        setIsMobileSidebarOpen(false);
+      } else {
+        // Optionally, you can keep a log for other resize events if needed
+        // console.log('[AppLayout] Window resized. Width:', window.innerWidth, 'Current isMobileSidebarOpen:', isMobileSidebarOpen);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    // Initial check
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobileSidebarOpen]); // Re-run if isMobileSidebarOpen changes to log its current value correctly
+
   // Handle click on main content area to collapse desktop sidebar
   const handleContentClick = useCallback(() => {
     if (!isDesktopSidebarCollapsed) {
@@ -53,6 +82,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ hideHeader, children }) => { // A
         <AnimatePresence>
           {isMobileSidebarOpen && (
             <>
+              {console.log('[AppLayout] Rendering mobile sidebar because isMobileSidebarOpen is true.')}
               {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}

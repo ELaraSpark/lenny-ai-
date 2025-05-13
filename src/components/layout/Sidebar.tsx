@@ -3,11 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import SidebarHeader from './sidebar/SidebarHeader';
-import PicassoNavItem from './sidebar/PicassoNavItem';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import useAuthStore from '@/stores/authStore'; // Import the Zustand store
 import { PicassoAvatar } from '@/components/illustrations/PicassoAvatar';
 import { PicassoIllustration } from '@/components/illustrations/PicassoIllustration';
 import {
@@ -34,6 +32,7 @@ import {
   Coffee,
   PartyPopper,
   Sparkles,
+  FlaskConical, // Added for Test Chat
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -46,13 +45,13 @@ interface SidebarProps {
 // Navigation Items
 const navItems = [
   { to: '/chat', label: 'Ask Leny', icon: MessageSquare, subItem: { to: '/recent-chats', label: 'View all chats', icon: Clock } },
-  { to: '/my-templates', label: 'Smart Notes', icon: Zap },
+  { to: '/test-chat', label: 'Test Chat', icon: FlaskConical }, // Added Test Chat link
   { to: '/tumor-board', label: 'Expert Panel', icon: ClipboardList },
   // Removed Rewards & Lounge from main nav
 ];
 
 const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: SidebarProps) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuthStore(); // Use Zustand store
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -145,7 +144,7 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
       <div className="border-t border-border p-3">
         <div className={cn("flex items-center", isCollapsed ? "justify-center" : "")}>
           <PicassoAvatar
-            email={user?.email || 'User'}
+            email={user?.email || 'User'} // Keep using user.email if available
             size="sm"
             color="text-primary"
             className="flex-shrink-0"
@@ -155,7 +154,7 @@ const Sidebar = ({ className, isCollapsed = false, onMouseEnter, onToggle }: Sid
             <>
               <div className="ml-2 overflow-hidden">
                 <p className="text-sm font-medium text-foreground truncate">
-                  {user?.email || 'User'}
+                  {user?.name || user?.email || 'User'} {/* Display name or email */}
                 </p>
               </div>
               <DropdownMenu>

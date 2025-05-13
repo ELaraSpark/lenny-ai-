@@ -1,23 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'; // Import useEffect and useState
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import useAuthStore from '@/stores/authStore'; // Import the Zustand store
+import { toast } from "sonner"; // Import toast
 
 interface GoogleAuthButtonProps {
   mode: 'signin' | 'signup';
-  isLoading?: boolean;
+  // isLoading prop is removed, will rely on storeIsLoading
 }
 
-const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ mode, isLoading = false }) => {
-  const { signInWithGoogle } = useAuth();
-  
+const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ mode }) => {
+  const { signInWithGoogle, isLoading: storeIsLoading, error: authError, user } = useAuthStore(); // Use Zustand store, include user
+  const [wasClicked, setWasClicked] = useState(false); // To track if this button initiated the action
+
   const handleGoogleAuth = async () => {
+    setWasClicked(true); // Mark that this button initiated the sign-in attempt
     try {
       console.log('Starting Google authentication...');
       await signInWithGoogle();
     } catch (error) {
-      console.error('Google auth error:', error);
+      console.error('Mock Google auth error:', error);
+      toast.error("An unexpected error occurred during Google sign-in.");
+      setWasClicked(false); // Reset if there's an immediate catch
     }
   };
+  
+  useEffect(() => {
+    if (wasClicked && !storeIsLoading) { // Only react if this button initiated and loading is finished
+      if (authError) {
+        toast.error(typeof authError === 'string' ? authError : authError.message);
+      } else if (user) {
+        toast.success(`${mode === 'signin' ? 'Signed in' : 'Signed up'} successfully with Google!`);
+        // Navigation will be handled by ProtectedRoute or RootHandler
+      }
+      setWasClicked(false); // Reset after handling
+    }
+  }, [authError, user, storeIsLoading, wasClicked, mode]);
+
+  // Determine loading state:
+  // If wasClicked is true, it means this button initiated the action, so use storeIsLoading.
+  // Otherwise, the button is not in a loading state specific to its own action.
+  const isLoading = wasClicked && storeIsLoading;
+
 
   return (
     <Button

@@ -1,30 +1,36 @@
 import React, { useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import PublicChat from '@/components/home/PublicChat';
-import PublicLayout from '@/components/layout/PublicLayout';
+import { Navigate } from 'react-router-dom'; // useNavigate is not needed if we use <Navigate />
+import useAuthStore from '@/stores/authStore'; // Import the Zustand store
+// PublicChat and PublicLayout are no longer needed here
+// import PublicChat from '@/components/home/PublicChat';
+// import PublicLayout from '@/components/layout/PublicLayout';
 
-// This component decides whether to show the public landing page 
-// or redirect to the authenticated app's main page based on auth state.
+// This component decides whether to redirect to login or the authenticated app's main page.
 export const RootHandler = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const { user, isLoading, checkAuthState } = useAuthStore(); // Use Zustand store
+  // const navigate = useNavigate(); // Not needed if using <Navigate />
 
-  if (loading) {
+  useEffect(() => {
+    // Ensure auth state is checked when the component mounts,
+    // though App.tsx also calls this. Redundant calls are fine for checkAuthState.
+    checkAuthState();
+  }, [checkAuthState]);
+
+  if (isLoading) {
     // Show a full-page loading indicator while checking auth state
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         {/* You can use a more sophisticated spinner/skeleton here */}
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div> 
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  // Always show the public chat interface first, regardless of authentication status
-  // This ensures that when users click on Leny AI in the header, they get the mock interface
-  return (
-    <PublicLayout showFooter={true}>
-      <PublicChat />
-    </PublicLayout>
-  );
+  if (user) {
+    // If user is authenticated, redirect to the main chat page (or another default authenticated route)
+    return <Navigate to="/chat" replace />;
+  } else {
+    // If user is not authenticated, redirect to the login page
+    return <Navigate to="/login" replace />;
+  }
 };

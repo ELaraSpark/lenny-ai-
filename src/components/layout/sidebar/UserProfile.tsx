@@ -3,7 +3,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Settings, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuth } from "@/contexts/AuthContext";
+import useAuthStore from "@/stores/authStore"; // Import the Zustand store
 import { useToast } from "@/hooks/use-toast";
 import NavItem from "./NavItem";
 
@@ -12,7 +12,7 @@ type UserProfileProps = {
 };
 
 const UserProfile = ({ collapsed }: UserProfileProps) => {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuthStore(); // Use Zustand store
   const { toast } = useToast();
   
   const handleSignOut = () => {
@@ -25,8 +25,9 @@ const UserProfile = ({ collapsed }: UserProfileProps) => {
 
   // Get user initials for avatar
   const getInitials = () => {
-    if (!user?.email) return "U";
-    return user.email.charAt(0).toUpperCase();
+    if (user?.name) return user.name.charAt(0).toUpperCase();
+    if (user?.email) return user.email.charAt(0).toUpperCase();
+    return "U";
   };
 
   return (
@@ -40,7 +41,7 @@ const UserProfile = ({ collapsed }: UserProfileProps) => {
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
-              {user?.email}
+              {user?.name || user?.email} {/* Display name or email */}
             </p>
             <p className="text-xs text-gray-500 truncate">
               Medical Professional

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PicassoIllustration } from '@/components/illustrations/PicassoIllustration';
 import { PicassoAvatar } from '@/components/illustrations/PicassoAvatar';
-import { useAuth } from '@/contexts/AuthContext';
+import useAuthStore from '@/stores/authStore'; // Import the Zustand store
 import { useToast } from '@/hooks/use-toast';
 import { funToasts } from '@/components/ui/fun-toast';
 import { 
@@ -60,7 +60,7 @@ interface Meme {
  * Doctor's Lounge - A fun, relaxing space for healthcare professionals
  */
 const DoctorsLounge = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore(); // Use Zustand store
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('daily');
   const [joke, setJoke] = useState('');
@@ -230,12 +230,12 @@ const DoctorsLounge = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PicassoAvatar
-                name={getUserFirstName()}
+                name={user?.name || getUserFirstName()} // Prefer user.name from store
                 illustrationType="healing"
                 size="sm"
                 color="text-primary"
               />
-              Welcome, Dr. {getUserFirstName()}!
+              Welcome, Dr. {user?.name || getUserFirstName()}! {/* Prefer user.name from store */}
             </CardTitle>
             <CardDescription>
               Take a break and enjoy some content curated just for healthcare professionals.

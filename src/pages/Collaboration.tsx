@@ -1,6 +1,5 @@
 
 import { useLocation } from "react-router-dom";
-import AppLayout from "@/components/layout/AppLayout";
 import CollaborationView from "@/components/collaboration/CollaborationView";
 import { specialists } from "@/components/collaboration/data/specialistsData";
 import { Agent } from "@/components/collaboration/types/consultationTypes";
@@ -43,12 +42,10 @@ const CollaborationPage = () => {
   };
 
   return (
-    <AppLayout>
-      <CollaborationView 
-        initialConsultationId={state?.consultationId} 
-        preSelectedAgent={getPreSelectedAgent()}
-      />
-    </AppLayout>
+    <CollaborationView
+      initialConsultationId={state?.consultationId}
+      preSelectedAgent={getPreSelectedAgent()}
+    />
   );
 };
 

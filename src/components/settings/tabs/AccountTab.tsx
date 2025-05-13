@@ -3,10 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth } from '@/contexts/AuthContext';
+import useAuthStore from '@/stores/authStore'; // Import the Zustand store
 
 const AccountTab = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore(); // Use Zustand store
   
   return (
     <div className="space-y-4">
@@ -33,10 +33,10 @@ const AccountTab = () => {
           
           <div className="space-y-2">
             <Label htmlFor="name">Display Name</Label>
-            <Input 
-              id="name" 
-              placeholder="Enter your display name" 
-              defaultValue={user?.email?.split('@')[0] || ''}
+            <Input
+              id="name"
+              placeholder="Enter your display name"
+              defaultValue={user?.name || user?.email?.split('@')[0] || ''} // Prefer user.name
             />
           </div>
           
