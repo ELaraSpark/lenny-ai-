@@ -1,3 +1,7 @@
+// Component: ProfessionalCard
+// Purpose: Displays a card for an AI agent with a professional design, highlighting expertise and actions.
+// Used in: AIAgentsView (as a card variant).
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Award, Calendar, MessageSquare, ArrowRight } from 'lucide-react';

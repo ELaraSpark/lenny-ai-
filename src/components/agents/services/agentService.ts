@@ -1,4 +1,8 @@
 
+// Service: agentService
+// Purpose: Handles core AI agent interactions, including generating responses and managing chat history (mocked).
+// Used in: useChatMessages.
+
 import { Agent } from "../types/agentTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { createMessageWithAttachments } from "@/integrations/deepseek/client";

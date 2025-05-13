@@ -1,4 +1,8 @@
 
+// Utility: predefinedData
+// Purpose: Provides predefined data for symptoms, questions, and mock patients used in the agents components.
+// Used in: SymptomsSelector, QuestionsSelector, PatientSelector, useSelectionToChat.
+
 export const predefinedSymptoms = [
   { id: "chest-pain", label: "Chest Pain", description: "Pain or discomfort in the chest area" },
   { id: "shortness-breath", label: "Shortness of Breath", description: "Difficulty breathing or dyspnea" },

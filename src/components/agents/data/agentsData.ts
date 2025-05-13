@@ -1,11 +1,15 @@
-import { 
+// Data: agentsData
+// Purpose: Provides mock data for AI agents, including their details, capabilities, and styling properties.
+// Used in: AIAgentsView, AgentSelector.
+
+import {
   Heart, Brain, Microscope, Stethoscope, Eye, BarChart4, Pill, Activity,
   HeartPulse, BrainCircuit, SearchCheck, Wind, Droplet, ScanFace, ShieldAlert,
   HelpingHand, Bone, Users, MessageSquare, FileCheck, Scale, FlaskConical,
   ClipboardList, UserCheck, TestTubeDiagonal, FolderKanban, FileLock, SearchCode,
   ClipboardCheck, BookUser, Speech, PersonStanding, Recycle, Bot, Dna, HandHeart,
   GraduationCap, Briefcase, FileQuestion, ShieldCheck, FileSearch, UserCog
-} from "lucide-react"; 
+} from "lucide-react";
 import { Agent } from "../types/agentTypes";
 import { AgentCategory } from "../AgentCategoryFilters"; // Import AgentCategory type
 

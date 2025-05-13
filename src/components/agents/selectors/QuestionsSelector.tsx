@@ -1,4 +1,8 @@
 
+// Component: QuestionsSelector
+// Purpose: Allows selecting predefined questions using a multi-select combobox.
+// Used in: DropdownSelectors.
+
 import React from "react";
 import { predefinedQuestions } from "../utils/predefinedData";
 import MultiSelectCombobox from "./MultiSelectCombobox";

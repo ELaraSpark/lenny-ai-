@@ -1,3 +1,7 @@
+// Hook: useChatMessages
+// Purpose: Manages the state and logic for chat messages with an AI agent.
+// Used in: ChatInterface.
+
 import { useState } from "react";
 import { Message, Agent } from "../types/agentTypes";
 import { generateAIResponse } from "../services/agentService";

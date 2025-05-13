@@ -1,4 +1,8 @@
 
+// Component: ChatHeader
+// Purpose: Displays the header for the chat interface, including the agent's name and a clear chat button.
+// Used in: ChatInterface.
+
 import { Bot, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";

@@ -1,4 +1,8 @@
 
+// Hook: useChatSelectors
+// Purpose: Manages the state and logic for selecting patient, symptoms, and questions in the chat interface.
+// Used in: ChatInterface, DropdownSelectors.
+
 import { useState } from "react";
 import { useSelectionToChat } from "./useSelectionToChat";
 

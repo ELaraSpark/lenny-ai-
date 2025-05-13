@@ -1,4 +1,8 @@
 
+// Component: AgentDocumentation
+// Purpose: Displays documentation and reference materials for a specific AI agent.
+// Used in: AgentProfile.
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FileText, Bookmark, ChevronRight, Edit, PlusCircle } from "lucide-react";

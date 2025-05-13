@@ -1,3 +1,7 @@
+// Component: ProfessionalChatMessage
+// Purpose: Displays a single message in a structured, professional format, including parsed sections and references.
+// Used in: ChatMessagesContainer.
+
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, Share2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -200,10 +204,10 @@ const ProfessionalChatMessage: React.FC<ProfessionalChatMessageProps> = ({
                           <div className="text-neutral-500">{source}</div>
                         </div>
                         <div className="flex gap-2 flex-shrink-0">
-                          <button className="h-7 w-7 p-0 text-neutral-400 hover:text-primary">
+                          <button className="h-7 w-7 p-0 text-neutral-400 hover:text-primary" aria-label="Mark reference as helpful">
                             <ThumbsUp size={14} />
                           </button>
-                          <button className="h-7 w-7 p-0 text-neutral-400 hover:text-primary">
+                          <button className="h-7 w-7 p-0 text-neutral-400 hover:text-primary" aria-label="Mark reference as not helpful">
                             <ThumbsDown size={14} />
                           </button>
                         </div>

@@ -1,4 +1,8 @@
 
+// Component: AddToChatButton
+// Purpose: A button that appears when patient, symptoms, or questions are selected, allowing them to be added to the chat input.
+// Used in: DropdownSelectors.
+
 import React from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';

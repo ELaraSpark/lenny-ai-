@@ -1,3 +1,7 @@
+// Component: CommandCenter
+// Purpose: Provides a central input field for users to enter queries or select recent tasks.
+// Used in: Potentially a dashboard or main application view.
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Search as SearchIcon, History } from 'lucide-react';
 

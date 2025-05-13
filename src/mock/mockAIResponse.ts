@@ -1,3 +1,7 @@
+// Mock: mockAIResponse
+// Purpose: Provides mock AI responses for testing and development purposes, with a fallback to a structured medical response format.
+// Used in: agentService.
+
 // AI response generator for the application
 // This file provides responses for the DeepSeek AI provider
 

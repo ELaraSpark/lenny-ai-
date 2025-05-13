@@ -1,3 +1,7 @@
+// Component: MultiSelectCombobox
+// Purpose: A reusable combobox component that allows selecting multiple items from a list.
+// Used in: PatientSelector, SymptomsSelector, QuestionsSelector.
+
 import React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";

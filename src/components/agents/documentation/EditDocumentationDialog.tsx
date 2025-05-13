@@ -1,4 +1,8 @@
 
+// Component: EditDocumentationDialog
+// Purpose: Provides a dialog for editing or adding documentation for an AI agent.
+// Used in: AgentDocumentation.
+
 import React, { useState, useEffect } from "react";
 import { Edit, Save } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";

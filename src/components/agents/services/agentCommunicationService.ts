@@ -1,4 +1,8 @@
 
+// Service: agentCommunicationService
+// Purpose: Handles communication with AI agents, including generating responses and managing chat history.
+// Used in: useChatMessages.
+
 import { supabase } from '@/integrations/supabase/client';
 import { Agent, Message } from '../types/agentTypes';
 import { apiClient } from '@/lib/api-client';

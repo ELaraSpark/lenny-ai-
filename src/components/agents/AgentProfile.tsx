@@ -1,4 +1,8 @@
 
+// Component: AgentProfile
+// Purpose: Displays the detailed profile of a selected AI agent, including description, capabilities, and documentation.
+// Used in: AIAgentsView.
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { FileText, Plus, Calendar } from "lucide-react";

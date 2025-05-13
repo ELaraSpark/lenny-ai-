@@ -1,3 +1,7 @@
+// Component: ChatMessagesContainer
+// Purpose: Displays a list of chat messages and handles auto-scrolling.
+// Used in: ChatInterface.
+
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Layout, LayoutGrid } from "lucide-react";
 import { Message, Agent } from "./types/agentTypes";

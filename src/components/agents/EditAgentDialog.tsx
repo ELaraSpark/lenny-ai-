@@ -1,3 +1,7 @@
+// Component: EditAgentDialog
+// Purpose: Provides a dialog for editing the details of an existing AI agent.
+// Used in: MyAgents page.
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import {

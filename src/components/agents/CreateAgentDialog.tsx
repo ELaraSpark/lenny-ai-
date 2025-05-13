@@ -1,3 +1,7 @@
+// Component: CreateAgentDialog
+// Purpose: Provides a dialog for creating a new AI agent, either from a template or from scratch.
+// Used in: AIAgentsView, MyAgents page.
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -27,6 +31,8 @@ export interface NewAgentData {
   avatar?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
 interface CreateAgentDialogProps {
   // No props needed now
 }

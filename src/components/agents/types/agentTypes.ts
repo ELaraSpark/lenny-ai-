@@ -1,4 +1,8 @@
 
+// Types: agentTypes
+// Purpose: Defines TypeScript types for AI agents and chat messages.
+// Used in: Various components and services within the agents directory.
+
 import { ReactNode } from "react";
 import { AgentCategory } from "../AgentCategoryFilters"; // Import the category type
 

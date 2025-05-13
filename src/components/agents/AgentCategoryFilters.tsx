@@ -1,3 +1,7 @@
+// Component: AgentCategoryFilters
+// Purpose: Provides a set of buttons to filter AI agents by category.
+// Used in: AIAgentsView.
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

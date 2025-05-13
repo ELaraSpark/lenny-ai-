@@ -1,3 +1,7 @@
+// Component: PlayfulCard
+// Purpose: Displays a card for an AI agent with a playful design and tone.
+// Used in: AIAgentsView (as a card variant).
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Zap, Heart, Brain, MessageCircle } from 'lucide-react';

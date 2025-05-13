@@ -1,4 +1,8 @@
 
+// Component: ChatInterface
+// Purpose: Manages the chat view with a selected AI agent, including displaying messages, input, and agent profile.
+// Used in: AIAgentsView.
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, User } from "lucide-react";

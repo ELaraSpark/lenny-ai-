@@ -1,4 +1,8 @@
 
+// Hook: useSelectionToChat
+// Purpose: Provides a function to format and dispatch selected patient, symptoms, and questions to the chat input.
+// Used in: useChatSelectors.
+
 import { useState } from 'react';
 import { predefinedSymptoms, predefinedQuestions } from '../utils/predefinedData';
 

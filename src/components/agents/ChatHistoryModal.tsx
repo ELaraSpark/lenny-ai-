@@ -1,3 +1,7 @@
+// Component: ChatHistoryModal
+// Purpose: Displays a modal with chat and task history, allowing users to search and select past interactions.
+// Used in: ChatInterface.
+
 import React, { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';

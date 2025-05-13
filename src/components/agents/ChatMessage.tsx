@@ -1,4 +1,8 @@
 
+// Component: ChatMessage
+// Purpose: Displays a single message within the chat interface, styled based on sender and chat style.
+// Used in: ChatMessagesContainer.
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Message } from "./types/agentTypes";

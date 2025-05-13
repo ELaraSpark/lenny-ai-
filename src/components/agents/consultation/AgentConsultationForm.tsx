@@ -1,4 +1,8 @@
 
+// Component: AgentConsultationForm
+// Purpose: Provides a form within a dialog to start a consultation with a selected AI agent by describing patient symptoms.
+// Used in: AgentProfile, AIAgentsView.
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";

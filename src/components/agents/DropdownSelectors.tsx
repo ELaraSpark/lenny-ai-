@@ -1,4 +1,8 @@
 
+// Component: DropdownSelectors
+// Purpose: Provides dropdowns for selecting patient, symptoms, and questions for a consultation.
+// Used in: ChatInterface.
+
 import React from "react";
 import PatientSelector from "./selectors/PatientSelector";
 import SymptomsSelector from "./selectors/SymptomsSelector";

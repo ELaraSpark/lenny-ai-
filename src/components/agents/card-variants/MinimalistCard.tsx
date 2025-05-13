@@ -1,3 +1,7 @@
+// Component: MinimalistCard
+// Purpose: Displays a minimalist card for an AI agent, highlighting its primary focus.
+// Used in: AIAgentsView (as a card variant).
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';

@@ -1,4 +1,8 @@
 
+// Component: AgentSelector
+// Purpose: Allows users to select an AI agent from a predefined list.
+// Used in: AgentConsultationForm.
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";

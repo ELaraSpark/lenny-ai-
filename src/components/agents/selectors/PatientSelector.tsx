@@ -1,4 +1,8 @@
 
+// Component: PatientSelector
+// Purpose: Allows selecting a patient from a predefined list using a combobox.
+// Used in: DropdownSelectors.
+
 import React from "react";
 import { Check, ChevronsUpDown, User } from "lucide-react";
 import { Button } from "@/components/ui/button";

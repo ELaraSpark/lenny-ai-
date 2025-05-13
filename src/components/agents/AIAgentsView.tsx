@@ -1,4 +1,8 @@
 
+// Component: AIAgentsView
+// Purpose: Provides a view to explore and interact with AI medical assistants.
+// Used in: Pages that display AI agents (e.g., /agents).
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

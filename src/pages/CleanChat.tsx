@@ -1,10 +1,10 @@
 import React from 'react';
-import CleanChatInterface from '@/components/chat/CleanChatInterface';
+import ChatInterface from '@/components/chat/ChatInterface';
 
 const CleanChat: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <CleanChatInterface />
+      <ChatInterface />
     </div>
   );
 };

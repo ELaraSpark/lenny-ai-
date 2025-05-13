@@ -1,3 +1,7 @@
+// Component: ChatInput
+// Purpose: Provides the input area for sending messages and attachments in the chat interface.
+// Used in: ChatInterface.
+
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { ArrowUp, Lightbulb, ChevronDown, Paperclip, X, AlertCircle } from "lucide-react";
 import SuggestionsDropdown from "@/components/onboarding/SuggestionsDropdown";
@@ -36,6 +40,7 @@ const ChatInput = ({
   const [chatInput, setChatInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsButtonRef = useRef<HTMLButtonElement>(null); // Add ref for suggestions button
   const [attachments, setAttachments] = useState<File[]>([]);
   const [selectedStyle, setSelectedStyle] = useState(initialStyle);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -202,10 +207,11 @@ const ChatInput = ({
           <div className="fixed inset-0 bg-black/20 z-[9998]" onClick={() => setShowSuggestions(false)} />
         )}
         {/* Suggestions Dropdown */}
-        <SuggestionsDropdown 
+        <SuggestionsDropdown
           isVisible={showSuggestions}
           onSuggestionClick={handleSuggestionSelect}
           onClose={() => setShowSuggestions(false)}
+          triggerRef={suggestionsButtonRef} // Pass the ref here
         />
         {/* Textarea with negative margin to align with attachment icon */}
         <textarea
@@ -237,7 +243,8 @@ const ChatInput = ({
             </Button>
             
             {/* Suggestions Button (Lightbulb) */}
-            <Button 
+            <Button
+              ref={suggestionsButtonRef} // Attach the ref to the button
               variant="ghost"
               size="sm"
               className="text-neutral-500 p-1 h-8 w-8 rounded-full transition-colors rotate-[1deg]"

@@ -1,3 +1,7 @@
+// Component: ConversationalCard
+// Purpose: Displays a card for an AI agent with a conversational chat interface preview.
+// Used in: AIAgentsView (as a card variant).
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Mic, Send } from 'lucide-react';
@@ -104,12 +108,13 @@ const ConversationalCard: React.FC<ConversationalCardProps> = ({
                 onFocus={onSelect}
               />
               <div className="absolute right-2 flex items-center gap-1">
-                <button className="h-8 w-8 flex items-center justify-center rounded-full bg-muted/50 text-muted-foreground hover:bg-muted/80">
+                <button className="h-8 w-8 flex items-center justify-center rounded-full bg-muted/50 text-muted-foreground hover:bg-muted/80" aria-label="Record voice message">
                   <Mic className="h-4 w-4" />
                 </button>
-                <button 
+                <button
                   className="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-primary-foreground"
                   onClick={onSelect}
+                  aria-label="Send message"
                 >
                   <Send className="h-4 w-4" />
                 </button>

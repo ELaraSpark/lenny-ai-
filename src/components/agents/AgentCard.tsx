@@ -1,3 +1,7 @@
+// Component: AgentCard
+// Purpose: Displays a card representation of an AI agent with details and actions.
+// Used in: AIAgentsView, potentially other agent listing views.
+
 import React from 'react'; // Ensure React is imported
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";

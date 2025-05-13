@@ -1,4 +1,8 @@
 
+// Component: SymptomsSelector
+// Purpose: Allows selecting predefined symptoms using a multi-select combobox.
+// Used in: DropdownSelectors.
+
 import React from "react";
 import { predefinedSymptoms } from "../utils/predefinedData";
 import MultiSelectCombobox from "./MultiSelectCombobox";
