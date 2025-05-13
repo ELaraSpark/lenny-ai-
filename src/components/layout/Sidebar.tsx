@@ -48,6 +48,9 @@ const navItems = [
   { to: '/chat', label: 'Ask Leny', icon: MessageSquare, subItem: { to: '/recent-chats', label: 'View all chats', icon: Clock } },
   { to: '/my-templates', label: 'Smart Notes', icon: Zap },
   { to: '/tumor-board', label: 'Expert Panel', icon: ClipboardList },
+  { to: '/collaboration-hub', label: 'Collaboration Hub', icon: Users },
+  { to: '/followup-scheduler', label: 'Follow-up Scheduler', icon: FileText },
+  { to: '/tools/document-transformer', label: 'Medical Documents', icon: FileText },
   // Removed Rewards & Lounge from main nav
 ];
 

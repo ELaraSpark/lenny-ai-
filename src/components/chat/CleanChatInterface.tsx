@@ -220,23 +220,100 @@ const CleanChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 panel-wrapper" ref={containerRef}>
-      {/* Header */}
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Medical AI Assistant</h1>
-        <p className="text-gray-600 mt-2">Ask any medical question and get evidence-based answers</p>
+    <div className="flex flex-col h-screen bg-gray-100" ref={containerRef}> {/* Changed to flex-col and h-screen */}
+      {/* Header - Optional, can be removed or restyled */}
+      <div className="p-4 border-b bg-white shadow-sm text-center">
+        <h1 className="text-xl font-semibold text-gray-800">Public Medical Chat</h1>
       </div>
-      
-      {/* Search form */}
-      <div className="mb-8">
-        <div className="relative">
-          <div className="flex overflow-hidden rounded-full border border-gray-300 shadow-sm focus-within:ring-2 focus-within:ring-primary focus-within:border-primary">
+
+      {/* Messages container */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+        <div className="max-w-4xl mx-auto w-full">
+          {messages.map((message) => (
+            <div key={message.id} className={`flex mb-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
+              {message.role === 'assistant' && (
+                <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center mr-3 flex-shrink-0 shadow-sm">
+                  {/* Placeholder for bot avatar, e.g., an icon or image */}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                  </svg>
+                </div>
+              )}
+              <div
+                className={`py-2.5 px-4 rounded-xl shadow-md max-w-[90%] md:max-w-[80%] ${
+                  message.role === 'user'
+                    ? 'bg-primary text-white rounded-br-none'
+                    : 'bg-white text-gray-800 rounded-bl-none'
+                }`}
+              >
+                {message.role === 'user' ? (
+                  <p className="text-base leading-relaxed">{message.content}</p>
+                ) : (
+                  <>
+                    {/* Optional: Display expanded question or source if available */}
+                    {extractQuestion(message) && extractQuestion(message) !== extractContent(message) && (
+                       <div className="text-sm text-gray-500 mb-1 italic">
+                         Re: {extractQuestion(message)}
+                       </div>
+                    )}
+                    {message.source && (
+                      <div className="text-xs text-primary mb-1 font-medium">{message.source.name}</div>
+                    )}
+                    <div
+                      className="prose prose-sm max-w-none" /* Removed no-nested-scroll as it might not be needed here */
+                      dangerouslySetInnerHTML={{ __html: formatTextWithCitations(extractContent(message)) }}
+                    />
+                    {message.citations && message.citations.length > 0 && (
+                      <div className="mt-3 pt-2 border-t border-gray-200">
+                        <div className="text-xs font-semibold mb-1 text-gray-600">References:</div>
+                        <ol className="text-xs text-gray-500 pl-4 space-y-1 list-decimal">
+                          {message.citations.map((citation) => (
+                            <li key={citation.id} id={`public-${citation.id}`}> {/* Added prefix to id */}
+                              <span className="font-medium text-gray-600">{citation.title}.</span> {citation.authors}. {citation.source} {citation.year}.
+                              {citation.url && <a href={citation.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">Link</a>}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex justify-center py-4">
+              <div className="flex items-center space-x-1.5">
+                <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center mr-3 flex-shrink-0 shadow-sm">
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-primary">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                  </svg>
+                </div>
+                <div className="bg-white py-3 px-4 rounded-xl rounded-bl-none shadow-md">
+                    <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Input form at bottom */}
+      <div className="border-t border-gray-200 bg-white p-3 md:p-4 sticky bottom-0">
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-4xl mx-auto relative"
+        >
+          <div className="relative flex items-center w-full">
             <input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="What is the treatment of asthma?"
-              className="flex-1 px-6 py-4 text-lg focus:outline-none"
+              placeholder="Send a message..."
+              className="w-full py-3.5 px-5 pr-14 border border-gray-300 rounded-xl shadow-sm resize-none overflow-hidden min-h-[56px] max-h-[150px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all text-base"
               disabled={isLoading}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -246,109 +323,18 @@ const CleanChatInterface: React.FC = () => {
               }}
             />
             <button
-              type="button"
-              className="bg-primary text-white p-4 flex items-center justify-center"
+              type="submit"
               disabled={isLoading || !inputValue.trim()}
-              onClick={(e) => {
-                console.log("Send button clicked");
-                handleSubmit(e);
-              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg h-9 w-9 flex items-center justify-center bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:bg-gray-300"
             >
               {isLoading ? (
-                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Send className="w-6 h-6" />
+                <Send size={18} />
               )}
             </button>
           </div>
-        </div>
-      </div>
-      
-      {/* Messages - with no-nested-scroll to prevent nested scrollbars */}
-      <div className="space-y-8 no-nested-scroll">
-        {messages.map((message) => (
-          <div key={message.id} className="animate-fade-in">
-            {message.role === 'user' ? (
-              /* User message */
-              <div className="mb-2">
-                <div className="text-gray-500 text-sm mb-1">Your question:</div>
-                <div className="text-gray-800 text-lg">{message.content}</div>
-              </div>
-            ) : (
-              /* Assistant message */
-              <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-                {/* Expanded question */}
-                <div className="px-6 py-4 border-b border-gray-100">
-                  <div className="text-gray-500 text-sm mb-1">Expanded question:</div>
-                  <div className="text-gray-800">
-                    <span className="font-medium">What is </span>
-                    <span>{extractQuestion(message).replace(/^What is /i, '')}</span>
-                  </div>
-                </div>
-                
-                {/* Source header - Using semitransparent background */}
-                {message.source && (
-                  <div className="px-6 py-3 tab-nav-bg border-b flex justify-between items-center">
-                    <div className="text-amber-700 font-medium">{message.source.name}</div>
-                  </div>
-                )}
-                
-                {/* Main content */}
-                <div className="px-6 py-4">
-                  <div 
-                    className="prose prose-sm max-w-none no-nested-scroll"
-                    dangerouslySetInnerHTML={{ 
-                      __html: formatTextWithCitations(extractContent(message)) 
-                    }}
-                  />
-                </div>
-                
-                {/* Citations */}
-                {message.citations && message.citations.length > 0 && (
-                  <div className="px-6 py-4 border-t tab-nav-bg">
-                    <div className="text-sm font-medium mb-2">References</div>
-                    <ol className="text-sm text-gray-600 pl-5 space-y-2">
-                      {message.citations.map((citation, index) => (
-                        <li key={citation.id} id={citation.id}>
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <div className="font-medium text-gray-700">{citation.title}</div>
-                              <div>{citation.authors}</div>
-                              <div className="text-gray-500">{citation.source} {citation.year}</div>
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-        
-        {/* Loading indicator */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
-        
-        {/* Empty state */}
-        {messages.length === 0 && !isLoading && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-12 h-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">No questions yet</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              Start by typing a medical question above. You'll get evidence-based answers with citations.
-            </p>
-          </div>
-        )}
-        
-        {/* Scroll anchor */}
-        <div ref={messagesEndRef} />
+        </form>
       </div>
     </div>
   );

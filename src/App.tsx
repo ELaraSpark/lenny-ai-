@@ -43,10 +43,11 @@ import RecentChats from "./pages/RecentChats";
 import RecentSearches from "./pages/RecentSearches"; // This import might be unused now
 import MyAgents from "./pages/MyAgents";
 import QuickNotes from "./pages/MyTemplates"; // Import as QuickNotes since that's the exported name
+import SavedTemplates from "./pages/SavedTemplates"; // Import SavedTemplates component
 import Integrations from "./pages/Integrations";
 import Tasks from "./pages/Tasks";
 import CreateAgentPage from "./pages/CreateAgentPage";
-import Referrals from "./pages/Referrals"; 
+import Referrals from "./pages/Referrals";
 import Library from "./pages/Library"; 
 import LandingPage from "./pages/LandingPage";
 import PublicChat from "@/components/home/PublicChat"; // Import PublicChat component
@@ -113,8 +114,7 @@ const App = () => (
                 {/* <Route path="/agents" element={<Navigate to="/my-agents" replace />} /> */} {/* Redirect */}
                 <Route path="/collaboration" element={<Collaboration />} />
                 <Route path="/analytics" element={<Analytics />} />
-                <Route path="/settings/*" element={<SettingsView />} />
-                <Route path="/followup-scheduler" element={<FollowupScheduler />} />
+                <Route path="/settings/*" element={<SettingsView />} />                <Route path="/followup-scheduler" element={<FollowupScheduler />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/tools/document-transformer" element={<DocumentTransformer />} />
                 <Route path="/collaboration-hub" element={<CollaborationHub />} />
@@ -127,15 +127,15 @@ const App = () => (
                 {/* <Route path="/agents/create" element={<CreateAgentPage />} /> */}
                 {/* <Route path="/agents/:agentId" element={<AgentDetailPage />} /> */}
                 
-                <Route path="/my-templates" element={<AppLayout hideHeader={true}><QuickNotes /></AppLayout>} />
+                <Route path="/my-templates" element={<PublicLayout forceHideHeader={true} showFooter={false}><QuickNotes /></PublicLayout>} />
                 <Route path="/quick-notes" element={<Navigate to="/my-templates" replace />} /> {/* Redirect to MyTemplates */}
+                <Route path="/saved-templates" element={<PublicLayout forceHideHeader={true} showFooter={false}><SavedTemplates /></PublicLayout>} /> {/* Add SavedTemplates route */}
                 <Route path="/integrations" element={<Integrations />} />
                 <Route path="/tasks" element={<Tasks />} />
-                <Route path="/referrals" element={<Referrals />} />
-                <Route path="/library" element={<Library />} />
+                <Route path="/referrals" element={<Referrals />} />                <Route path="/library" element={<Library />} />
                 <Route path="/chat" element={<Chat />} />
-                <Route path="/templates/create" element={<CreateTemplatePage />} /> {/* Added create template route */}
-                <Route path="/templates/:templateId/edit" element={<EditTemplatePage />} /> {/* Added edit template route */}
+                <Route path="/templates/create" element={<PublicLayout forceHideHeader={true} showFooter={false}><CreateTemplatePage /></PublicLayout>} /> {/* Added create template route */}
+                <Route path="/templates/:templateId/edit" element={<PublicLayout forceHideHeader={true} showFooter={false}><EditTemplatePage /></PublicLayout>} /> {/* Added edit template route */}
                 <Route path="/doctors-lounge" element={<DoctorsLounge />} /> {/* Added Doctor's Lounge route */}
                 <Route path="/card-comparison" element={<CardComparisonPage />} /> {/* Added Card Comparison route */}
                 {/* Add other authenticated routes as needed */}

@@ -970,10 +970,9 @@ ${inputText}`;
                   </div>
                 </button>
               ))}
-              
-              {/* Add a "More" card at the end */}
+                {/* Add a "More" card at the end */}
               <button
-                onClick={() => navigate('/my-templates')}
+                onClick={() => navigate('/saved-templates')}
                 className="template-card text-left bg-primary/5 border border-dashed border-primary/30 rounded-lg p-3 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary w-full flex items-center justify-center gap-2 h-12"
               >
                 <MoreHorizontal className="w-4 h-4 text-primary" />

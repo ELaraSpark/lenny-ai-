@@ -70,9 +70,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
     <div className="min-h-screen flex flex-col bg-background overflow-x-hidden"> {/* Added overflow-x-hidden */}
       
       {/* Conditionally render header */}
-      {showHeader && !forceHideHeader && (
-        <header className={`sticky top-0 z-50 w-full backdrop-blur-md transition-all duration-300 ${isScrolled ? 'bg-background/90 shadow-md' : 'bg-transparent'}`}>
-          <div className="container mx-auto px-4 sm:px-6">
+      {showHeader && !forceHideHeader && (        <header className={`sticky top-0 z-50 w-full backdrop-blur-md transition-all duration-300 ${isScrolled ? 'bg-background/90 shadow-md' : 'bg-transparent'}`}>
+          <div className="px-4 sm:px-6 lg:px-8 w-full">
             <nav className="flex items-center justify-between py-4">
               {/* Playful Logo/Accent - Using the landing page style */}
               <Link to="/" className="text-2xl font-semibold text-neutral-900 flex items-center transform -rotate-1 mr-8">
@@ -214,17 +213,14 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({
             </nav>
           </div>
         </header>
-      )}
-
-      {/* Main content with scrollable area */}
-      <main className="flex-1 overflow-y-auto scrollable-container">
+      )}      {/* Main content with scrollable area - full width */}
+      <main className="flex-1 overflow-y-auto scrollable-container w-full">
         {children}
       </main>
 
       {/* Footer */}
-      {showFooter && (
-        <footer className="bg-background/80 backdrop-blur-md border-t border-border pt-10 pb-5 relative z-10"> 
-          <div className="container mx-auto px-4 sm:px-6">
+      {showFooter && (        <footer className="bg-background/80 backdrop-blur-md border-t border-border pt-10 pb-5 relative z-10"> 
+          <div className="px-4 sm:px-6 lg:px-8 w-full">
             {/* Footer columns */}
             <div className="flex flex-wrap justify-between gap-8 mb-8">
               <div className="w-full sm:w-1/2 md:w-auto">

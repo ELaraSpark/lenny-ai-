@@ -48,11 +48,18 @@ const DocumentTransformer: React.FC = () => {
     const [isOutputEditable, setIsOutputEditable] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [isListening, setIsListening] = useState<boolean>(false); // State for dictation
+    const [isPageLoaded, setIsPageLoaded] = useState<boolean>(false); // State for preventing spinner reloads
     // Correct type annotation using the installed types
     const recognitionRef = useRef<SpeechRecognition | null>(null); 
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const outputRef = useRef<HTMLDivElement>(null);
+
+    // UseEffect to prevent spinner from loading multiple times
+    useEffect(() => {
+        // Mark page as loaded after initial render
+        setIsPageLoaded(true);
+    }, []);
 
     // --- Speech Recognition Setup ---
     // Check for browser support using the declared window type

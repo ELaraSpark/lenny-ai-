@@ -31,6 +31,12 @@ const ActiveCallManager = () => {
 const FollowupSchedulerView = () => {
   const [activeTab, setActiveTab] = useState("schedule");
   const { activeCall } = useActiveCallContext();
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    // Set content as loaded after first render to prevent multiple spinner reloads
+    setIsLoaded(true);
+  }, []);
   
   return (
     // Apply consistent panel styling

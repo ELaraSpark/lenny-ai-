@@ -98,10 +98,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ hideHeader, children }) => { // A
             className="tab-nav-bg border-none shadow-none relative z-dropdown"
             onMobileMenuToggle={toggleMobileSidebar}
           />
-          
-          {/* Content with scrolling enabled */}
+            {/* Content with scrolling enabled - full width */}
           <main className="flex-1 page-container overflow-y-auto">
-            <div className="relative z-base h-full max-w-5xl mx-auto p-4 md:p-8 bg-background rounded-lg shadow-sm border border-border/30 panel-wrapper">
+            <div className="relative z-base h-full w-full p-4 md:p-8 bg-background">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

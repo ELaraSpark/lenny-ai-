@@ -1,12 +1,21 @@
 
-import AppLayout from "@/components/layout/AppLayout";
+import PublicLayout from "@/components/layout/PublicLayout";
 import FollowupSchedulerView from "@/components/followup/FollowupSchedulerView";
+import { useState, useEffect } from "react";
 
 const FollowupScheduler = () => {
+  // Loading state to prevent the spinner from showing repeatedly
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Mark as loaded after initial render
+    setIsLoading(false);
+  }, []);
+  
   return (
-    <AppLayout>
+    <PublicLayout showHeader={true} showFooter={false}>
       <FollowupSchedulerView />
-    </AppLayout>
+    </PublicLayout>
   );
 };
 

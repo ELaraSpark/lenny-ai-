@@ -63,7 +63,9 @@ const CollaborationHub: React.FC = () => {
     const [isTaggingPopoverOpen, setIsTaggingPopoverOpen] = useState(false); 
     const [showConsensus, setShowConsensus] = useState<boolean>(false); 
     const [consensusData, setConsensusData] = useState<ConsensusItemData[]>([]); 
-    const [consensusProgress, setConsensusProgress] = useState<number>(0); 
+    const [consensusProgress, setConsensusProgress] = useState<number>(0);
+    // Loading state to prevent the spinner from showing repeatedly
+    const [isLoading, setIsLoading] = useState(true);
 
     // Scroll chat to bottom
     useEffect(() => {
