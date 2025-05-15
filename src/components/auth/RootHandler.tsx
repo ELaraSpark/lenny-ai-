@@ -19,9 +19,12 @@ export const RootHandler = () => {
       </div>
     );
   }
-
-  // Always show the public chat interface first, regardless of authentication status
-  // This ensures that when users click on Leny AI in the header, they get the mock interface
+  // If user is authenticated, redirect them to the full chat interface
+  if (user) {
+    return <Navigate to="/chat" replace />;
+  }
+  
+  // If not logged in, show the public landing page with public chat
   return (
     <PublicLayout showFooter={true}>
       <PublicChat />
